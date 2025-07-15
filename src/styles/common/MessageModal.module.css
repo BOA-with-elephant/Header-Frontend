@@ -1,0 +1,187 @@
+/* MessageModal.module.css */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-modal);
+    max-width: 360px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out;
+    border: none;
+}
+
+.modalHeader {
+    padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-lg) var(--spacing-2xl);
+    text-align: center;
+    background: var(--bg-primary);
+}
+
+.iconContainer {
+    margin-bottom: var(--spacing-lg);
+}
+
+.icon {
+    font-size: 48px;
+    display: inline-block;
+    animation: bounceIn 0.5s ease-out;
+}
+
+.title {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.modalBody {
+    padding: 0 var(--spacing-2xl) var(--spacing-2xl) var(--spacing-2xl);
+    background: var(--bg-primary);
+}
+
+.message {
+    margin: 0;
+    font-size: var(--text-base);
+    line-height: 1.5;
+    color: var(--text-secondary);
+    white-space: pre-line;
+}
+
+.modalFooter {
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg-secondary);
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    overflow: hidden;
+}
+
+.btn {
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    border: none;
+    outline: none;
+    flex: 1;
+}
+
+.btnCancel {
+    background-color: var(--color-light-gray);
+    color: var(--text-secondary);
+    border-right: 1px solid var(--border-color);
+}
+
+.btnCancel:hover {
+    background-color: var(--border-color);
+}
+
+.btnConfirm {
+    background-color: var(--color-primary);
+    color: var(--text-light);
+}
+
+.btnConfirm:hover {
+    background-color: #1e2660;
+}
+
+/* 단일 버튼일 때 */
+.modalFooter:has(.btnConfirm:only-child) {
+    grid-template-columns: 1fr;
+}
+
+.modalFooter:has(.btnConfirm:only-child) .btnConfirm {
+    border-right: none;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .modal {
+        max-width: 300px;
+        margin: var(--spacing-lg);
+    }
+    
+    .modalHeader,
+    .modalBody {
+        padding-left: var(--spacing-lg);
+        padding-right: var(--spacing-lg);
+    }
+    
+    .modalHeader {
+        padding-top: var(--spacing-2xl);
+        padding-bottom: var(--spacing-md);
+    }
+    
+    .modalBody {
+        padding-bottom: var(--spacing-lg);
+    }
+    
+    .btn {
+        padding: var(--spacing-sm) var(--spacing-lg);
+        font-size: var(--text-sm);
+    }
+    
+    .icon {
+        font-size: 40px;
+    }
+    
+    .title {
+        font-size: var(--text-base);
+    }
+    
+    .message {
+        font-size: var(--text-sm);
+    }
+}

@@ -1,0 +1,291 @@
+/* src/styles/landing/LandingPage.module.css */
+
+/* =================================
+   랜딩 컨테이너
+   ================================= */
+.landingContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--color-primary) 10%, #764ba2 100%);
+  color: var(--text-primary);
+  font-family: 'SacheonHangGong-Regular', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.landingMain {
+  padding-top: 0;
+}
+
+/* =================================
+   히어로 섹션
+   ================================= */
+.heroSection {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px var(--spacing-2xl) 0;
+  gap: 60px;
+}
+
+.heroContent {
+  flex: 1;
+  max-width: 500px;
+}
+
+.heroTitle {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: var(--spacing-2xl);
+  color: var(--text-light);
+}
+
+.heroAccent {
+  background: linear-gradient(45deg, var(--color-grade), #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroDescription {
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-2xl);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.heroButtons {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.heroImage {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.featurePreview {
+  display: grid;
+  gap: var(--spacing-lg);
+  transform: rotate(5deg);
+}
+
+.previewCard {
+  background: var(--bg-primary);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+}
+
+.previewHeader {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.previewNumber {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+}
+
+/* =================================
+   특징 섹션
+   ================================= */
+.featuresSection {
+  background: var(--bg-primary);
+  padding: 80px var(--spacing-2xl);
+}
+
+.featuresContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.featuresTitle {
+  text-align: center;
+  font-size: 36px;
+  font-weight: var(--font-bold);
+  margin-bottom: 60px;
+  color: var(--color-primary);
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+}
+
+.featureItem {
+  text-align: center;
+}
+
+.featureIcon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.featureTitle {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary);
+}
+
+.featureDescription {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* =================================
+   CTA 섹션
+   ================================= */
+.ctaSection {
+  background: var(--bg-secondary);
+  padding: 80px var(--spacing-2xl);
+  text-align: center;
+}
+
+.ctaContainer {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ctaTitle {
+  font-size: 36px;
+  font-weight: var(--font-bold);
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-primary);
+}
+
+.ctaDescription {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.ctaButtons {
+  display: flex;
+  gap: var(--spacing-lg);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* =================================
+   버튼 스타일
+   ================================= */
+.ctaButton {
+  padding: var(--spacing-md) var(--spacing-2xl);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: var(--font-semibold);
+  transition: var(--transition-fast);
+  display: inline-block;
+}
+
+.ctaButton.primary {
+  background: var(--bg-primary);
+  color: var(--color-primary);
+}
+
+.ctaButton.primary:hover {
+  background: var(--bg-secondary);
+  transform: translateY(-2px);
+}
+
+.ctaButton.secondary {
+  background: transparent;
+  color: var(--text-light);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.ctaButton.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ctaButton.large {
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  font-size: var(--text-lg);
+  border-radius: var(--radius-xl);
+}
+
+.ctaButton.primaryCta {
+  background: var(--color-primary);
+  color: var(--text-light);
+}
+
+.ctaButton.primaryCta:hover {
+  background: #0f172a;
+  transform: translateY(-2px);
+}
+
+.ctaButton.secondaryCta {
+  background: var(--bg-primary);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.ctaButton.secondaryCta:hover {
+  background: var(--bg-secondary);
+  transform: translateY(-2px);
+}
+
+/* =================================
+   반응형 - 모바일
+   ================================= */
+@media (max-width: 768px) {
+  .heroSection {
+    flex-direction: column;
+    text-align: center;
+    gap: 40px;
+    padding: 40px var(--spacing-lg);
+  }
+
+  .heroTitle {
+    font-size: 36px;
+  }
+
+  .heroButtons {
+    justify-content: center;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* =================================
+   반응형 - 소형 모바일
+   ================================= */
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 28px;
+  }
+
+  .heroDescription {
+    font-size: var(--text-base);
+  }
+
+  .featuresTitle {
+    font-size: 28px;
+  }
+
+  .ctaTitle {
+    font-size: 28px;
+  }
+
+  .ctaButton.large {
+    padding: var(--spacing-sm) var(--spacing-2xl);
+    font-size: var(--text-base);
+  }
+}

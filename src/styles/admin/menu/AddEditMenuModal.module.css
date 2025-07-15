@@ -1,0 +1,268 @@
+/* src/styles/admin/menu/AddEditMenuModal.module.css */
+
+/* 모달 오버레이 */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 모달 컨테이너 */
+.modal {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-modal);
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+/* 모달 헤더 */
+.modalHeader {
+    background-color: var(--color-primary);
+    color: var(--text-light);
+    padding: var(--spacing-lg);
+    text-align: center;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: var(--font-medium);
+}
+
+/* 모달 바디 */
+.modalBody {
+    padding: var(--spacing-2xl);
+}
+
+/* 에러 메시지 */
+.error {
+    background-color: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: var(--color-error);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--text-sm);
+    text-align: center;
+}
+
+/* 폼 그룹 */
+.formGroup {
+    margin-bottom: var(--spacing-lg);
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+}
+
+/* 필수 표시 */
+.required {
+    color: var(--color-error);
+}
+
+/* 기본 입력 필드 스타일 */
+.textInput {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    transition: var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.textInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(19, 24, 61, 0.1);
+}
+
+.textInput::placeholder {
+    color: var(--text-muted);
+}
+
+.textInput:disabled {
+    background-color: var(--bg-secondary);
+    cursor: not-allowed;
+}
+
+/* 셀렉트 박스 래퍼 */
+.selectWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.selectWrapper::after {
+    content: '▼';
+    position: absolute;
+    right: var(--spacing-md);
+    pointer-events: none;
+    color: var(--text-secondary);
+    font-size: var(--text-xs);
+}
+
+/* 셀렉트 박스 */
+.selectInput {
+    width: 100%;
+    padding: var(--spacing-md) 40px var(--spacing-md) var(--spacing-lg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    background-color: var(--bg-primary);
+    appearance: none;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.selectInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(19, 24, 61, 0.1);
+}
+
+.selectInput:disabled {
+    background-color: var(--bg-secondary);
+    cursor: not-allowed;
+}
+
+/* 시간 입력 그룹 */
+.timeInputGroup {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.timeInputGroup .selectWrapper:first-child {
+    flex: 1;
+}
+
+.timeInputGroup .selectWrapper:last-child {
+    flex: 1;
+}
+
+.timeInput {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    text-align: center;
+    transition: var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.timeInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(19, 24, 61, 0.1);
+}
+
+.timeInput::placeholder {
+    color: var(--text-muted);
+}
+
+.timeInput:disabled {
+    background-color: var(--bg-secondary);
+    cursor: not-allowed;
+}
+
+/* 모달 푸터 */
+.modalFooter {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-2xl);
+}
+
+.cancelBtn,
+.submitBtn,
+.deleteBtn {
+    flex: 1;
+    padding: var(--spacing-md) var(--spacing-2xl);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    transition: var(--transition-fast);
+}
+
+.cancelBtn {
+    background-color: var(--color-gray-300);
+    color: var(--text-primary);
+}
+
+
+.deleteBtn {
+    background-color: var(--color-error);
+    color: var(--text-light);
+}
+
+.submitBtn {
+    background-color: var(--color-primary);
+    color: var(--text-light);
+}
+
+.cancelBtn:hover, .deleteBtn:hover, .submitBtn:hover {
+    transform: translateY(-1px);
+    font-weight: var(--font-bold);
+}
+
+.cancelBtn:disabled,
+.deleteBtn:disabled,
+.submitBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.deleteBtn:disabled:hover {
+    background-color: var(--color-error);
+    transform: none;
+}
+
+.submitBtn:disabled:hover {
+    background-color: var(--color-primary);
+    transform: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .modal {
+        width: 95%;
+        margin: var(--spacing-lg);
+    }
+    
+    .modalBody {
+        padding: var(--spacing-lg);
+    }
+    
+    .timeInputGroup {
+        gap: var(--spacing-sm);
+    }
+    
+    .modalFooter {
+        gap: var(--spacing-sm);
+        margin-top: var(--spacing-2xl);
+    }
+    
+    .cancelBtn,
+    .submitBtn {
+        padding: var(--spacing-sm) var(--spacing-lg);
+        font-size: var(--text-xs);
+    }
+}
