@@ -70,6 +70,13 @@
   border: 1px solid var(--color-secondary2);
 }
 
+.searchHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
 .searchTitle {
   font-size: var(--text-lg);
   font-weight: var(--font-bold);
@@ -262,7 +269,7 @@
 .table th {
   background: var(--color-background);
   padding: var(--spacing-lg) var(--spacing-lg);
-  text-align: left;
+  text-align: center;
   font-weight: var(--font-bold);
   color: var(--color-primary);
   font-size: var(--text-sm);
@@ -274,6 +281,8 @@
   border-bottom: 1px solid var(--color-secondary2);
   font-size: var(--text-sm);
   color: var(--text-primary);
+  justify-items: center;
+  text-align: center;
 }
 
 .table tbody tr:hover {
@@ -315,8 +324,8 @@
 
 /* 상태 뱃지 */
 .statusBadge {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-2xl);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
   font-size: var(--text-xs);
   font-weight: var(--font-bold);
   text-transform: uppercase;
@@ -324,64 +333,26 @@
 }
 
 .statusBadge.completed {
-  background: rgba(246, 168, 0, 0.1);
-  color: var(--color-grade);
-  border: 2px solid rgba(246, 168, 0, 0.2);
+  background: rgba(44, 189, 22, 0.1);
+  color: var(--color-success);
 }
 
 .statusBadge.pending {
   background: rgba(91, 91, 162, 0.1);
   color: var(--color-dark-gray);
-  border: 2px solid rgba(91, 91, 162, 0.2);
 }
 
-.statusBadge.cancelled, .statusBadge.partial_cancelled {
+.statusBadge.cancelled {
   background: rgba(255, 68, 68, 0.1);
   color: var(--color-error);
-  border: 2px solid rgba(255, 68, 68, 0.2);
 }
 
-/* =================================
-   페이지네이션
-   ================================= */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-2xl);
+ .statusBadge.partial_cancelled {
+  background: rgba(193, 151, 1, 0.1);
+  color: var(--color-grade);
 }
 
-.paginationButton {
-  padding: var(--spacing-md) var(--spacing-lg);
-  border: 2px solid var(--color-secondary2);
-  background: var(--bg-primary);
-  color: var(--color-primary);
-  border-radius: var(--radius-xl);
-  cursor: pointer;
-  transition: var(--transition-fast);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  min-width: 44px;
-}
 
-.paginationButton:hover {
-  background: var(--color-background);
-  border-color: var(--color-light-gray);
-  transform: translateY(-1px);
-}
-
-.paginationButton.active {
-  background: var(--color-primary);
-  color: var(--text-light);
-  border-color: var(--color-primary);
-}
-
-.paginationButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-}
 
 /* =================================
    빈 상태

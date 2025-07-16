@@ -272,7 +272,7 @@ export default function MenuManagement() {
         if (updatedCategory) { // 업데이트된 카테고리 데이터가 있으면 (수정 완료)
             showSuccess('카테고리 수정 완료', MESSAGES.CATEGORY.UPDATE_SUCCESS);
         } else { // 데이터가 없으면 (삭제 완료)
-            showWarning('카테고리 삭제 완료', MESSAGES.CATEGORY.DELETE_SUCCESS + '\n관련 시술들도 함께 삭제되었습니다.');
+            showSuccess('카테고리 삭제 완료', MESSAGES.CATEGORY.DELETE_SUCCESS + '\n관련 시술들도 함께 삭제되었습니다.');
         }
     };
 
