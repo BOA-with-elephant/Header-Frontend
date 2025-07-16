@@ -12,17 +12,8 @@ export default function Reservation() {
     return (
         <>
             <h1>예약관리 페이지</h1>
-            <div className="content-card" style={{width: '100%', position: 'relative'}}>
-                <div className={styles.calendarHeader}>
-                    <span className={styles.title}>예약 관리</span>
+            <div className="content-card" style={{ height : '800px', position: 'relative'}}>
                     <ReservationCalendar/>
-                    <input type="text" className={styles.inputBox}/>
-                    <select name="searchTitle" className="">
-                        <option>날짜별</option>
-                        <option>고객별</option>
-                        <option>시술별</option>
-                    </select>
-                </div>
             </div>
         </>
     )

@@ -16,25 +16,6 @@
     margin: 0;
 }
 
-/* <2025년 6월> */
-.changeMonthBtn{
-    width : 30px;
-    height : 30px;
-    /* object-fit: contain; */
-}
-
-.yearAndMonthTitle{
-    font-size: var(--text-xl);
-    font-weight: var(--font-bold);
-    color: #000000;
-}
-
-.yearAndMonth{
-    display: inline-flex;
-    align-items: center; 
-    gap: 8px;
-}
-
 /* search_box */
 .inputBox{
     width: 288px;
@@ -48,6 +29,9 @@
 .selectBox{
     width: 111.25px;
     height: 44px;
+    background: #FFFFFF;
+    border: 3px solid #13183D;
+    border-radius: 15px;
 }
 
 
