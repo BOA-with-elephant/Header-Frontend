@@ -1,0 +1,45 @@
+/* ------- 달력 헤더 ------- */
+.calendarHeader{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* 예약 관리 */
+.title{
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-primary);
+    margin: 0;
+}
+
+/* <2025년 6월> */
+.changeMonthBtn{
+    width : 30px;
+    height : 30px;
+    object-fit: contain;
+}
+
+.yearAndMonthTitle{
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: #000000;
+}
+
+.yearAndMonth{
+    display: inline-flex;
+    align-items: center;
+    
+    gap: 8px;
+}
+
+/* search_box */
+.searchBox{
+    position: absolute;
+    width: 414.76px;
+    height: 48px;
+    left: 1451px;
+    top: 175px;
+}
+
+
