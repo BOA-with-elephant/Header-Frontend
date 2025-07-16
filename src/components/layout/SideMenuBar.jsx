@@ -31,8 +31,7 @@ const MENU_CONFIG = {
       type: "expandable", // 확장 가능한 메뉴
       firstPath: "/myshop/customer",
       items: [
-        { path: "/myshop/customer", text: "고객 등록" },
-        { path: "/myshop/customer-list", text: "고객 조회" }
+        { path: "/myshop/customer", text: "고객 조회/등록" },
       ]
     },
     {
