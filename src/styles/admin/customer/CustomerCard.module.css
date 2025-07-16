@@ -8,6 +8,7 @@
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .customerCard:hover {

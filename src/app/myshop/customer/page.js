@@ -3,10 +3,18 @@ import { useState } from 'react';
 import MessageModal from '@/components/ui/MessageModal';
 import { useMessageModal } from '@/hooks/useMessageModal';
 import CustomerCard from '@/components/ui/CustomerCard';
+import CustomerDetailModal from '@/components/ui/CustomerDetailModal';
 import styles from '@/styles/admin/customer/Customer.module.css';
+
 
 export default function Customer() {
     const { modal, closeModal, showError, showSuccess, showConfirm, showWarning } = useMessageModal();
+    
+    // 고객 상세 모달 상태
+    const [detailModal, setDetailModal] = useState({
+        isOpen: false,
+        customer: null
+    });
     
     // 고객 데이터 (실제로는 API에서 가져올 데이터)
     const [customers, setCustomers] = useState([
@@ -18,7 +26,8 @@ export default function Customer() {
             lastVisit: '1일전',
             visitCount: 52,
             totalAmount: 3150000,
-            preferredServices: ['헤어컷', '파마']
+            preferredServices: ['헤어컷', '파마'],
+            memo: '파마를 자주 하시는 고객입니다. 모발이 약간 얇아서 볼륨 파마를 선호하세요.'
         },
         {
             id: 2,
@@ -28,7 +37,8 @@ export default function Customer() {
             lastVisit: '2일전',
             visitCount: 28,
             totalAmount: 1890000,
-            preferredServices: ['염색', '트리트먼트']
+            preferredServices: ['염색', '트리트먼트'],
+            memo: '염색을 정기적으로 하시며, 애쉬톤 컬러를 선호합니다.'
         },
         {
             id: 3,
@@ -275,6 +285,41 @@ export default function Customer() {
         setCurrentPage(1);
     };
 
+    // 고객 상세 모달 열기
+    const openDetailModal = (customer) => {
+        setDetailModal({
+            isOpen: true,
+            customer: customer
+        });
+    };
+
+    // 고객 상세 모달 닫기
+    const closeDetailModal = () => {
+        setDetailModal({
+            isOpen: false,
+            customer: null
+        });
+    };
+
+    // 고객 메모 저장
+    const handleMemoSave = async (customerId, memo) => {
+        try {
+            // 실제로는 API 호출
+            console.log('메모 저장:', { customerId, memo });
+            
+            // 로컬 상태 업데이트
+            setCustomers(prev => prev.map(customer => 
+                customer.id === customerId 
+                    ? { ...customer, memo }
+                    : customer
+            ));
+            
+            showSuccess('저장 완료', '메모가 성공적으로 저장되었습니다.');
+        } catch (error) {
+            showError('저장 실패', '메모 저장 중 오류가 발생했습니다.');
+        }
+    };
+
     // 신규 고객 추가
     const handleAddCustomer = () => {
         showConfirm(
@@ -292,6 +337,9 @@ export default function Customer() {
         const customer = customers.find(c => c.id === customerId);
         
         switch (action) {
+            case 'detail':
+                openDetailModal(customer);
+                break;
             case 'reservation':
                 showSuccess('예약 완료', `${customer.name}님의 예약이 완료되었습니다.`);
                 break;
@@ -397,6 +445,7 @@ export default function Customer() {
                                 key={customer.id}
                                 customer={customer}
                                 onAction={handleCustomerAction}
+                                onClick={() => openDetailModal(customer)}
                             />
                         ))
                     ) : (
@@ -445,6 +494,14 @@ export default function Customer() {
                     </button>
                 </div>
             </div>
+
+            {/* 고객 상세 모달 */}
+            <CustomerDetailModal
+                isOpen={detailModal.isOpen}
+                onClose={closeDetailModal}
+                customer={detailModal.customer}
+                onSave={handleMemoSave}
+            />
 
             {/* 메시지 모달 */}
             <MessageModal

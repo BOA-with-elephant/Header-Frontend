@@ -1,14 +1,17 @@
 'use client';
 import styles from '@/styles/admin/customer/CustomerCard.module.css';
 
-export default function CustomerCard({ customer, onAction }) {
+export default function CustomerCard({ customer, onAction, onClick }) {
     // 금액 포맷팅
     const formatCurrency = (amount) => {
         return `₩ ${amount.toLocaleString()}`;
     };
 
     return (
-        <div className={styles.customerCard}>
+        <div 
+            className={styles.customerCard}
+            onClick={onClick}
+        >
             <div className={styles.customerHeader}>
                 <div className={styles.customerProfile}>
                     <div className={styles.profileAvatar}>
