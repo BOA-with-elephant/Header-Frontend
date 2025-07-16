@@ -1,0 +1,99 @@
+.calendarHeader {
+    height: 74px;
+    background-color: red;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    color: #ffffff;
+    font-family: 'Pretendard-Regular';
+    font-size: 35px;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+.changeMonthBtn{
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    /* object-fit: contain; */
+}
+
+.calendarBody{
+    position: absolute;
+    margin-top: 30px;
+    padding-left: 30px;
+    padding-bottom: 25px;
+    border: 4px solid blue;
+    border-top: none;
+    width : 788px;
+    height: max-content;
+    border-radius: 0px;    
+}
+
+.dayList {
+    display: flex;
+    width : 720px;
+}
+
+.day{
+    flex: 1;
+    text-align: center;
+    font-family: 'Inter';
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.calendarGrid {
+    position : relative;
+    display: flex;
+    flex-wrap: wrap;
+    width : 720px;
+    z-index : 1;
+    
+}
+
+.dateCell {
+    width: calc(100% / 7);
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    box-sizing: border-box;
+    margin-top: 20px;
+    cursor: pointer;
+    position : relative;
+    z-index : 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.currentMonth {
+    color : #000000;
+    font-family: 'Inter';
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.otherMonth {
+    color: #838383;
+    font-family: 'Inter';
+    font-size: 25px;
+    cursor: default;
+    font-weight: 700;
+}
+
+.today{
+    background-color: green;
+    border-radius: 100px;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    z-index : 3;
+}
+/* img{
+    position : absolute;
+    z-index : -1;
+} */

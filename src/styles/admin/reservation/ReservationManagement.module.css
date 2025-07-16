@@ -1,10 +1,10 @@
 /* ------- 달력 헤더 ------- */
 .calendarHeader{
-    position: relative;
+    /* position: relative; */
+    /* width: 100%; */
     display: flex;
     align-items: center;
     height: 50px;
-    gap: 16px;
 }
 
 /* 예약 관리 */
@@ -20,7 +20,7 @@
 .changeMonthBtn{
     width : 30px;
     height : 30px;
-    object-fit: contain;
+    /* object-fit: contain; */
 }
 
 .yearAndMonthTitle{
@@ -30,21 +30,24 @@
 }
 
 .yearAndMonth{
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);   
     display: inline-flex;
     align-items: center; 
     gap: 8px;
 }
 
 /* search_box */
-.searchBox{
-    position: absolute;
-    width: 414.76px;
-    height: 48px;
-    left: 1451px;
-    top: 175px;
+.inputBox{
+    width: 288px;
+    height: 47px;
+
+    background: #FFFFFF;
+    border: 3px solid #13183D;
+    border-radius: 15px;
+}
+
+.selectBox{
+    width: 111.25px;
+    height: 44px;
 }
 
 
