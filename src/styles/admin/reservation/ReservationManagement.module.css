@@ -1,12 +1,15 @@
 /* ------- 달력 헤더 ------- */
 .calendarHeader{
+    position: relative;
     display: flex;
     align-items: center;
+    height: 50px;
     gap: 16px;
 }
 
 /* 예약 관리 */
 .title{
+    z-index: 1;
     font-size: var(--text-xl);
     font-weight: var(--font-bold);
     color: var(--color-primary);
@@ -27,9 +30,11 @@
 }
 
 .yearAndMonth{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);   
     display: inline-flex;
-    align-items: center;
-    
+    align-items: center; 
     gap: 8px;
 }
 
