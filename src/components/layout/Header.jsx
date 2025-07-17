@@ -10,8 +10,8 @@ const HEADER_ACTIONS = {
     { href: "/logout", text: "로그아웃", type: "action" }
   ],
   unauthenticated: [
-    { href: "/login", text: "로그인", type: "link" },
-    { href: "/signup", text: "회원가입", type: "link" }
+    { href: "/auth/session", text: "로그인", type: "link" },
+    { href: "/auth/signup", text: "회원가입", type: "link" }
   ]
 };
 
