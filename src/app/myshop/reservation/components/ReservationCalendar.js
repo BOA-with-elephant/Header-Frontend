@@ -87,17 +87,19 @@ export default function ReservationCalendar() {
     useEffect(() => {
         const reservationList = async () => {
             try {
-                const res = await fetch(`${API_BASE_URL}/${year}/${month + 1}`);
+                const formatMonth = String(month + 1).padStart(2, '0');
+                const thisMonth = `${year}-${formatMonth}`;
+                console.log('thisMonth', typeof(thisMonth));
+                const res = await fetch(`${API_BASE_URL}/${thisMonth}`);
                 const data = await res.json();
-                console.log(data);
+                console.log('data', data);
                 setReservationInfo(data);
             } catch (err) {
                 console.error('예약 정보 불러오기 실패:', err);
             }
         };
-        reservationList(); // 함수를 선언만 하지 말고 호출도 해야 함!
-    }, [year, month]); // 이 값들이 바뀔 때마다 다시 호출됨
-
+        reservationList();
+    }, [year, month]);
 
     return (
         <>
@@ -153,7 +155,43 @@ export default function ReservationCalendar() {
                                 onClick={isWithinOneWeek ? () => { selectedDateHandler(date) } : undefined}
                             >
                                 {date.getDate()}
+                                
+                                {(() => {
+                                     // date.getDate().toISOString().split('T')[0]은 YYYY-MM-DD 형식으로 만들어주는 표현
+                                    const dailyReservations = reservationInfo.filter(list => list.resvDate === date.toISOString().split('T')[0]);
 
+                                    const showReservations = dailyReservations.slice(0, 2);
+                                    const hiddenCount = dailyReservations.length - 2;
+
+                                    return(
+                                        <>
+                                            {showReservations.map(list => {
+                                                const backgroundColor = list.menuColor;
+                                                const resvTime = list.resvTime;
+
+                                                function formatTime(resvTime){
+                                                    const [hours, minutes, seconds] = resvTime.split(':');
+                                                    const date = new Date();
+                                                    date.setHours(parseInt(hours, 10));
+                                                    return date.toLocaleTimeString('en-US', {hour: 'numeric', hour12: true});
+                                                }
+
+                                                const formattedTime = formatTime(resvTime);
+
+                                                return(
+                                                    <div key={list.resvCode} className={styles.resvDiv} style={{ backgroundColor : backgroundColor}}>
+                                                        {formattedTime}&emsp;{list.userName}&emsp;{list.menuName}
+                                                    </div>
+                                                );
+                                            })}
+                                            {hiddenCount > 0 && (
+                                                <div className={styles.resvDiv} style={{ backgroundColor : '#8588A2', color: '#FFFFFF'}}>
+                                                    외 {hiddenCount}건
+                                                </div>
+                                            )}
+                                        </>
+                                    );
+                                })()}
                             </div>
                         );
                     })}

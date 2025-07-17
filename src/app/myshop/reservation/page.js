@@ -12,7 +12,7 @@ export default function Reservation() {
     return (
         <>
             <h1>예약관리 페이지</h1>
-            <div className="content-card" style={{ height : '800px', position: 'relative'}}>
+            <div className="content-card" style={{ height : 'max-content', position: 'relative'}}>
                     <ReservationCalendar/>
             </div>
         </>
