@@ -5,6 +5,7 @@ import { useMessageModal } from '@/hooks/useMessageModal';
 import CustomerCard from '@/components/ui/CustomerCard';
 import CustomerRegisterModal from '@/components/ui/CustomerRegisterModal';
 import CustomerDetailModal from '@/components/ui/CustomerDetailModal';
+import CustomerHistoryModal from '@/components/ui/CustomerHistoryModal';
 import styles from '@/styles/admin/customer/Customer.module.css';
 
 export default function Customer() {
@@ -14,7 +15,7 @@ export default function Customer() {
     const [historyModal, setHistoryModal] = useState({
         isOpen: false,
         title: '',
-        message: ''
+        historyData: []
     });
 
     // 신규 고객 등록 모달 상태
@@ -44,7 +45,7 @@ export default function Customer() {
     const itemsPerPage = 8;
 
     // TODO: shop_id를 어디서 가져올지 결정되면 수정
-    const SHOP_ID = 2; // 임시값
+    const SHOP_ID = 1; // 임시값
 
     // API 데이터를 내부 형식으로 변환
     const transformApiData = (apiData) => {
@@ -192,23 +193,24 @@ export default function Customer() {
     // 고객 히스토리 API 호출 함수
     const fetchCustomerHistory = async (clientCode) => {
         try {
-            // TODO: 히스토리 API 엔드포인트가 정해지면 수정
-            // const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/customers/${clientCode}/history`);
-            // const result = await response.json();
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/customers/${clientCode}`);
 
-            // 테스트용: 더미 데이터
-            const customer = customers.find(c => c.clientCode === clientCode);
-            if (customer && customer.clientCode <= 2) {
-                // 첫 번째, 두 번째 고객만 테스트 히스토리 데이터
-                const testHistory = [
-                    { date: '2025-07-16', services: ['헤어컷', '볼륨파마'], amount: 85000 },
-                    { date: '2025-07-02', services: ['헤어컷'], amount: 35000 },
-                    { date: '2025-06-18', services: ['볼륨파마', '트리트먼트'], amount: 120000 }
-                ];
-                return testHistory;
+            if (!response.ok) {
+                throw new Error('히스토리 조회에 실패했습니다.');
             }
 
-            return [];
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.message || '히스토리 조회에 실패했습니다.');
+            }
+
+            // API 응답 데이터를 모달에서 사용하는 형태로 변환
+            return result.data.map(item => ({
+                date: item.visitDate,
+                services: item.menuName  // 단일 메뉴명으로 처리
+            }));
+
         } catch (error) {
             console.error('히스토리 조회 실패:', error);
             throw error;
@@ -220,34 +222,10 @@ export default function Customer() {
         try {
             const historyData = await fetchCustomerHistory(customer.clientCode);
 
-            if (historyData.length === 0) {
-                setHistoryModal({
-                    isOpen: true,
-                    title: `${customer.name}님 방문 히스토리`,
-                    message: '아직 방문 기록이 없습니다.'
-                });
-                return;
-            }
-
-            // 히스토리 데이터를 최신순으로 정렬하고 포맷팅
-            const sortedHistory = historyData.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            const historyMessage = sortedHistory.map(visit => {
-                const formattedDate = new Date(visit.date).toLocaleDateString('ko-KR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-                const servicesText = visit.services.join(', ');
-                const formattedAmount = visit.amount.toLocaleString();
-
-                return `📅 ${formattedDate}\n💇 ${servicesText}\n💰 ${formattedAmount}원`;
-            }).join('\n\n');
-
             setHistoryModal({
                 isOpen: true,
                 title: `${customer.name}님 방문 히스토리`,
-                message: historyMessage
+                historyData: historyData
             });
         } catch (error) {
             showError('오류', '히스토리를 불러오는데 실패했습니다.');
@@ -259,7 +237,7 @@ export default function Customer() {
         setHistoryModal({
             isOpen: false,
             title: '',
-            message: ''
+            historyData: []
         });
     };
 
@@ -627,14 +605,11 @@ export default function Customer() {
             />
 
             {/* 히스토리 모달 */}
-            <MessageModal
+            <CustomerHistoryModal
                 isOpen={historyModal.isOpen}
                 onClose={closeHistoryModal}
-                type="info"
                 title={historyModal.title}
-                message={historyModal.message}
-                confirmText="확인"
-                showCancel={false}
+                historyData={historyModal.historyData}
             />
 
             {/* 메시지 모달 */}
