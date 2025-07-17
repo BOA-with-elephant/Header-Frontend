@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import goBackButton from "public/images/reservation/Back.png";
-import searchIcon from "../../../../../public/images/reservation/search_icon.png";
+import searchIcon from "../../../../../public/images/reservation/Magnifier.png";
 import styles from "../../../../styles/admin/reservation/Calendar.module.css";
 
 // 현재 월, 이전 월, 다음 월 날짜를 계산하는 함수
@@ -38,7 +38,11 @@ export default function ReservationCalendar() {
     const date = currentDate.getDate();
     const [day, setDay] = useState(currentDate.getDay());
 
+    const [inputValue, setInputValue] = useState("");
+    const [optionValue, setOptionValue] = useState("");
+
     const [reservationInfo, setReservationInfo] = useState([]);
+    const [searchResultList, setSearchResultList] = useState([]);
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
       
@@ -84,6 +88,46 @@ export default function ReservationCalendar() {
         setSelectedDate(date);
     }
 
+    const opionValueChangeHandler = (e) => {
+        setOptionValue(e.target.value);
+    }
+
+    const inputEventHandler = async (e) => {
+        switch(optionValue){
+            case "byDate" : 
+                try{
+                    const formattedResvDate = `${e.target.inputValue.slice(0, 4)}-${e.target.inputValue.slice(4, 6)}-${e.target.inputValue.slice(6, 8)}`;
+                    const response = await fetch(`${API_BASE_URL}?resvDate=${formattedResvDate}`);
+                    const data = await response.json();
+                    console.log('listByDate', data);
+                    setSearchResultList(data);
+                } catch (error) {
+                    console.error('검색 결과 불러오기 실패 : ', error)
+                }
+                break;
+            case "byUserName" : 
+                try{
+                    const response = await fetch(`${API_BASE_URL}?userName=${e.target.inputValue}`);
+                    const data = await response.json();
+                    console.log('listByUserName', data);
+                    setSearchResultList(data);
+                } catch (error) {
+                    console.error('검색 결과 불러오기 실패 : ', error)
+                }
+                break;
+            case "byMenuName" : 
+                try{
+                    const response = await fetch(`${API_BASE_URL}?menuName=${e.target.inputValue}`);
+                    const data = await response.json();
+                    console.log('listByMenuName', data);
+                    setSearchResultList(data);
+                } catch (error) {
+                    console.error('검색 결과 불러오기 실패 : ', error)
+                }
+                break;
+        }
+    }
+
     useEffect(() => {
         const reservationList = async () => {
             try {
@@ -94,8 +138,8 @@ export default function ReservationCalendar() {
                 const data = await res.json();
                 console.log('data', data);
                 setReservationInfo(data);
-            } catch (err) {
-                console.error('예약 정보 불러오기 실패:', err);
+            } catch (error) {
+                console.error('예약 정보 불러오기 실패 :', error);
             }
         };
         reservationList();
@@ -114,14 +158,16 @@ export default function ReservationCalendar() {
                 </div>
                 <div className={styles.rightSection}>
                     <div className={styles.inputWrapper}>
-                        <input type="text" className={styles.inputBox}/>
-                        <Image src={searchIcon} alt='검색 아이콘' className={styles.searchIcon}/>
+                        <input type="text" className={styles.inputBox} onChange={(e) => setInputValue(e.target.value)}/>
+                        <Image src={searchIcon} alt='검색 아이콘' className={styles.searchIcon} onClick={inputEventHandler}/>
                     </div>
-                    <select name="searchTitle" className={styles.selectBox}>
-                        <option>날짜별</option>
-                        <option>고객별</option>
-                        <option>시술별</option>
-                    </select>
+                    <div className={styles.selectWrapper}>
+                        <select name="searchTitle" className={styles.selectBox} style={{ paddingRight: '10px' }}>
+                            <option value="byDate" onChange={(e) => opionValueChangeHandler()}>날짜별</option>
+                            <option value="byUserName" onChange={(e) => opionValueChangeHandler()}>고객별</option>
+                            <option value="byMenuName" onChange={(e) => opionValueChangeHandler()}>시술별</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div className={styles.calendarBody}>
