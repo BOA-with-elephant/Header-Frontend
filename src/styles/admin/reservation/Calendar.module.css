@@ -1,0 +1,172 @@
+/* 달력 머리 */
+.calendarHeader {
+    height: 80px;
+    background-color: var(--color-secondary2);
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.leftSection, .centerSection, .rightSection{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.centerSection{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.rightSection{
+    padding-right: 30px;
+    gap: 10px;
+}
+
+/* 예약 관리 */
+.title{
+    z-index: 1;
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-primary);
+    padding-left: 30px;
+}
+
+/* search_box */
+.inputBox{
+    width : 230px;
+    height : 32px;
+    background: #FFFFFF;
+    border: 3px solid #13183D;
+    border-radius: 10px;
+    padding-left: 10px;
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+}
+
+.searchIcon{
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width : 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.selectBox{
+    -webkit-appearance: none; /* 사파리 */
+    -moz-appearance: none;    /* 파이어폭스 */
+    -webkit-appearance: none; /* 크롬/엣지 */
+    appearance: none;
+
+    height : 40px;
+    width: 200px;
+    padding: 0 15px;
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-primary);
+    background: #FFFFFF;
+    border: 3px solid #13183D;
+    border-radius: 10px;
+}
+
+.inputWrapper{
+    position: relative;
+    display: inline-block;
+}
+
+/* <2025년 7월 > */
+.changeMonthBtn{
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.yearAndMonth{
+    font-size: 30px;
+    font-weight: var(--font-bold);
+    color: #000000;
+}
+
+/* 달력 바디 */
+.calendarBody{
+    border: 3px solid var(--color-secondary2);
+    border-top: none;
+    height: max-content;
+}
+
+.dayList {
+    display: flex;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.day{
+    flex: 1;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.calendarGrid {
+    position : relative;
+    display: flex;
+    flex-wrap: wrap;
+    z-index : 1;
+    
+}
+
+.dateCell {
+    width: calc(100% / 7);
+    height : 130px;
+    padding-top: 10px;
+    padding-left: 10px;
+    box-sizing: border-box;
+    cursor: pointer;
+    position : relative;
+    z-index : 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border: solid 1px var(--color-secondary2);
+}
+
+.currentMonth {
+    color : #000000;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.otherMonth {
+    color: #838383;
+    font-size: 20px;
+    cursor: default;
+    font-weight: 700;
+}
+
+.today{
+    background-color: green;
+    border-radius: 100px;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    z-index : 3;
+}
+
+.resvDiv{
+    display: block;
+    font-size: 13px;
+    width: 97%;
+    padding: 2px 4px;
+    margin-top: 5px;
+    white-space: nowrap;  /* 줄바꿈 방지 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: -5px;
+}
