@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import MessageModal from '@/components/ui/MessageModal';
 import { useMessageModal } from '@/hooks/useMessageModal';
 import CustomerCard from '@/components/ui/CustomerCard';
+import CustomerRegisterModal from '@/components/ui/CustomerRegisterModal';
 import CustomerDetailModal from '@/components/ui/CustomerDetailModal';
 import styles from '@/styles/admin/customer/Customer.module.css';
 
@@ -14,6 +15,11 @@ export default function Customer() {
         isOpen: false,
         title: '',
         message: ''
+    });
+
+    // 신규 고객 등록 모달 상태
+    const [registerModal, setRegisterModal] = useState({
+        isOpen: false
     });
 
     // 고객 상세 모달 상태
@@ -115,6 +121,40 @@ export default function Customer() {
             return result.data;
         } catch (error) {
             console.error('메모 수정 오류:', error);
+            throw error;
+        }
+    };
+
+    // 신규 고객 추가 API 호출
+    const addCustomer = async (customerData) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/customers`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: customerData.name,
+                    birthday: customerData.birthday,
+                    phone: customerData.phone,
+                    sendable: customerData.allowsMarketing,
+                    memo: customerData.memo
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('고객 등록에 실패했습니다.');
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.message || '고객 등록에 실패했습니다.');
+            }
+
+            return result.data;
+        } catch (error) {
+            console.error('고객 등록 오류:', error);
             throw error;
         }
     };
@@ -335,6 +375,34 @@ export default function Customer() {
         }
     };
 
+    // 신규 고객 등록 처리
+    const handleAddCustomer = () => {
+        setRegisterModal({ isOpen: true });
+    };
+
+
+    // 신규 고객 등록 확인
+    const handleCustomerRegister = async (customerData) => {
+        try {
+            await addCustomer(customerData);
+
+            // 고객 목록 새로고침
+            await fetchCustomers();
+
+            // 모달 닫기
+            setRegisterModal({ isOpen: false });
+
+            showSuccess('등록 완료', '신규 고객이 성공적으로 등록되었습니다.');
+        } catch (error) {
+            showError('등록 실패', '고객 등록 중 오류가 발생했습니다.');
+        }
+    };
+
+    // 신규 고객 등록 모달 닫기
+    const handleRegisterModalClose = () => {
+        setRegisterModal({ isOpen: false });
+    };
+
     // 고객 삭제 처리
     const handleDeleteCustomer = async (clientCode) => {
         const customer = customers.find(c => c.clientCode === clientCode);
@@ -357,17 +425,6 @@ export default function Customer() {
         );
     };
 
-    // 신규 고객 추가
-    const handleAddCustomer = () => {
-        showConfirm(
-            '신규 고객 등록',
-            '신규 고객 정보를 입력하시겠습니까?',
-            () => {
-                // TODO: 고객 등록 모달을 열거나 페이지로 이동
-                showSuccess('등록 완료', '신규 고객이 성공적으로 등록되었습니다.');
-            }
-        );
-    };
 
     // 고객 액션 처리 (이벤트 전파 방지 포함)
     const handleCustomerAction = (clientCode, action, event) => {
@@ -553,6 +610,13 @@ export default function Customer() {
                     </>
                 )}
             </div>
+
+            {/* 신규 고객 등록 모달 */}
+            <CustomerRegisterModal
+                isOpen={registerModal.isOpen}
+                onClose={handleRegisterModalClose}
+                onConfirm={handleCustomerRegister}
+            />
 
             {/* 고객 상세 모달 */}
             <CustomerDetailModal
