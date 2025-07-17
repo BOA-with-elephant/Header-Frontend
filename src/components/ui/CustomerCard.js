@@ -7,6 +7,13 @@ export default function CustomerCard({ customer, onAction, onClick }) {
         return `₩ ${amount.toLocaleString()}`;
     };
 
+    // 액션 버튼 클릭 핸들러 (이벤트 전파 방지)
+    const handleActionClick = (action, event) => {
+        event.stopPropagation(); // 이벤트 전파 방지
+        event.preventDefault();
+        onAction(customer.id, action, event);
+    };
+
     return (
         <div 
             className={styles.customerCard}
@@ -49,19 +56,19 @@ export default function CustomerCard({ customer, onAction, onClick }) {
             <div className={styles.customerActions}>
                 <button 
                     className={`${styles.actionBtn} ${styles.reservationBtn}`}
-                    onClick={() => onAction(customer.id, 'reservation')}
+                    onClick={(e) => handleActionClick('reservation', e)}
                 >
                     예약
                 </button>
                 <button 
                     className={`${styles.actionBtn} ${styles.historyBtn}`}
-                    onClick={() => onAction(customer.id, 'history')}
+                    onClick={(e) => handleActionClick('history', e)}
                 >
                     히스토리
                 </button>
                 <button 
                     className={`${styles.actionBtn} ${styles.messageBtn}`}
-                    onClick={() => onAction(customer.id, 'message')}
+                    onClick={(e) => handleActionClick('message', e)}
                 >
                     메세지 발송
                 </button>
