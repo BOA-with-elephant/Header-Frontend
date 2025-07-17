@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MessageModal from '@/components/ui/MessageModal';
 import { useMessageModal } from '@/hooks/useMessageModal';
 import CustomerCard from '@/components/ui/CustomerCard';
@@ -8,220 +8,23 @@ import styles from '@/styles/admin/customer/Customer.module.css';
 
 export default function Customer() {
     const { modal, closeModal, showError, showSuccess, showConfirm, showWarning } = useMessageModal();
-    
+
     // 히스토리 모달 상태
     const [historyModal, setHistoryModal] = useState({
         isOpen: false,
         title: '',
         message: ''
     });
-    
+
     // 고객 상세 모달 상태
     const [detailModal, setDetailModal] = useState({
         isOpen: false,
         customer: null
     });
-    
-    // 고객 데이터 (테스트용 히스토리 더미 데이터만 일부 추가)
-    const [customers, setCustomers] = useState([
-        {
-            id: 1,
-            name: '이지훈',
-            phone: '010-2345-6789',
-            isVip: true,
-            lastVisit: '1일전',
-            visitCount: 52,
-            totalAmount: 3150000,
-            preferredServices: ['헤어컷', '파마'],
-            memo: '파마를 자주 하시는 고객입니다. 모발이 약간 얇아서 볼륨 파마를 선호하세요.',
-            // 테스트용 더미 히스토리
-            history: [
-                { date: '2025-07-16', services: ['헤어컷', '볼륨파마'], amount: 85000 },
-                { date: '2025-07-02', services: ['헤어컷'], amount: 35000 },
-                { date: '2025-06-18', services: ['볼륨파마', '트리트먼트'], amount: 120000 },
-                { date: '2025-06-05', services: ['헤어컷'], amount: 35000 },
-                { date: '2025-05-22', services: ['헤어컷', '볼륨파마'], amount: 85000 }
-            ]
-        },
-        {
-            id: 2,
-            name: '박서연',
-            phone: '010-3456-7890',
-            isVip: true,
-            lastVisit: '2일전',
-            visitCount: 28,
-            totalAmount: 1890000,
-            preferredServices: ['염색', '트리트먼트'],
-            memo: '염색을 정기적으로 하시며, 애쉬톤 컬러를 선호합니다.',
-            // 테스트용 더미 히스토리
-            history: [
-                { date: '2025-07-15', services: ['애쉬 염색', '트리트먼트'], amount: 95000 },
-                { date: '2025-06-28', services: ['헤어컷', '트리트먼트'], amount: 65000 },
-                { date: '2025-06-10', services: ['애쉬 염색'], amount: 75000 },
-                { date: '2025-05-25', services: ['헤어컷'], amount: 35000 }
-            ]
-        },
-        {
-            id: 3,
-            name: '최민정',
-            phone: '010-4567-8901',
-            isVip: false,
-            lastVisit: '3일전',
-            visitCount: 15,
-            totalAmount: 580000,
-            preferredServices: ['헤어컷']
-        },
-        {
-            id: 4,
-            name: '김동현',
-            phone: '010-5678-9012',
-            isVip: true,
-            lastVisit: '1주전',
-            visitCount: 73,
-            totalAmount: 4520000,
-            preferredServices: ['헤어컷', '염색', '파마']
-        },
-        {
-            id: 5,
-            name: '홍유진',
-            phone: '010-6789-0123',
-            isVip: false,
-            lastVisit: '5일전',
-            visitCount: 8,
-            totalAmount: 320000,
-            preferredServices: ['헤어컷', '염색']
-        },
-        {
-            id: 6,
-            name: '윤상우',
-            phone: '010-7890-1234',
-            isVip: true,
-            lastVisit: '2일전',
-            visitCount: 39,
-            totalAmount: 2100000,
-            preferredServices: ['헤어컷', '펌']
-        },
-        {
-            id: 7,
-            name: '정하영',
-            phone: '010-8901-2345',
-            isVip: false,
-            lastVisit: '1주전',
-            visitCount: 12,
-            totalAmount: 450000,
-            preferredServices: ['트리트먼트']
-        },
-        {
-            id: 8,
-            name: '강민석',
-            phone: '010-9012-3456',
-            isVip: true,
-            lastVisit: '4일전',
-            visitCount: 65,
-            totalAmount: 3890000,
-            preferredServices: ['헤어컷', '염색']
-        },
-        {
-            id: 9,
-            name: '조예은',
-            phone: '010-1357-2468',
-            isVip: false,
-            lastVisit: '6일전',
-            visitCount: 5,
-            totalAmount: 180000,
-            preferredServices: ['헤어컷']
-        },
-        {
-            id: 10,
-            name: '신재훈',
-            phone: '010-2468-1357',
-            isVip: true,
-            lastVisit: '3일전',
-            visitCount: 45,
-            totalAmount: 2750000,
-            preferredServices: ['헤어컷', '파마', '염색']
-        },
-        {
-            id: 11,
-            name: '문소영',
-            phone: '010-3579-4681',
-            isVip: false,
-            lastVisit: '1주전',
-            visitCount: 22,
-            totalAmount: 890000,
-            preferredServices: ['염색', '트리트먼트']
-        },
-        {
-            id: 12,
-            name: '배준호',
-            phone: '010-4681-3579',
-            isVip: true,
-            lastVisit: '1일전',
-            visitCount: 88,
-            totalAmount: 5240000,
-            preferredServices: ['헤어컷', '펌']
-        },
-        {
-            id: 13,
-            name: '한수빈',
-            phone: '010-5792-6803',
-            isVip: false,
-            lastVisit: '4일전',
-            visitCount: 18,
-            totalAmount: 720000,
-            preferredServices: ['헤어컷', '염색']
-        },
-        {
-            id: 14,
-            name: '노태영',
-            phone: '010-6803-5792',
-            isVip: true,
-            lastVisit: '2일전',
-            visitCount: 56,
-            totalAmount: 3460000,
-            preferredServices: ['헤어컷', '파마', '트리트먼트']
-        },
-        {
-            id: 15,
-            name: '임채윤',
-            phone: '010-7914-8025',
-            isVip: false,
-            lastVisit: '5일전',
-            visitCount: 11,
-            totalAmount: 420000,
-            preferredServices: ['트리트먼트']
-        },
-        {
-            id: 16,
-            name: '송민호',
-            phone: '010-8025-7914',
-            isVip: true,
-            lastVisit: '1일전',
-            visitCount: 62,
-            totalAmount: 3780000,
-            preferredServices: ['헤어컷', '염색']
-        },
-        {
-            id: 17,
-            name: '유다빈',
-            phone: '010-9136-2470',
-            isVip: false,
-            lastVisit: '6일전',
-            visitCount: 7,
-            totalAmount: 285000,
-            preferredServices: ['헤어컷']
-        },
-        {
-            id: 18,
-            name: '김은서',
-            phone: '010-1470-9136',
-            isVip: true,
-            lastVisit: '3일전',
-            visitCount: 41,
-            totalAmount: 2320000,
-            preferredServices: ['염색', '파마', '트리트먼트']
-        }
-    ]);
+
+    // 고객 데이터 상태
+    const [customers, setCustomers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     // 필터 및 정렬 상태
     const [filters, setFilters] = useState({
@@ -234,20 +37,137 @@ export default function Customer() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
-    // 고객 히스토리 API 호출 함수
-    const fetchCustomerHistory = async (customerId) => {
+    // TODO: shop_id를 어디서 가져올지 결정되면 수정
+    const SHOP_ID = 2; // 임시값
+
+    // API 데이터를 내부 형식으로 변환
+    const transformApiData = (apiData) => {
+        return apiData.map(customer => ({
+            id: customer.clientCode,
+            clientCode: customer.clientCode,
+            name: customer.userName,
+            phone: customer.phone,
+            birthday: customer.birthday,
+            sendable: customer.sendable,
+            isVip: customer.memo?.includes('VIP') || false, // 메모에 VIP가 있으면 VIP로 표시
+            lastVisit: customer.lastVisited === '방문 기록 없음' ? '방문 기록 없음' : customer.lastVisited,
+            visitCount: customer.visitCount,
+            totalAmount: customer.totalPaymentAmount,
+            preferredServices: customer.favoriteMenuName ? [customer.favoriteMenuName] : [],
+            memo: customer.memo || ''
+        }));
+    };
+
+    // 고객 목록 API 호출
+    const fetchCustomers = async () => {
         try {
-            // 실제 API 호출
-            // const response = await fetch(`/api/customers/${customerId}/history`);
-            // const historyData = await response.json();
-            
-            // 테스트용: 더미 데이터에서 히스토리 가져오기
-            const customer = customers.find(c => c.id === customerId);
-            if (customer && customer.history) {
-                return customer.history;
+            setLoading(true);
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/customers`);
+
+            if (!response.ok) {
+                throw new Error('고객 목록 조회에 실패했습니다.');
             }
-            
-            // 히스토리가 없는 경우 빈 배열 반환
+
+            const result = await response.json();
+
+            if (result.success) {
+                const transformedData = transformApiData(result.data);
+                setCustomers(transformedData);
+            } else {
+                throw new Error(result.message || '고객 목록 조회에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('고객 목록 조회 오류:', error);
+            showError('오류', '고객 목록을 불러오는데 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 컴포넌트 마운트 시 고객 목록 조회
+    useEffect(() => {
+        fetchCustomers();
+    }, []);
+
+    // 고객 메모 수정 API 호출
+    const updateCustomerMemo = async (clientCode, memo) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/v1/my-shops/${SHOP_ID}/customers/${clientCode}?memo=${encodeURIComponent(memo)}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('메모 수정에 실패했습니다.');
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.message || '메모 수정에 실패했습니다.');
+            }
+
+            return result.data;
+        } catch (error) {
+            console.error('메모 수정 오류:', error);
+            throw error;
+        }
+    };
+
+    // 고객 삭제 API 호출
+    const deleteCustomer = async (clientCode) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/v1/my-shops/${SHOP_ID}/customers/${clientCode}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('고객 삭제에 실패했습니다.');
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.message || '고객 삭제에 실패했습니다.');
+            }
+
+            return result.data;
+        } catch (error) {
+            console.error('고객 삭제 오류:', error);
+            throw error;
+        }
+    };
+
+    // 고객 히스토리 API 호출 함수
+    const fetchCustomerHistory = async (clientCode) => {
+        try {
+            // TODO: 히스토리 API 엔드포인트가 정해지면 수정
+            // const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/customers/${clientCode}/history`);
+            // const result = await response.json();
+
+            // 테스트용: 더미 데이터
+            const customer = customers.find(c => c.clientCode === clientCode);
+            if (customer && customer.clientCode <= 2) {
+                // 첫 번째, 두 번째 고객만 테스트 히스토리 데이터
+                const testHistory = [
+                    { date: '2025-07-16', services: ['헤어컷', '볼륨파마'], amount: 85000 },
+                    { date: '2025-07-02', services: ['헤어컷'], amount: 35000 },
+                    { date: '2025-06-18', services: ['볼륨파마', '트리트먼트'], amount: 120000 }
+                ];
+                return testHistory;
+            }
+
             return [];
         } catch (error) {
             console.error('히스토리 조회 실패:', error);
@@ -258,8 +178,8 @@ export default function Customer() {
     // 히스토리 모달 열기
     const openHistoryModal = async (customer) => {
         try {
-            const historyData = await fetchCustomerHistory(customer.id);
-            
+            const historyData = await fetchCustomerHistory(customer.clientCode);
+
             if (historyData.length === 0) {
                 setHistoryModal({
                     isOpen: true,
@@ -271,7 +191,7 @@ export default function Customer() {
 
             // 히스토리 데이터를 최신순으로 정렬하고 포맷팅
             const sortedHistory = historyData.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
+
             const historyMessage = sortedHistory.map(visit => {
                 const formattedDate = new Date(visit.date).toLocaleDateString('ko-KR', {
                     year: 'numeric',
@@ -280,7 +200,7 @@ export default function Customer() {
                 });
                 const servicesText = visit.services.join(', ');
                 const formattedAmount = visit.amount.toLocaleString();
-                
+
                 return `📅 ${formattedDate}\n💇 ${servicesText}\n💰 ${formattedAmount}원`;
             }).join('\n\n');
 
@@ -310,7 +230,7 @@ export default function Customer() {
         // 검색 필터 (이름 또는 전화번호)
         if (filters.search.trim()) {
             const searchTerm = filters.search.toLowerCase().trim();
-            filtered = filtered.filter(customer => 
+            filtered = filtered.filter(customer =>
                 customer.name.toLowerCase().includes(searchTerm) ||
                 customer.phone.replace(/-/g, '').includes(searchTerm.replace(/-/g, ''))
             );
@@ -333,9 +253,13 @@ export default function Customer() {
                 break;
             case '방문일 순':
             default:
-                // 방문일 순 정렬 (최근 방문 순)
-                const visitOrder = { '1일전': 1, '2일전': 2, '3일전': 3, '4일전': 4, '5일전': 5, '1주전': 7 };
-                filtered.sort((a, b) => (visitOrder[a.lastVisit] || 999) - (visitOrder[b.lastVisit] || 999));
+                // 방문 횟수가 0이면 맨 뒤로, 아니면 마지막 방문일 기준
+                filtered.sort((a, b) => {
+                    if (a.visitCount === 0 && b.visitCount === 0) return 0;
+                    if (a.visitCount === 0) return 1;
+                    if (b.visitCount === 0) return -1;
+                    return b.visitCount - a.visitCount; // 방문 횟수 많은 순
+                });
                 break;
         }
 
@@ -351,7 +275,6 @@ export default function Customer() {
             ...prev,
             search: searchValue
         }));
-        // 검색할 때 첫 페이지로 리셋
         setCurrentPage(1);
     };
 
@@ -361,7 +284,6 @@ export default function Customer() {
             ...prev,
             [filterType]: value
         }));
-        // 필터 변경 시 첫 페이지로 리셋
         setCurrentPage(1);
     };
 
@@ -392,22 +314,47 @@ export default function Customer() {
     };
 
     // 고객 메모 저장
-    const handleMemoSave = async (customerId, memo) => {
+    const handleMemoSave = async (clientCode, memo) => {
         try {
-            // 실제로는 API 호출
-            console.log('메모 저장:', { customerId, memo });
-            
+            await updateCustomerMemo(clientCode, memo);
+
             // 로컬 상태 업데이트
-            setCustomers(prev => prev.map(customer => 
-                customer.id === customerId 
-                    ? { ...customer, memo }
+            setCustomers(prev => prev.map(customer =>
+                customer.clientCode === clientCode
+                    ? {
+                        ...customer,
+                        memo,
+                        isVip: memo.includes('VIP') // 메모에 VIP가 포함되면 VIP 상태 업데이트
+                    }
                     : customer
             ));
-            
+
             showSuccess('저장 완료', '메모가 성공적으로 저장되었습니다.');
         } catch (error) {
             showError('저장 실패', '메모 저장 중 오류가 발생했습니다.');
         }
+    };
+
+    // 고객 삭제 처리
+    const handleDeleteCustomer = async (clientCode) => {
+        const customer = customers.find(c => c.clientCode === clientCode);
+
+        showConfirm(
+            '고객 삭제',
+            `${customer.name}님을 정말 삭제하시겠습니까?\n삭제된 고객 정보는 복구할 수 없습니다.`,
+            async () => {
+                try {
+                    await deleteCustomer(clientCode);
+
+                    // 로컬 상태에서 삭제
+                    setCustomers(prev => prev.filter(c => c.clientCode !== clientCode));
+
+                    showSuccess('삭제 완료', '고객이 성공적으로 삭제되었습니다.');
+                } catch (error) {
+                    showError('삭제 실패', '고객 삭제 중 오류가 발생했습니다.');
+                }
+            }
+        );
     };
 
     // 신규 고객 추가
@@ -416,16 +363,22 @@ export default function Customer() {
             '신규 고객 등록',
             '신규 고객 정보를 입력하시겠습니까?',
             () => {
-                // 실제로는 고객 등록 모달을 열거나 페이지로 이동
+                // TODO: 고객 등록 모달을 열거나 페이지로 이동
                 showSuccess('등록 완료', '신규 고객이 성공적으로 등록되었습니다.');
             }
         );
     };
 
-    // 고객 액션 처리
-    const handleCustomerAction = (customerId, action) => {
-        const customer = customers.find(c => c.id === customerId);
-        
+    // 고객 액션 처리 (이벤트 전파 방지 포함)
+    const handleCustomerAction = (clientCode, action, event) => {
+        // 이벤트 전파 방지
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        const customer = customers.find(c => c.clientCode === clientCode);
+
         switch (action) {
             case 'detail':
                 openDetailModal(customer);
@@ -434,11 +387,13 @@ export default function Customer() {
                 showSuccess('예약 완료', `${customer.name}님의 예약이 완료되었습니다.`);
                 break;
             case 'history':
-                // 히스토리 모달 열기
                 openHistoryModal(customer);
                 break;
             case 'message':
                 showSuccess('메세지 발송', `${customer.name}님에게 메세지를 발송했습니다.`);
+                break;
+            case 'delete':
+                handleDeleteCustomer(clientCode);
                 break;
             default:
                 break;
@@ -466,7 +421,7 @@ export default function Customer() {
     return (
         <>
             <h1>고객관리</h1>
-            
+
             <div className={styles.contentCard}>
                 {/* 검색 및 필터 영역 */}
                 <div className={styles.customerHeader}>
@@ -482,7 +437,7 @@ export default function Customer() {
                             <span className={styles.searchIcon}>🔍</span>
                         </div>
                     </div>
-                    
+
                     <div className={styles.filterControls}>
                         <select
                             value={filters.memberType}
@@ -493,7 +448,7 @@ export default function Customer() {
                             <option>VIP회원</option>
                             <option>일반회원</option>
                         </select>
-                        
+
                         <select
                             value={filters.sortBy}
                             onChange={(e) => handleFilterChange('sortBy', e.target.value)}
@@ -503,15 +458,15 @@ export default function Customer() {
                             <option>가나다 순</option>
                             <option>결제금액 순</option>
                         </select>
-                        
-                        <button 
+
+                        <button
                             className={styles.resetFilterBtn}
                             onClick={resetFilters}
                         >
                             필터 초기화
                         </button>
-                        
-                        <button 
+
+                        <button
                             className={styles.addCustomerBtn}
                             onClick={handleAddCustomer}
                         >
@@ -523,67 +478,80 @@ export default function Customer() {
                 {/* 검색 결과 정보 */}
                 {filters.search && (
                     <div className={styles.searchInfo}>
-                        <span className={styles.searchTerm}>"{filters.search}"</span>에 대한 검색 결과 
+                        <span className={styles.searchTerm}>"{filters.search}"</span>에 대한 검색 결과
                         <span className={styles.resultCount}>{filteredCustomers.length}명</span>
                     </div>
                 )}
 
-                {/* 고객 카드 그리드 */}
-                <div className={styles.customerGrid}>
-                    {currentCustomers.length > 0 ? (
-                        currentCustomers.map((customer) => (
-                            <CustomerCard
-                                key={customer.id}
-                                customer={customer}
-                                onAction={handleCustomerAction}
-                                onClick={() => openDetailModal(customer)}
-                            />
-                        ))
-                    ) : (
-                        <div className={styles.noResults}>
-                            <div className={styles.noResultsIcon}>🔍</div>
-                            <h3 className={styles.noResultsTitle}>검색 결과가 없습니다</h3>
-                            <p className={styles.noResultsText}>
-                                다른 검색어를 입력하거나 필터를 변경해보세요.
-                            </p>
-                            <button 
-                                className={styles.resetBtn}
-                                onClick={resetFilters}
-                            >
-                                필터 초기화
-                            </button>
+                {/* 로딩 상태 */}
+                {loading ? (
+                    <div className="content-card">
+                        <div className="loading-container" style={{ textAlign: 'center', padding: '50px' }}>
+                            <div>고객 데이터를 불러오는 중...</div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                ) : (
+                    <>
+                        {/* 고객 카드 그리드 */}
+                        <div className={styles.customerGrid}>
+                            {currentCustomers.length > 0 ? (
+                                currentCustomers.map((customer) => (
+                                    <CustomerCard
+                                        key={customer.clientCode}
+                                        customer={customer}
+                                        onAction={handleCustomerAction}
+                                        onClick={() => openDetailModal(customer)}
+                                    />
+                                ))
+                            ) : (
+                                <div className={styles.noResults}>
+                                    <div className={styles.noResultsIcon}>🔍</div>
+                                    <h3 className={styles.noResultsTitle}>검색 결과가 없습니다</h3>
+                                    <p className={styles.noResultsText}>
+                                        다른 검색어를 입력하거나 필터를 변경해보세요.
+                                    </p>
+                                    <button
+                                        className={styles.resetBtn}
+                                        onClick={resetFilters}
+                                    >
+                                        필터 초기화
+                                    </button>
+                                </div>
+                            )}
+                        </div>
 
-                {/* 페이지네이션 */}
-                <div className={styles.pagination}>
-                    <button 
-                        className={styles.paginationBtn}
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        ‹
-                    </button>
-                    
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                            key={page}
-                            className={`${styles.paginationBtn} ${currentPage === page ? styles.active : ''}`}
-                            onClick={() => handlePageChange(page)}
-                        >
-                            {page}
-                        </button>
-                    ))}
-                    
-                    <button 
-                        className={styles.paginationBtn}
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                    >
-                        ›
-                    </button>
-                </div>
+                        {/* 페이지네이션 */}
+                        {totalPages > 1 && (
+                            <div className={styles.pagination}>
+                                <button
+                                    className={styles.paginationBtn}
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                >
+                                    ‹
+                                </button>
+
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                    <button
+                                        key={page}
+                                        className={`${styles.paginationBtn} ${currentPage === page ? styles.active : ''}`}
+                                        onClick={() => handlePageChange(page)}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
+
+                                <button
+                                    className={styles.paginationBtn}
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        )}
+                    </>
+                )}
             </div>
 
             {/* 고객 상세 모달 */}
