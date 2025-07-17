@@ -382,7 +382,7 @@ function SideMenuBar({
             <div className="bottom-menu-item clickable" onClick={handleViewModeToggle}>
               <span className="bottom-menu-icon">{isAdmin ? "👤" : "🔧"}</span>
               <span className="bottom-menu-text">
-                {isAdmin ? "고객 페이지 전환" : "관리자 페이지 전환"}
+                {isAdmin? "고객 페이지 전환" : "관리자 페이지 전환"}
               </span>
             </div>
           ) : null}
