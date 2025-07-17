@@ -6,9 +6,15 @@ import CustomerCard from '@/components/ui/CustomerCard';
 import CustomerDetailModal from '@/components/ui/CustomerDetailModal';
 import styles from '@/styles/admin/customer/Customer.module.css';
 
-
 export default function Customer() {
     const { modal, closeModal, showError, showSuccess, showConfirm, showWarning } = useMessageModal();
+    
+    // 히스토리 모달 상태
+    const [historyModal, setHistoryModal] = useState({
+        isOpen: false,
+        title: '',
+        message: ''
+    });
     
     // 고객 상세 모달 상태
     const [detailModal, setDetailModal] = useState({
@@ -16,7 +22,7 @@ export default function Customer() {
         customer: null
     });
     
-    // 고객 데이터 (실제로는 API에서 가져올 데이터)
+    // 고객 데이터 (테스트용 히스토리 더미 데이터만 일부 추가)
     const [customers, setCustomers] = useState([
         {
             id: 1,
@@ -27,7 +33,15 @@ export default function Customer() {
             visitCount: 52,
             totalAmount: 3150000,
             preferredServices: ['헤어컷', '파마'],
-            memo: '파마를 자주 하시는 고객입니다. 모발이 약간 얇아서 볼륨 파마를 선호하세요.'
+            memo: '파마를 자주 하시는 고객입니다. 모발이 약간 얇아서 볼륨 파마를 선호하세요.',
+            // 테스트용 더미 히스토리
+            history: [
+                { date: '2025-07-16', services: ['헤어컷', '볼륨파마'], amount: 85000 },
+                { date: '2025-07-02', services: ['헤어컷'], amount: 35000 },
+                { date: '2025-06-18', services: ['볼륨파마', '트리트먼트'], amount: 120000 },
+                { date: '2025-06-05', services: ['헤어컷'], amount: 35000 },
+                { date: '2025-05-22', services: ['헤어컷', '볼륨파마'], amount: 85000 }
+            ]
         },
         {
             id: 2,
@@ -38,7 +52,14 @@ export default function Customer() {
             visitCount: 28,
             totalAmount: 1890000,
             preferredServices: ['염색', '트리트먼트'],
-            memo: '염색을 정기적으로 하시며, 애쉬톤 컬러를 선호합니다.'
+            memo: '염색을 정기적으로 하시며, 애쉬톤 컬러를 선호합니다.',
+            // 테스트용 더미 히스토리
+            history: [
+                { date: '2025-07-15', services: ['애쉬 염색', '트리트먼트'], amount: 95000 },
+                { date: '2025-06-28', services: ['헤어컷', '트리트먼트'], amount: 65000 },
+                { date: '2025-06-10', services: ['애쉬 염색'], amount: 75000 },
+                { date: '2025-05-25', services: ['헤어컷'], amount: 35000 }
+            ]
         },
         {
             id: 3,
@@ -213,6 +234,75 @@ export default function Customer() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
+    // 고객 히스토리 API 호출 함수
+    const fetchCustomerHistory = async (customerId) => {
+        try {
+            // 실제 API 호출
+            // const response = await fetch(`/api/customers/${customerId}/history`);
+            // const historyData = await response.json();
+            
+            // 테스트용: 더미 데이터에서 히스토리 가져오기
+            const customer = customers.find(c => c.id === customerId);
+            if (customer && customer.history) {
+                return customer.history;
+            }
+            
+            // 히스토리가 없는 경우 빈 배열 반환
+            return [];
+        } catch (error) {
+            console.error('히스토리 조회 실패:', error);
+            throw error;
+        }
+    };
+
+    // 히스토리 모달 열기
+    const openHistoryModal = async (customer) => {
+        try {
+            const historyData = await fetchCustomerHistory(customer.id);
+            
+            if (historyData.length === 0) {
+                setHistoryModal({
+                    isOpen: true,
+                    title: `${customer.name}님 방문 히스토리`,
+                    message: '아직 방문 기록이 없습니다.'
+                });
+                return;
+            }
+
+            // 히스토리 데이터를 최신순으로 정렬하고 포맷팅
+            const sortedHistory = historyData.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const historyMessage = sortedHistory.map(visit => {
+                const formattedDate = new Date(visit.date).toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const servicesText = visit.services.join(', ');
+                const formattedAmount = visit.amount.toLocaleString();
+                
+                return `📅 ${formattedDate}\n💇 ${servicesText}\n💰 ${formattedAmount}원`;
+            }).join('\n\n');
+
+            setHistoryModal({
+                isOpen: true,
+                title: `${customer.name}님 방문 히스토리`,
+                message: historyMessage
+            });
+        } catch (error) {
+            showError('오류', '히스토리를 불러오는데 실패했습니다.');
+        }
+    };
+
+    // 히스토리 모달 닫기
+    const closeHistoryModal = () => {
+        setHistoryModal({
+            isOpen: false,
+            title: '',
+            message: ''
+        });
+    };
+
     // 필터링된 고객 목록
     const getFilteredCustomers = () => {
         let filtered = [...customers];
@@ -344,7 +434,8 @@ export default function Customer() {
                 showSuccess('예약 완료', `${customer.name}님의 예약이 완료되었습니다.`);
                 break;
             case 'history':
-                showSuccess('히스토리', `${customer.name}님의 방문 기록을 확인합니다.`);
+                // 히스토리 모달 열기
+                openHistoryModal(customer);
                 break;
             case 'message':
                 showSuccess('메세지 발송', `${customer.name}님에게 메세지를 발송했습니다.`);
@@ -501,6 +592,17 @@ export default function Customer() {
                 onClose={closeDetailModal}
                 customer={detailModal.customer}
                 onSave={handleMemoSave}
+            />
+
+            {/* 히스토리 모달 */}
+            <MessageModal
+                isOpen={historyModal.isOpen}
+                onClose={closeHistoryModal}
+                type="info"
+                title={historyModal.title}
+                message={historyModal.message}
+                confirmText="확인"
+                showCancel={false}
             />
 
             {/* 메시지 모달 */}
