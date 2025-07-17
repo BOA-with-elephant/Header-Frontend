@@ -11,7 +11,7 @@ export default function CustomerCard({ customer, onAction, onClick }) {
     const handleActionClick = (action, event) => {
         event.stopPropagation(); // 이벤트 전파 방지
         event.preventDefault();
-        onAction(customer.id, action, event);
+        onAction(customer.clientCode, action, event);
     };
 
     return (
@@ -71,6 +71,12 @@ export default function CustomerCard({ customer, onAction, onClick }) {
                     onClick={(e) => handleActionClick('message', e)}
                 >
                     메세지 발송
+                </button>
+                <button 
+                    className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                    onClick={(e) => handleActionClick('delete', e)}
+                >
+                    삭제
                 </button>
             </div>
         </div>
