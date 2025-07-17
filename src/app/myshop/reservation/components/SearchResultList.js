@@ -1,0 +1,71 @@
+import React, { useState, useEffect } from 'react';
+import styles from '../../../../styles/admin/reservation/SearchResultList.module.css'
+import closeBtn from '../../../../../public/images/reservation/Close.png';
+import Image from 'next/image';
+
+export default function SearchResultList({searchResultList, setIsOpen}){
+
+    const formatTime = (resvTime) => {
+        const [hours, minutes, seconds] = resvTime.split(':');
+        const date = new Date();
+        date.setHours(parseInt(hours, 10));
+        return date.toLocaleTimeString('en-US', {hour: 'numeric', hour12: true});
+    };
+
+    const changeResvState = (resvState) => {
+        switch(resvState){
+            case "APPROVE" : return "예약 확정"; break;
+            case "CANCEL" : return "예약 취소"; break;
+            case "FINISH" : return "시술 완료"; break;
+        }
+    }
+
+    return(
+        <>
+            <div className={styles.tableContainer}>
+                <div style={{ paddingBottom : '20px'}}>
+                    <h3 className={styles.heading}>검색 결과</h3>
+                    <Image 
+                        src={closeBtn} 
+                        alt='닫기 버튼'
+                        onClick={() => setIsOpen(false)}
+                        className={styles.closeBtn}
+                    />
+                </div>
+                <table className={styles.customTable}>
+                    <thead>
+                        <tr>
+                            <th>예약일</th>
+                            <th>시간</th>
+                            <th>고객명</th>
+                            <th>전화번호</th>
+                            <th>시술</th>
+                            <th>요청사항</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {searchResultList.length > 0 ? (
+                            searchResultList.map((list) => (
+                                <tr key={list.resvCode}>
+                                <td>{list.resvDate}</td>
+                                <td>{formatTime(list.resvTime)}</td>
+                                <td>{list.userName}</td>
+                                <td>{list.userPhone}</td>
+                                <td>{list.menuName}</td>
+                                <td>{list.userComment}</td>
+                                <td>{changeResvState(list.resvState)}</td>
+                                </tr>
+                        ))) : (
+                            <tr>
+                                <td colSpan="7" style={{textAlign: "center", padding: "20px"}}>
+                                    검색 결과가 없습니다.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </>
+    )
+}

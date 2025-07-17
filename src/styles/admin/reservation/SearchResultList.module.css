@@ -1,0 +1,55 @@
+.tableContainer {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-lg);
+}
+
+.heading{
+    margin-top: 0;
+    color: var(--color-primary);
+    display: inline;
+}
+
+.closeBtn{
+    width : 25px;
+    height : 25px;
+    display: inline;
+    float: right;
+    margin-right: 10px;
+    right : 10px;
+    cursor: pointer;
+}
+
+.customTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.customTable thead {
+    background-color: #424664;
+    color: white;
+}
+
+.customTable th,
+.customTable td {
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.customTable tbody tr {
+    background-color: white;
+    transition: background-color 0.2s ease;
+}
+
+.customTable tbody tr:hover {
+    background-color: #f5f7fa;
+    cursor: pointer;
+}

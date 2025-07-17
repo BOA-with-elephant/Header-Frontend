@@ -4,16 +4,29 @@ import MessageModal from '@/components/ui/MessageModal';  // 성공, 실패, 경
 import { useMessageModal } from '@/hooks/useMessageModal'; // 메시지 모달 상태를 관리하고 제어하는 커스텀 훅
 // showError, showSuccess, showConfirm, showWarning 등을 통해 상황별 메시지를 간편하게 호출 가능
 import { MESSAGES } from '@/constants/messages'; // 애플리케이션 전반에서 사용하는 표준 메시지 텍스트 모음 (예: 에러 메시지, 안내 문구 등)
-import styles from "src/styles/admin/reservation/ReservationManagement.module.css";
 import ReservationCalendar from "./components/ReservationCalendar";
+import SearchResultList from "./components/SearchResultList";
 
 export default function Reservation() {
+
+    const [searchResultList, setSearchResultList] = useState([]);
+    const [optionValue, setOptionValue] = useState();
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <>
             <h1>예약관리 페이지</h1>
             <div className="content-card" style={{ height : 'max-content', position: 'relative'}}>
-                    <ReservationCalendar/>
+                    <ReservationCalendar
+                        setSearchResultList={setSearchResultList}
+                        setIsOpen={setIsOpen}
+                    />
+                    {isOpen && (
+                        <SearchResultList 
+                            searchResultList={searchResultList} 
+                            setIsOpen={setIsOpen}
+                        />
+                    )}
             </div>
         </>
     )

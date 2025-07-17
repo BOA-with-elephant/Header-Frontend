@@ -26,7 +26,7 @@ const getCalendarDates = (year, month) => {
     return dates;  // 날짜 배열을 반환
 };
 
-export default function ReservationCalendar() {
+export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
     const [selectedDate, setSelectedDate] = useState(null);
 
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -39,10 +39,10 @@ export default function ReservationCalendar() {
     const [day, setDay] = useState(currentDate.getDay());
 
     const [inputValue, setInputValue] = useState("");
-    const [optionValue, setOptionValue] = useState("");
+    const [optionValue, setOptionValue] = useState("byDate");
 
     const [reservationInfo, setReservationInfo] = useState([]);
-    const [searchResultList, setSearchResultList] = useState([]);
+    // const [searchResultList, setSearchResultList] = useState([]);
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
       
@@ -88,39 +88,42 @@ export default function ReservationCalendar() {
         setSelectedDate(date);
     }
 
-    const opionValueChangeHandler = (e) => {
+    const optionValueChangeHandler = (e) => {
         setOptionValue(e.target.value);
     }
 
-    const inputEventHandler = async (e) => {
+    const inputEventHandler = async () => {
         switch(optionValue){
             case "byDate" : 
                 try{
-                    const formattedResvDate = `${e.target.inputValue.slice(0, 4)}-${e.target.inputValue.slice(4, 6)}-${e.target.inputValue.slice(6, 8)}`;
+                    const formattedResvDate = `${inputValue.slice(0, 4)}-${inputValue.slice(4, 6)}-${inputValue.slice(6, 8)}`;
                     const response = await fetch(`${API_BASE_URL}?resvDate=${formattedResvDate}`);
                     const data = await response.json();
                     console.log('listByDate', data);
                     setSearchResultList(data);
+                    setIsOpen(true);
                 } catch (error) {
                     console.error('검색 결과 불러오기 실패 : ', error)
                 }
                 break;
             case "byUserName" : 
                 try{
-                    const response = await fetch(`${API_BASE_URL}?userName=${e.target.inputValue}`);
+                    const response = await fetch(`${API_BASE_URL}?userName=${inputValue}`);
                     const data = await response.json();
                     console.log('listByUserName', data);
                     setSearchResultList(data);
+                    setIsOpen(true);
                 } catch (error) {
                     console.error('검색 결과 불러오기 실패 : ', error)
                 }
                 break;
             case "byMenuName" : 
                 try{
-                    const response = await fetch(`${API_BASE_URL}?menuName=${e.target.inputValue}`);
+                    const response = await fetch(`${API_BASE_URL}?menuName=${inputValue}`);
                     const data = await response.json();
                     console.log('listByMenuName', data);
                     setSearchResultList(data);
+                    setIsOpen(true);
                 } catch (error) {
                     console.error('검색 결과 불러오기 실패 : ', error)
                 }
@@ -162,10 +165,10 @@ export default function ReservationCalendar() {
                         <Image src={searchIcon} alt='검색 아이콘' className={styles.searchIcon} onClick={inputEventHandler}/>
                     </div>
                     <div className={styles.selectWrapper}>
-                        <select name="searchTitle" className={styles.selectBox} style={{ paddingRight: '10px' }}>
-                            <option value="byDate" onChange={(e) => opionValueChangeHandler()}>날짜별</option>
-                            <option value="byUserName" onChange={(e) => opionValueChangeHandler()}>고객별</option>
-                            <option value="byMenuName" onChange={(e) => opionValueChangeHandler()}>시술별</option>
+                        <select name="searchTitle" className={styles.selectBox} style={{ paddingRight: '10px' }} onChange={optionValueChangeHandler}>
+                            <option value="byDate">날짜별</option>
+                            <option value="byUserName">고객별</option>
+                            <option value="byMenuName">시술별</option>
                         </select>
                     </div>
                 </div>
@@ -203,8 +206,13 @@ export default function ReservationCalendar() {
                                 {date.getDate()}
                                 
                                 {(() => {
-                                     // date.getDate().toISOString().split('T')[0]은 YYYY-MM-DD 형식으로 만들어주는 표현
-                                    const dailyReservations = reservationInfo.filter(list => list.resvDate === date.toISOString().split('T')[0]);
+                                    function formatDateToYML(date){
+                                        const year = date.getFullYear();
+                                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                                        const day = String(date.getDate()).padStart(2, '0');
+                                        return `${year}-${month}-${day}`
+                                    }
+                                    const dailyReservations = reservationInfo.filter(list => list.resvDate === formatDateToYML(date));
 
                                     const showReservations = dailyReservations.slice(0, 2);
                                     const hiddenCount = dailyReservations.length - 2;
