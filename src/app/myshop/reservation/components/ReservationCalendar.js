@@ -26,7 +26,7 @@ const getCalendarDates = (year, month) => {
     return dates;  // 날짜 배열을 반환
 };
 
-export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
+export default function ReservationCalendar({setSearchResultList, setIsOpen, setIsShowModal, setSelectedDate}) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const dayList = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     const today = new Date();
@@ -94,7 +94,12 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                     const data = await response.json();
                     // console.log('listByDate', data);
                     setSearchResultList(data);
+                    setInputValue("");
                     setIsOpen(true);
+                    window.scrollTo({
+                        top : 0,
+                        behavior : 'smooth'
+                    })
                 } catch (error) {
                     console.error('검색 결과 불러오기 실패 : ', error)
                 }
@@ -105,7 +110,12 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                     const data = await response.json();
                     // console.log('listByUserName', data);
                     setSearchResultList(data);
+                    setInputValue("");
                     setIsOpen(true);
+                    window.scrollTo({
+                        top : 0,
+                        behavior : 'smooth'
+                    })
                 } catch (error) {
                     console.error('검색 결과 불러오기 실패 : ', error)
                 }
@@ -116,7 +126,12 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                     const data = await response.json();
                     // console.log('listByMenuName', data);
                     setSearchResultList(data);
+                    setInputValue("");
                     setIsOpen(true);
+                    window.scrollTo({
+                        top : 0,
+                        behavior : 'smooth'
+                    })
                 } catch (error) {
                     console.error('검색 결과 불러오기 실패 : ', error)
                 }
@@ -129,9 +144,9 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
             try {
                 const formatMonth = String(month + 1).padStart(2, '0');
                 const thisMonth = `${year}-${formatMonth}`;
-                const res = await fetch(`${API_BASE_URL}/${thisMonth}`);
+                const res = await fetch(`${API_BASE_URL}?date=${thisMonth}`);
                 const data = await res.json();
-                // console.log('data', data);
+                console.log('data', data);
                 setReservationInfo(data);
             } catch (error) {
                 console.error('예약 정보 불러오기 실패 :', error);
@@ -139,6 +154,16 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
         };
         reservationList();
     }, [year, month]);
+
+    const clickDateHandler = (date) => {
+        // 공백 제거 + 마침표러 split
+        const [year, month, day] = date.split('.').map(str => str.trim());
+        const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        console.log('formattedDate',formattedDate);
+        setIsShowModal(true);
+        setSelectedDate(formattedDate);
+
+    }
 
     return (
         <>
@@ -153,7 +178,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                 </div>
                 <div className={styles.rightSection}>
                     <div className={styles.inputWrapper}>
-                        <input type="text" className={styles.inputBox} onChange={(e) => setInputValue(e.target.value)}/>
+                        <input type="text" className={styles.inputBox} value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
                         <Image src={searchIcon} alt='검색 아이콘' className={styles.searchIcon} onClick={inputEventHandler}/>
                     </div>
                     <div className={styles.selectWrapper}>
@@ -175,6 +200,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                     {calendarDates.map((date, index) => {
 
                         const isToday = date.toDateString() === today.toDateString();
+                        const selectedDate = date.toLocaleDateString()
                         return(
                             <div
                                 key={index}
@@ -182,6 +208,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                                     date.getMonth() === month ? styles.currentMonth : styles.otherMonth
                                 }`}
                                 style={{ backgroundColor : isToday ? '#F2F2F2' : 'none' }}
+                                onClick={() => clickDateHandler(selectedDate)}
                             >
                                 {date.getDate()}
                                 

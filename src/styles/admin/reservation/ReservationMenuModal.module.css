@@ -1,0 +1,77 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+    display: relative;
+}
+
+.modalWrapper{
+    position: absolute;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+    width : 400px;
+    height: 300px;
+    z-index: 1001;
+    border-radius: var(--spacing-sm);
+}
+
+.modalHeaderWrapper{
+    background-color:#1f2937;
+    height: 60px;
+    display : flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    border-top-left-radius: var(--spacing-sm);
+    border-top-right-radius: var(--spacing-sm);
+}
+
+.menuTitle{
+    display: inline;
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: #FFFFFF;
+    margin-left: 10px;
+}
+
+.closeBtn{
+    width : 25px;
+    height : 25px;
+    display: inline;
+    float: right;
+    margin-right: 10px;
+    right : 10px;
+    cursor: pointer;
+}
+
+.modalBodyWrapper{
+    flex-grow: 1;
+    padding: 20px;
+    background-color: var(--bg-primary);
+    border-bottom-left-radius: var(--spacing-sm);
+    border-bottom-right-radius: var(--spacing-sm);
+}
+
+.menus{
+    border: 2px solid var(--border-color);
+    font-size: var(--text-lg);
+    font-weight: var(--font-medium);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    margin-right : 20px;
+    margin-left : 20px;
+    margin-bottom : 20px;
+    padding : 10px 0;
+}
+
+.menus:hover{
+    background-color: #353957;
+    color: #FFFFFF;
+    cursor: pointer;
+}
