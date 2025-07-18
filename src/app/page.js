@@ -21,7 +21,7 @@ export default function Home() {
               <Link href="/auth/signup" className={`${styles.ctaButton} ${styles.primary}`}>
                 지금 시작하기
               </Link>
-              <Link href="/auth/session" className={`${styles.ctaButton} ${styles.secondary} `}>
+              <Link href="/shops" className={`${styles.ctaButton} ${styles.secondary} `}>
               {/** 샵 관리하기는 관리자만 접근가능하므로 로그인 창으로 유도되어야 함. 이후 /myshop/main으로 이동 가능 */}
                 샵 관리하기
               </Link>
