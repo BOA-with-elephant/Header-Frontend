@@ -157,12 +157,13 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
 
     const clickDateHandler = (date) => {
         // 공백 제거 + 마침표러 split
-        const [year, month, day] = date.split('.').map(str => str.trim());
-        const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
         console.log('formattedDate',formattedDate);
         setIsShowModal(true);
         setSelectedDate(formattedDate);
-
     }
 
     return (
@@ -200,7 +201,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                     {calendarDates.map((date, index) => {
 
                         const isToday = date.toDateString() === today.toDateString();
-                        const selectedDate = date.toLocaleDateString()
+                        // const selectedDate = date.toLocaleDateString();
                         return(
                             <div
                                 key={index}
@@ -208,7 +209,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                                     date.getMonth() === month ? styles.currentMonth : styles.otherMonth
                                 }`}
                                 style={{ backgroundColor : isToday ? '#F2F2F2' : 'none' }}
-                                onClick={() => clickDateHandler(selectedDate)}
+                                onClick={() => clickDateHandler(date)}
                             >
                                 {date.getDate()}
                                 
