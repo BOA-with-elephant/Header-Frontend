@@ -145,7 +145,7 @@ export default function Signup() {
                     <Checkbox checked={service} onChange={setService}>
                             (필수) 서비스 이용약관
                     </Checkbox>
-                    <a class={styles.linkStyle} href="/auth/terms-of-use">
+                    <a className={styles.linkStyle} href="/auth/terms-of-use">
                         이용약관 보기
                     </a>
                     <br/>
