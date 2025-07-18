@@ -26,9 +26,7 @@ const getCalendarDates = (year, month) => {
     return dates;  // 날짜 배열을 반환
 };
 
-export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
-    const [selectedDate, setSelectedDate] = useState(null);
-
+export default function ReservationCalendar({setSearchResultList, setIsOpen, setIsShowModal, setSelectedDate}) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const dayList = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     const today = new Date();
@@ -42,7 +40,6 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
     const [optionValue, setOptionValue] = useState("byDate");
 
     const [reservationInfo, setReservationInfo] = useState([]);
-    // const [searchResultList, setSearchResultList] = useState([]);
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
       
@@ -84,10 +81,6 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
         setCurrentDate(new Date(year, month + 1, 1));
     };
 
-    const selectedDateHandler = () => {
-        setSelectedDate(date);
-    }
-
     const optionValueChangeHandler = (e) => {
         setOptionValue(e.target.value);
     }
@@ -99,9 +92,14 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                     const formattedResvDate = `${inputValue.slice(0, 4)}-${inputValue.slice(4, 6)}-${inputValue.slice(6, 8)}`;
                     const response = await fetch(`${API_BASE_URL}?resvDate=${formattedResvDate}`);
                     const data = await response.json();
-                    console.log('listByDate', data);
+                    // console.log('listByDate', data);
                     setSearchResultList(data);
+                    setInputValue("");
                     setIsOpen(true);
+                    window.scrollTo({
+                        top : 0,
+                        behavior : 'smooth'
+                    })
                 } catch (error) {
                     console.error('검색 결과 불러오기 실패 : ', error)
                 }
@@ -110,9 +108,14 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                 try{
                     const response = await fetch(`${API_BASE_URL}?userName=${inputValue}`);
                     const data = await response.json();
-                    console.log('listByUserName', data);
+                    // console.log('listByUserName', data);
                     setSearchResultList(data);
+                    setInputValue("");
                     setIsOpen(true);
+                    window.scrollTo({
+                        top : 0,
+                        behavior : 'smooth'
+                    })
                 } catch (error) {
                     console.error('검색 결과 불러오기 실패 : ', error)
                 }
@@ -121,9 +124,14 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                 try{
                     const response = await fetch(`${API_BASE_URL}?menuName=${inputValue}`);
                     const data = await response.json();
-                    console.log('listByMenuName', data);
+                    // console.log('listByMenuName', data);
                     setSearchResultList(data);
+                    setInputValue("");
                     setIsOpen(true);
+                    window.scrollTo({
+                        top : 0,
+                        behavior : 'smooth'
+                    })
                 } catch (error) {
                     console.error('검색 결과 불러오기 실패 : ', error)
                 }
@@ -136,8 +144,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
             try {
                 const formatMonth = String(month + 1).padStart(2, '0');
                 const thisMonth = `${year}-${formatMonth}`;
-                console.log('thisMonth', typeof(thisMonth));
-                const res = await fetch(`${API_BASE_URL}/${thisMonth}`);
+                const res = await fetch(`${API_BASE_URL}?date=${thisMonth}`);
                 const data = await res.json();
                 console.log('data', data);
                 setReservationInfo(data);
@@ -147,6 +154,16 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
         };
         reservationList();
     }, [year, month]);
+
+    const clickDateHandler = (date) => {
+        // 공백 제거 + 마침표러 split
+        const [year, month, day] = date.split('.').map(str => str.trim());
+        const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        console.log('formattedDate',formattedDate);
+        setIsShowModal(true);
+        setSelectedDate(formattedDate);
+
+    }
 
     return (
         <>
@@ -161,7 +178,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                 </div>
                 <div className={styles.rightSection}>
                     <div className={styles.inputWrapper}>
-                        <input type="text" className={styles.inputBox} onChange={(e) => setInputValue(e.target.value)}/>
+                        <input type="text" className={styles.inputBox} value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
                         <Image src={searchIcon} alt='검색 아이콘' className={styles.searchIcon} onClick={inputEventHandler}/>
                     </div>
                     <div className={styles.selectWrapper}>
@@ -182,26 +199,16 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                 <div className={styles.calendarGrid}>
                     {calendarDates.map((date, index) => {
 
-                        // 오늘 날짜를 비교하기 위해 시간 값을 0으로 설정
-                        const todayWithoutTime = new Date(today).setHours(0, 0, 0, 0);
-                        const dateWithoutTime = new Date(date).setHours(0, 0, 0, 0);
-                        const nextWeekWithoutTime = new Date(today);
-                        nextWeekWithoutTime.setDate(today.getDate() + 7);
-
                         const isToday = date.toDateString() === today.toDateString();
-                        const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-                        const isPastDate = dateWithoutTime < todayWithoutTime; // 오늘 이전 날짜 확인
-                        const isBeyondNextWeek = dateWithoutTime > nextWeekWithoutTime;  // 다음 주 이후 날짜 확인
-
-                        const isWithinOneWeek = !isPastDate && !isBeyondNextWeek;
-
+                        const selectedDate = date.toLocaleDateString()
                         return(
                             <div
                                 key={index}
                                 className={`${styles.dateCell} ${
                                     date.getMonth() === month ? styles.currentMonth : styles.otherMonth
                                 }`}
-                                onClick={isWithinOneWeek ? () => { selectedDateHandler(date) } : undefined}
+                                style={{ backgroundColor : isToday ? '#F2F2F2' : 'none' }}
+                                onClick={() => clickDateHandler(selectedDate)}
                             >
                                 {date.getDate()}
                                 
@@ -212,8 +219,8 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                                         const day = String(date.getDate()).padStart(2, '0');
                                         return `${year}-${month}-${day}`
                                     }
+                                    // 하루의 예약 3개 이상인 경우 2개만 보여주고 나머지는 그 외 n건으로 표기
                                     const dailyReservations = reservationInfo.filter(list => list.resvDate === formatDateToYML(date));
-
                                     const showReservations = dailyReservations.slice(0, 2);
                                     const hiddenCount = dailyReservations.length - 2;
 
@@ -239,8 +246,8 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen}) {
                                                 );
                                             })}
                                             {hiddenCount > 0 && (
-                                                <div className={styles.resvDiv} style={{ backgroundColor : '#8588A2', color: '#FFFFFF'}}>
-                                                    외 {hiddenCount}건
+                                                <div className={styles.resvDiv} style={{ backgroundColor : '#8588A2', color: '#000000'}}>
+                                                    그 외 {hiddenCount}건
                                                 </div>
                                             )}
                                         </>

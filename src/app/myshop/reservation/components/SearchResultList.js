@@ -3,7 +3,7 @@ import styles from '../../../../styles/admin/reservation/SearchResultList.module
 import closeBtn from '../../../../../public/images/reservation/Close.png';
 import Image from 'next/image';
 
-export default function SearchResultList({searchResultList, setIsOpen}){
+export default function SearchResultList({searchResultList, setIsOpen, setSelectedResvCode, setIsShowDetailReservation}){
 
     const formatTime = (resvTime) => {
         const [hours, minutes, seconds] = resvTime.split(':');
@@ -20,11 +20,16 @@ export default function SearchResultList({searchResultList, setIsOpen}){
         }
     }
 
+    const showDetailResvHandler = (resvCode) => {
+        setIsShowDetailReservation(true);
+        setSelectedResvCode(resvCode);
+    }
+
     return(
         <>
             <div className={styles.tableContainer}>
                 <div style={{ paddingBottom : '20px'}}>
-                    <h3 className={styles.heading}>검색 결과</h3>
+                    <h3 className={styles.heading}>조회 결과</h3>
                     <Image 
                         src={closeBtn} 
                         alt='닫기 버튼'
@@ -38,22 +43,21 @@ export default function SearchResultList({searchResultList, setIsOpen}){
                             <th>예약일</th>
                             <th>시간</th>
                             <th>고객명</th>
-                            <th>전화번호</th>
                             <th>시술</th>
-                            <th>요청사항</th>
                             <th>상태</th>
                         </tr>
                     </thead>
                     <tbody>
                         {searchResultList.length > 0 ? (
                             searchResultList.map((list) => (
-                                <tr key={list.resvCode}>
+                                <tr 
+                                    key={list.resvCode}
+                                    onClick={() => showDetailResvHandler(list.resvCode)}
+                                >
                                 <td>{list.resvDate}</td>
                                 <td>{formatTime(list.resvTime)}</td>
                                 <td>{list.userName}</td>
-                                <td>{list.userPhone}</td>
                                 <td>{list.menuName}</td>
-                                <td>{list.userComment}</td>
                                 <td>{changeResvState(list.resvState)}</td>
                                 </tr>
                         ))) : (

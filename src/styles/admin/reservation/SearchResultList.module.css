@@ -1,11 +1,11 @@
 .tableContainer {
-    margin-top: 20px;
     padding: 20px;
     background-color: #FFFFFF;
     border-radius: 8px;
     border-radius: var(--radius-xl);
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-lg);
+    margin-bottom: 20px;
 }
 
 .heading{
