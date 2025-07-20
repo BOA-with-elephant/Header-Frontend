@@ -7,7 +7,7 @@ import { MESSAGES } from '@/constants/messages'; // 애플리케이션 전반에
 export default function Message() {
     return (
         <>
-            <h1>새 메세지 작성 페이지</h1>
+            <h1>자동 발송 설정 페이지</h1>
             <div className="content-card">
 
             </div>
