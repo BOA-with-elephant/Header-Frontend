@@ -1,0 +1,260 @@
+/* --- 전역 및 레이아웃 --- */
+.map-page-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.left-panel-container {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    bottom: 24px;
+    width: 380px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+}
+
+.side-panel {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-container {
+    width: 100%;
+    height: 100%;
+}
+
+.placeholder-map {
+    width: 100%;
+    height: 100%;
+    background-color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #9ca3af;
+}
+
+/* --- 검색 및 필터 (ShopListPanel) --- */
+.search-box, .filter-box {
+    padding: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid #F2F2F2;
+}
+
+.search-box input, .filter-box select {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border: 1px solid #BDBEBF;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.search-box button, .filter-box button {
+    padding: 0.75rem;
+    border: none;
+    background: #13183D;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* --- 매장 목록 (ShopListPanel) --- */
+.shop-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.shop-item {
+    padding: 1rem;
+    border-bottom: 1px solid #F2F2F2;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.shop-item:hover {
+    background-color: #F9F9F9;
+}
+
+.shop-item h4 {
+    margin: 0 0 4px 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.shop-item p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #8588A2;
+}
+
+.scroll-sentinel {
+    text-align: center;
+    padding: 1rem;
+    color: #8588A2;
+}
+
+/* --- 상세 정보 (ShopDetailPanel) --- */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #F2F2F2;
+}
+.panel-header h3 { margin: 0; font-size: 1.25rem; }
+.close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+
+.panel-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.shop-contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.shop-contact-info span { font-size: 0.875rem; }
+
+.header-buttons { display: flex; gap: 0.5rem; margin-top: 1rem; }
+.cta-button {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border: none;
+    background-color: #13183D;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.cta-button:disabled {
+    background-color: #BDBEBF;
+    cursor: not-allowed;
+}
+
+.icon-button {
+    padding: 0.75rem;
+    border: 1px solid #BDBEBF;
+    background-color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #000;
+}
+
+.menu-section { display: flex; flex-direction: column; gap: 1rem; }
+.menu-category h4 { margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600; }
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+.menu-item-info { display: flex; flex-direction: column; }
+.menu-item-info small { font-size: 0.75rem; color: #8588A2; }
+.menu-price { font-weight: 500; }
+
+/* --- 예약 폼 (BookingFormPanel) --- */
+.booking-form .form-section { margin-bottom: 1.5rem; }
+.booking-form h4 { margin: 0 0 0.75rem 0; font-size: 1rem; font-weight: 600; }
+.booking-form .required { color: #b81111; }
+
+.date-time-picker { display: flex; gap: 0.5rem; }
+.picker-button {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #BDBEBF;
+    border-radius: 6px;
+    background-color: #fff;
+    text-align: left;
+}
+.react-datepicker-wrapper { width: 100%; }
+
+.menu-selection-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.radio-label { display: flex; align-items: center; gap: 0.5rem; }
+.booking-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem;
+    border: 1px solid #BDBEBF;
+    border-radius: 6px;
+    resize: vertical;
+}
+.terms-container { margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 0.5rem;}
+
+/* --- 아코디언 (Accordion) --- */
+.accordion-item { border: 1px solid #F2F2F2; border-radius: 6px; padding: 0.75rem; }
+.accordion-title { display: flex; justify-content: space-between; cursor: pointer; }
+.accordion-title label { display: flex; align-items: center; gap: 0.5rem; }
+.accordion-content { padding-top: 0.75rem; margin-top: 0.75rem; border-top: 1px solid #F2F2F2; font-size: 0.875rem; color: #8588A2;}
+
+
+/* --- 공용 모달 (CustomAlertModal) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(19, 24, 61, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content p {
+    margin: 0 0 1.5rem 0;
+    white-space: pre-wrap; /* \n 줄바꿈 적용 */
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    background-color: #13183D;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* --- 로더 --- */
+.loader {
+    border: 4px solid #F2F2F2;
+    border-top: 4px solid #13183D;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 4rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
