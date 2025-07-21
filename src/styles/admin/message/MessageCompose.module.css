@@ -1,0 +1,226 @@
+.container {
+    padding: var(--spacing-2xl);
+}
+
+.header {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.description {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* 매개변수 섹션 */
+.parametersSection {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.parametersTitle {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.parametersDescription {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0 0 var(--spacing-lg) 0;
+}
+
+.parametersGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-sm);
+}
+
+.parameterButton {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: var(--font-medium);
+}
+
+.parameterButton:hover {
+    border-color: var(--color-primary);
+    background: rgba(59, 130, 246, 0.05);
+    color: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+.parameterButton:active {
+    transform: translateY(0);
+}
+
+/* 작성 섹션 */
+.composeSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.textareaContainer {
+    position: relative;
+}
+
+.messageTextarea {
+    width: 100%;
+    min-height: 300px;
+    padding: var(--spacing-lg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-base);
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+    outline: none;
+}
+
+.messageTextarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.messageTextarea::placeholder {
+    color: var(--text-tertiary);
+    line-height: 1.6;
+}
+
+.charCounter {
+    position: absolute;
+    bottom: var(--spacing-sm);
+    right: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--bg-primary);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    font-size: var(--text-xs);
+}
+
+.charCount {
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.charCount.warning {
+    color: var(--color-warning);
+}
+
+.charLimit {
+    color: var(--text-tertiary);
+}
+
+/* 미리보기 섹션 */
+.previewSection {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+}
+
+.previewTitle {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-md) 0;
+}
+
+.previewContent {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.previewLine {
+    margin: 0 0 var(--spacing-xs) 0;
+    color: var(--text-secondary);
+}
+
+.previewLine:last-child {
+    margin-bottom: 0;
+}
+
+/* 완료 섹션 */
+.completeSection {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.completeButton {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md) var(--spacing-2xl);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 200px;
+}
+
+.completeButton:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.completeButton:disabled {
+    background: var(--bg-tertiary);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-lg);
+    }
+    
+    .parametersGrid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: var(--spacing-xs);
+    }
+    
+    .parameterButton {
+        padding: var(--spacing-xs);
+        font-size: var(--text-xs);
+    }
+    
+    .messageTextarea {
+        min-height: 250px;
+        padding: var(--spacing-md);
+    }
+    
+    .completeButton {
+        min-width: auto;
+        width: 100%;
+    }
+}
