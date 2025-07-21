@@ -1,0 +1,166 @@
+.stepsContainer {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    height: fit-content;
+    position: sticky;
+    top: var(--spacing-xl);
+}
+
+.stepsTitle {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-lg) 0;
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stepsList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.stepItem {
+    margin-bottom: var(--spacing-md);
+    transition: all 0.2s ease;
+}
+
+.stepItem:last-child {
+    margin-bottom: 0;
+}
+
+.stepContent {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.stepIndicator {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    transition: all 0.2s ease;
+}
+
+.stepNumber {
+    color: var(--text-tertiary);
+}
+
+.checkIcon {
+    color: var(--color-success);
+    font-size: 16px;
+}
+
+.stepText {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+/* 상태별 스타일 */
+.stepItem.active .stepIndicator {
+    background: var(--color-primary);
+    color: white;
+}
+
+.stepItem.active .stepText {
+    color: var(--text-primary);
+    font-weight: var(--font-medium);
+}
+
+.stepItem.active .stepContent {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.stepItem.completed .stepIndicator {
+    background: var(--color-success);
+    color: white;
+}
+
+.stepItem.completed .stepText {
+    color: var(--text-secondary);
+}
+
+.stepItem.clickable {
+    cursor: pointer;
+}
+
+.stepItem.clickable:hover .stepContent {
+    background: var(--bg-secondary);
+}
+
+.stepItem.clickable:hover .stepText {
+    color: var(--text-primary);
+}
+
+/* 비활성 상태 */
+.stepItem:not(.active):not(.completed):not(.clickable) .stepIndicator {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+}
+
+.stepItem:not(.active):not(.completed):not(.clickable) .stepNumber {
+    color: var(--text-tertiary);
+}
+
+.stepItem:not(.active):not(.completed):not(.clickable) .stepText {
+    color: var(--text-tertiary);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+    .stepsContainer {
+        position: static;
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .stepsList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+    }
+    
+    .stepItem {
+        margin-bottom: 0;
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .stepContent {
+        justify-content: center;
+        text-align: center;
+        padding: var(--spacing-sm) var(--spacing-xs);
+    }
+    
+    .stepText {
+        font-size: var(--text-xs);
+    }
+}
+
+@media (max-width: 768px) {
+    .stepsList {
+        flex-direction: column;
+    }
+    
+    .stepItem {
+        min-width: auto;
+    }
+    
+    .stepContent {
+        justify-content: flex-start;
+        text-align: left;
+    }
+}

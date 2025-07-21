@@ -46,8 +46,10 @@ const MENU_CONFIG = {
       type: "expandable", // 확장 가능한 메뉴
       firstPath: "/myshop/message",
       items: [
-        { path: "/myshop/message", text: "메시지 등록" },
-        { path: "/myshop/message-list", text: "메시지 조회" }
+        { path: "/myshop/message", text: "새 메세지 작성" },
+        { path: "/myshop/message/template-setting", text: "템플릿 관리" },
+        { path: "/myshop/message/auto-setting", text: "자동 발송 설정" },
+        { path: "/myshop/message/list", text: "메시지 조회" }
       ]
     }
   ],
