@@ -12,18 +12,19 @@
 
 .modalWrapper{
     position: absolute;
-    top : 50%;
+    top : 30%;
     left : 50%;
     transform: translate(-50%, -50%);
-    width : 400px;
-    height: 300px;
+    width : 480px;
+    height: auto;
+    max-height: 80vh;
     z-index: 1001;
     border-radius: var(--spacing-sm);
 }
 
 .modalHeaderWrapper{
     background-color:#1f2937;
-    height: 60px;
+    height: 70px;
     display : flex;
     justify-content: space-between;
     align-items: center;
@@ -51,40 +52,62 @@
 }
 
 .modalBodyWrapper{
-    flex-grow: 1;
     padding: 20px;
     background-color: var(--bg-primary);
     border-bottom-left-radius: var(--spacing-sm);
     border-bottom-right-radius: var(--spacing-sm);
+}.formRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
 }
 
-.menus{
-    border: 2px solid var(--border-color);
-    font-size: var(--text-lg);
-    font-weight: var(--font-medium);
-    border-radius: var(--radius-lg);
-    text-align: center;
-    margin-right : 20px;
-    margin-left : 20px;
-    margin-bottom : 20px;
-    padding : 10px 0;
+.formGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-right: 1rem;
 }
 
-.menus:hover{
-    background-color: #353957;
-    color: #FFFFFF;
-    cursor: pointer;
+.formGroup:last-child {
+  margin-right: 0;
 }
 
-.pastDay {
-  background-color: #F9F9F9;
-  color: #8588A2;
-  cursor: not-allowed;
+.formGroup label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
 }
 
-/* pastDay일 경우 hover 효과 지우기 */
-.pastDay:hover{
-    background-color: #F9F9F9;
-    color: #8588A2;
-    cursor: not-allowed;
+.inputTag, .selector, .textAreaTag {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
+
+.textAreaTag {
+  resize: none;
+  height: 80px;
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancelBtn {
+  background-color: #f2f2f2;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+}
+
+.submitBtn {
+  background-color: #222b50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+}
+
+

@@ -162,6 +162,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
         const day = String(date.getDate()).padStart(2, '0');
         const formattedDate = `${year}-${month}-${day}`;
         console.log('formattedDate',formattedDate);
+
         setIsShowModal(true);
         setSelectedDate(formattedDate);
     }
@@ -201,7 +202,6 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                     {calendarDates.map((date, index) => {
 
                         const isToday = date.toDateString() === today.toDateString();
-                        // const selectedDate = date.toLocaleDateString();
                         return(
                             <div
                                 key={index}
