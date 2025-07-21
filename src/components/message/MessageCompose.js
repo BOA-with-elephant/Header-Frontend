@@ -8,33 +8,6 @@ export default function MessageCompose({ content, onComplete }) {
     const [charCount, setCharCount] = useState(content?.length || 0);
     const textareaRef = useRef(null);
 
-    // 매개변수 버튼들
-    const parameters = [
-        { label: '고객명', value: '{고객명}' },
-        { label: '샵명', value: '{샵명}' },
-        { label: '위치', value: '{위치}' } // 쿠키에 저장해놓는게 맞는것 같다.
-    ];
-
-    // 매개변수 삽입 함수
-    const insertParameter = (paramValue) => {
-        const textarea = textareaRef.current;
-        if (!textarea) return;
-
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const newText = messageText.slice(0, start) + paramValue + messageText.slice(end);
-        
-        setMessageText(newText);
-        setCharCount(newText.length);
-        
-        // 커서 위치 업데이트
-        setTimeout(() => {
-            const newCursorPos = start + paramValue.length;
-            textarea.setSelectionRange(newCursorPos, newCursorPos);
-            textarea.focus();
-        }, 0);
-    };
-
     // 텍스트 변경 처리
     const handleTextChange = (e) => {
         const newText = e.target.value;
@@ -65,33 +38,13 @@ export default function MessageCompose({ content, onComplete }) {
                 </p>
             </div>
 
-            {/* 매개변수 버튼들 */}
-            <div className={styles.parametersSection}>
-                <h3 className={styles.parametersTitle}>매개변수</h3>
-                <p className={styles.parametersDescription}>
-                    아래 버튼을 클릭하면 현재 커서 위치에 매개변수가 삽입됩니다
-                </p>
-                <div className={styles.parametersGrid}>
-                    {parameters.map((param, index) => (
-                        <button
-                            key={index}
-                            className={styles.parameterButton}
-                            onClick={() => insertParameter(param.value)}
-                            type="button"
-                        >
-                            {param.label}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
             {/* 메세지 작성 영역 */}
             <div className={styles.composeSection}>
                 <div className={styles.textareaContainer}>
                     <textarea
                         ref={textareaRef}
                         className={styles.messageTextarea}
-                        placeholder="메세지 내용을 입력해주세요...&#10;&#10;매개변수를 사용하면 고객별로 개인화된 메세지를 발송할 수 있습니다.&#10;예) 안녕하세요 {고객명}님! 예약 확인 메세지입니다."
+                        placeholder="메세지 내용을 입력해주세요...&#10;&#10;"
                         value={messageText}
                         onChange={handleTextChange}
                         maxLength={1000}
