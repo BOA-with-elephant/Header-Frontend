@@ -3,7 +3,7 @@ import styles from '../../../../styles/admin/reservation/ReservationMenuModal.mo
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function ReservationMenuModal({setIsShowModal ,selectedDate, setSearchResultList, setIsOpen}){
+export default function ReservationMenuModal({setIsShowModal ,selectedDate, setSearchResultList, setIsOpen, setIsShowUpdateModal}){
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
     
@@ -40,6 +40,9 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
             };
         }, [])
     
+        const showUpdateReservationModalHandler = () => {
+            setIsShowUpdateModal(true);
+        }
     return(
         <>
             <div className={styles.modalOverlay}/>
@@ -56,7 +59,7 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
                 <div className={styles.modalBodyWrapper}>
                     <div className={styles.menus}>예약 등록</div>
                     <div className={styles.menus} onClick={ShowDetailReservationHandler}>예약 조회</div>
-                    <div className={styles.menus}>예약 막기</div>
+                    <div className={styles.menus} onClick={showUpdateReservationModalHandler}>예약 막기</div>
                 </div>
             </div>
         </>

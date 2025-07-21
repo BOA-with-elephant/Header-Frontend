@@ -8,6 +8,7 @@ import ReservationCalendar from "./components/ReservationCalendar";
 import SearchResultList from "./components/SearchResultList";
 import ReservationMenuModal from "./components/ReservationMenuModal";
 import DetailReservationModal from "./components/DetailReservationModal";
+import UpdateReservationInfoModal from "./components/UpdateReservaionInfoModal";
 
 export default function Reservation() {
 
@@ -17,6 +18,7 @@ export default function Reservation() {
     const [selectedDate, setSelectedDate] = useState();
     const [isShowDetailReservation, setIsShowDetailReservation] = useState(false);
     const [selectedResvCode, setSelectedResvCode] = useState();
+    const [isShowUpdateModal, setIsShowUpdateModal] = useState(false);
 
     return (
         <>
@@ -42,11 +44,19 @@ export default function Reservation() {
                             selectedDate={selectedDate}
                             setSearchResultList={setSearchResultList}
                             setIsOpen={setIsOpen}
+                            selectedResvCode={selectedResvCode}
+                            setIsShowUpdateModal={setIsShowUpdateModal}
                         />
                     )}
                     {isShowDetailReservation && (
                         <DetailReservationModal
                             setIsShowDetailReservation={setIsShowDetailReservation}
+                            selectedResvCode={selectedResvCode}
+                        />
+                    )}
+                    {isShowUpdateModal && (
+                        <UpdateReservationInfoModal
+                            setIsShowUpdateModal={setIsShowUpdateModal}
                             selectedResvCode={selectedResvCode}
                         />
                     )}
