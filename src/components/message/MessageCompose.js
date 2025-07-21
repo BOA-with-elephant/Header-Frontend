@@ -11,12 +11,8 @@ export default function MessageCompose({ content, onComplete }) {
     // 매개변수 버튼들
     const parameters = [
         { label: '고객명', value: '{고객명}' },
-        { label: '연락처', value: '{연락처}' },
-        { label: '서비스명', value: '{서비스명}' },
-        { label: '예약일', value: '{예약일}' },
-        { label: '예약시간', value: '{예약시간}' },
         { label: '샵명', value: '{샵명}' },
-        { label: '위치', value: '{위치}' }
+        { label: '위치', value: '{위치}' } // 쿠키에 저장해놓는게 맞는것 같다.
     ];
 
     // 매개변수 삽입 함수
