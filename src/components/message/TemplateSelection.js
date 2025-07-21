@@ -5,11 +5,11 @@ import styles from '@/styles/admin/message/TemplateSelection.module.css';
 
 export default function TemplateSelection({ selectedTemplate, onTemplateSelect }) {
     // 템플릿 카테고리
-    const [selectedCategory, setSelectedCategory] = useState('promotion');
+    const [selectedCategory, setSelectedCategory] = useState('promotional');
 
     // 템플릿 데이터 (실제로는 API에서 가져올 데이터)
     const templates = {
-        promotion: [
+        promotional: [
             {
                 id: 1,
                 name: '할인 이벤트',
@@ -25,7 +25,7 @@ export default function TemplateSelection({ selectedTemplate, onTemplateSelect }
                 usageCount: 89
             }
         ],
-        reminder: [
+        informational: [
             {
                 id: 3,
                 name: '예약 알림',
@@ -40,22 +40,12 @@ export default function TemplateSelection({ selectedTemplate, onTemplateSelect }
                 category: '알림',
                 usageCount: 167
             }
-        ],
-        event: [
-            {
-                id: 5,
-                name: '생일 축하',
-                content: '🎂 {고객명}님, 생일을 축하드립니다! 🎉\n\n특별한 날을 맞아 생일 혜택을 준비했습니다.\n{서비스명} 무료 체험권 증정!\n\n소중한 하루 되세요! ✨',
-                category: '이벤트',
-                usageCount: 78
-            }
         ]
     };
 
     const categories = [
-        { id: 'promotion', name: '프로모션', icon: '🎯' },
-        { id: 'reminder', name: '알림', icon: '🔔' },
-        { id: 'event', name: '이벤트', icon: '🎉' }
+        { id: 'informational', name: '알림', icon: '🔔' },
+        { id: 'promotional', name: '프로모션', icon: '🎯' },
     ];
 
     return (
@@ -95,9 +85,7 @@ export default function TemplateSelection({ selectedTemplate, onTemplateSelect }
                     >
                         <div className={styles.templateHeader}>
                             <h3 className={styles.templateName}>{template.name}</h3>
-                            <span className={styles.usageCount}>
-                                사용 {template.usageCount}회
-                            </span>
+    
                         </div>
                         
                         <div className={styles.templateContent}>
