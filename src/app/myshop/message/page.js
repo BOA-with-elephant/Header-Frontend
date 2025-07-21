@@ -14,6 +14,9 @@ import styles from '@/styles/admin/message/Message.module.css';
 export default function Message() {
     const { modal, closeModal, showError, showSuccess, showConfirm } = useMessageModal();
 
+    // 임시 shopId
+    const SHOP_ID = 2;
+
     // 현재 단계 상태
     const [currentStep, setCurrentStep] = useState(1);
 
@@ -91,22 +94,61 @@ export default function Message() {
 
     // 즉시 발송 처리
     const handleImmediateSend = () => {
+        const clientCodes = selectedRecipients.map(recipient => recipient.clientCode);
+
         showConfirm(
             '메세지 발송',
             `선택된 ${selectedRecipients.length}명에게 메세지를 발송하시겠습니까?`,
-            () => {
-                // TODO: 실제 발송 API 호출
-                console.log('메세지 발송:', {
-                    type: messageType,
-                    template: selectedTemplate,
-                    content: messageContent,
-                    recipients: selectedRecipients
-                });
-                showSuccess('발송 완료', '메세지가 성공적으로 발송되었습니다.');
-                // 초기화
-                resetForm();
+            async () => {
+                try {
+                    const messageData = {
+                        messageContent: getMessageContent(),
+                        clientCodes: clientCodes,
+                        shopCode: SHOP_ID,
+                        subject: generateSubject(),
+                        isScheduled: false
+                    };
+
+                    console.log('발송 데이터:', messageData);
+
+                    const result = await sendMessage(messageData);
+
+                    showSuccess('발송 접수 완료', '메세지가 성공적으로 접수되었습니다.\n발송은 순차적으로 처리됩니다.');
+
+                    resetForm();
+
+                } catch (error) {
+                    showError('발송 실패', '메세지 발송 중 오류가 발생했습니다.\n다시 시도해주세요.');
+                }
             }
         );
+    };
+
+    const sendMessage = async (messageData) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(messageData)
+            });
+
+            if (!response.ok) {
+                throw new Error('메세지 발송에 실패했습니다.');
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.message || '메세지 발송에 실패했습니다.');
+            }
+
+            return result.data;
+        } catch (error) {
+            console.error('메세지 발송 오류:', error);
+            throw error;
+        }
     };
 
     // 예약 발송 처리
@@ -128,6 +170,27 @@ export default function Message() {
             visitPeriod: '',
             ageGroup: ''
         });
+    };
+
+    // 제목 생성 함수
+    const generateSubject = () => {
+        if (messageType === 'template' && selectedTemplate) {
+            return selectedTemplate.name;
+        } else if (messageType === 'direct' && messageContent) {
+            const cleanContent = messageContent.replace(/\n/g, ' ').trim();
+            return cleanContent.length > 10 ? `${cleanContent.substring(0, 10)}...` : cleanContent;
+        }
+        return '메세지';
+    };
+
+    // 메세지 내용 생성 함수
+    const getMessageContent = () => {
+        if (messageType === 'template' && selectedTemplate) {
+            return selectedTemplate.content;
+        } else if (messageType === 'direct' && messageContent) {
+            return messageContent;
+        }
+        return '';
     };
 
     return (
