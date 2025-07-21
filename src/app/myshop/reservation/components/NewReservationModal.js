@@ -3,7 +3,7 @@ import styles from '../../../../styles/admin/reservation/NewReservationModal.mod
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function NewReservationModal({ isShowNewResvModal, setIsShowNewResvModal }) {
+export default function NewReservationModal({ isShowNewResvModal, setIsShowNewResvModal, selectedDate, resvDateList, fetchReservationData }) {
   
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
@@ -11,12 +11,11 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
     const [reservationData, setReservationData] = useState({
         userName : '',
         userPhone : '',
-        resvDate : '',
-        resvTime : '',
         menuName : '',
+        resvDate : selectedDate,
+        resvTime : '',
         userComment : ''
     });  
-    const [resvTimeList, setResvTimeList] = useState([]);
     const [menuNameList, setMenuNameList] = useState([]);
     const [today, setToday] = useState();
 
@@ -28,10 +27,10 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
             setMenuNameList(data);
             } catch (err) {
             setError(err.message);
-            console.error('카테고리 조회 실패:', err);
+            console.error('메뉴 리스트 조회 실패:', err);
             }
         }; 
-        fetchMenuList(); // 반드시 호출해야 함
+        fetchMenuList();
     }, []);
 
 
@@ -45,6 +44,20 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
         const availableDay = `${year}-${month}-${day}`;
 
         setToday(availableDay);
+
+        // 스크롤 막기
+        document.body.style.overflow = 'hidden';  
+        document.documentElement.style.overflow = 'hidden';
+
+        const next = document.getElementById('__next');
+        if (next) next.style.overflow = 'hidden';
+
+        return () => {
+            // 모달 닫힐 때 스크롤 원상 복구
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+            if (next) next.style.overflow = 'auto';
+        };
     }, []);
 
     // 숫자만 받아서 자동 포맷
@@ -80,23 +93,38 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
         setIsShowNewResvModal(false);
     }
 
-    const clickSubmitHandler = () => {
-        console.log('reservationData',reservationData)
+    const clickSubmitHandler = async() => {
+        const {resvDate, resvTime, userName, userPhone, menuName} = reservationData;
+
+        if(resvDate && resvTime && userName && userPhone && menuName){
+            try{
+                const response = await fetch(`${API_BASE_URL}`, {
+                    method : "POST",
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body : JSON.stringify(reservationData)
+                });
+
+                const contentType = response.headers.get("Content-Type");
+
+                if(contentType && contentType.includes("application/json")){
+                    const data = await response.json();
+                    console.log('예약 성공 : ', data);
+                    await fetchReservationData();
+                    setIsShowNewResvModal(false); 
+                } else {
+                    const text = await response.text();
+                    console.warn("받은 응답이 JSON이 아님 : ", text);
+                }
+            } catch(error){
+                console.error('예약 실패 : ', error)
+            }
+        } else {
+            console.warn('모든 필드를 입력해주세요');
+        }
+            
     }
-
-    //   // 서버 전송용 값
-    //   const getFormattedPhoneForServer = () => {
-    //     // 하이픈 없으면 추가 (혹은 다른 처리)
-    //     return phone.replace(/[^0-9]/g, "") // 숫자만 추출
-    //                 .replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3"); // 하이픈 추가
-    //   };
-
-    // const handleSubmit = () => {
-    //     // 여기에 예약 등록 API 호출 로직 추가
-    //     console.log({ customer, phone, date, time, procedure, memo });
-    //     setIsShowNewResvModal(false);
-    //   };
-
 
     return (
         <>
@@ -119,9 +147,9 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
                 <input 
                     className={styles.inputTag} 
                     name = "resvDate"
-                    type="date" value={reservationData.resvDate} 
-                    onChange={inputChangeHandler}
-                    min={today}
+                    type="date"
+                    disabled 
+                    value={reservationData.resvDate} 
                 />
                 </div>
 
@@ -129,15 +157,30 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
                 <label>예약 시간</label>
                 <select className={styles.selector} name="resvTime" value={reservationData.resvTime} onChange={inputChangeHandler}>
                     <option value="">시간 선택</option>
-                    <option value="10:00~11:00">10:00</option>
-                    <option value="11:00~12:00">11:00</option>
-                    <option value="12:00~13:00">12:00</option>
-                    <option value="12:00~13:00">13:00</option>
-                    <option value="12:00~13:00">14:00</option>
-                    <option value="12:00~13:00">15:00</option>
-                    <option value="12:00~13:00">16:00</option>
-                    <option value="12:00~13:00">17:00</option>
-                    <option value="12:00~13:00">18:00</option>
+                    {resvDateList?.results?.schedule
+                    .filter(item => item.targetDate === selectedDate)  // selectedDate와 일치하는 날짜 찾기
+                    .flatMap(item => {
+                        // 오늘인 경우 현재 시간 이후로만 예약 가능
+                        const isToday = new Date(item.targetDate).toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10);
+                        const currentTime = new Date();
+                        const currentHours = currentTime.getHours();
+                        const currentMinutes = currentTime.getMinutes();
+
+                        return item.availableTimes.filter(time => {
+                            if(!isToday) return true;
+
+                            const [hourStr, minuteStr] = time.split(':');
+                            const hour = parseInt(hourStr);
+                            const minute = parseInt(minuteStr);
+
+                            return hour > currentHours || (hour === currentHours && minute > currentMinutes);
+                        });
+                    })
+                    .map((time, index) => (
+                        <option key={index} value={time}>
+                            {time.substring(0, 5)}
+                        </option>
+                    ))}
                 </select>
                 </div>
             </div>
@@ -162,7 +205,6 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
                     type="tel" 
                     name="userPhone"
                     maxLength={13}
-                    minLength={13}
                     placeholder="휴대폰 번호"
                     value={reservationData.userPhone} 
                     onChange={phoneFormatHandler} 

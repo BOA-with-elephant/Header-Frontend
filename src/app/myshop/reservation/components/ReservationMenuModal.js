@@ -3,7 +3,7 @@ import styles from '../../../../styles/admin/reservation/ReservationMenuModal.mo
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function ReservationMenuModal({setIsShowModal ,selectedDate, setSearchResultList, setIsOpen, setIsShowNewResvModal}){
+export default function ReservationMenuModal({setIsShowModal ,selectedDate, setSearchResultList, setIsOpen, setIsShowNewResvModal, resvDateList}){
     const [pastDay, setPastDay] = useState(false);
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
@@ -36,6 +36,7 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
 
     useEffect(() => {
 
+            // 오늘 이전 날짜 예약 등록 막기
             const formatSelectedDate = new Date(selectedDate);
             const today = new Date();
 
@@ -44,6 +45,15 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
             today.setHours(0, 0, 0, 0);
 
             if (formatSelectedDate < today) {
+                setPastDay(true);
+            }
+
+            // 예약 가능 날짜가 아니면 예약 등록 막기
+            console.log('selectedDate!!!!!', selectedDate);
+            const availableDates = resvDateList?.results?.schedule?.map(item => item.targetDate) || [];
+            const isAvailableDate = availableDates.includes(selectedDate);
+
+            if(!isAvailableDate){
                 setPastDay(true);
             }
 
