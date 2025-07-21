@@ -3,10 +3,12 @@ import styles from '../../../../styles/admin/reservation/ReservationMenuModal.mo
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function ReservationMenuModal({setIsShowModal ,selectedDate, setSearchResultList, setIsOpen, setIsShowUpdateModal}){
+export default function ReservationMenuModal({setIsShowModal ,selectedDate, setSearchResultList, setIsOpen, setIsShowNewResvModal, resvDateList}){
+    const [pastDay, setPastDay] = useState(false);
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
     
+    // 예약 상세 조회
     const ShowDetailReservationHandler = async() => {
         setIsShowModal(false);
       
@@ -24,7 +26,37 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
         }
     }
 
+    const ShowNewResvModalHandler = () => {
+
+        if(pastDay) return ; // 클릭 막기
+
+        setIsShowModal(false);
+        setIsShowNewResvModal(true);
+    }
+
     useEffect(() => {
+
+            // 오늘 이전 날짜 예약 등록 막기
+            const formatSelectedDate = new Date(selectedDate);
+            const today = new Date();
+
+            // 시간 제거해서 날짜만 비교 (00:00:00 기준)
+            formatSelectedDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+
+            if (formatSelectedDate < today) {
+                setPastDay(true);
+            }
+
+            // 예약 가능 날짜가 아니면 예약 등록 막기
+            console.log('selectedDate!!!!!', selectedDate);
+            const availableDates = resvDateList?.results?.schedule?.map(item => item.targetDate) || [];
+            const isAvailableDate = availableDates.includes(selectedDate);
+
+            if(!isAvailableDate){
+                setPastDay(true);
+            }
+
             // 스크롤 막기
             document.body.style.overflow = 'hidden';  
             document.documentElement.style.overflow = 'hidden';
@@ -57,7 +89,11 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
                     /> 
                 </div>
                 <div className={styles.modalBodyWrapper}>
-                    <div className={styles.menus}>예약 등록</div>
+                    <div className={`${styles.menus} ${pastDay ? styles.pastDay : ''}`} 
+                        onClick={ShowNewResvModalHandler}
+                    >
+                        예약 등록
+                    </div>
                     <div className={styles.menus} onClick={ShowDetailReservationHandler}>예약 조회</div>
                     <div className={styles.menus} onClick={showUpdateReservationModalHandler}>예약 막기</div>
                 </div>

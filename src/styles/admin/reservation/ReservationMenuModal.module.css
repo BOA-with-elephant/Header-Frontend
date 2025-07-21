@@ -11,7 +11,7 @@
 }
 
 .modalWrapper{
-    position: absolute;
+    position: fixed;
     top : 50%;
     left : 50%;
     transform: translate(-50%, -50%);
@@ -74,4 +74,17 @@
     background-color: #353957;
     color: #FFFFFF;
     cursor: pointer;
+}
+
+.pastDay {
+  background-color: #F9F9F9;
+  color: #8588A2;
+  cursor: not-allowed;
+}
+
+/* pastDay일 경우 hover 효과 지우기 */
+.pastDay:hover{
+    background-color: #F9F9F9;
+    color: #8588A2;
+    cursor: not-allowed;
 }

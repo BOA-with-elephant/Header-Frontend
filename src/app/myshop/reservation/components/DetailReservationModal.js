@@ -111,7 +111,6 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
                         <button className={styles.buttons}>메모 추가</button>
                     </div>
                 </div>
-
             </div>
         </>
     )

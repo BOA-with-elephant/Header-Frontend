@@ -11,8 +11,8 @@ const MENU_CONFIG = {
       type: "expandable", // 확장 가능한 메뉴
       firstPath: "/myshop/reservation",
       items: [
-        { path: "/myshop/reservation", text: "예약 등록" },
-        { path: "/myshop/reservation-list", text: "예약 조회" }
+        { path: "/myshop/reservation", text: "예약조회/등록" },
+        // { path: "/myshop/reservation-list", text: "예약 조회" }
       ]
     },
     {
