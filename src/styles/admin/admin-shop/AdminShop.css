@@ -87,15 +87,28 @@
     border-top: 1px solid #e9ecef;
     padding-top: 1rem;
 }
-.detail-actions .action-button {
+.action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     flex: 1;
     padding: 0.75rem;
     border-radius: 8px;
     border: 1px solid #BDBEBF;
     background-color: #fff;
+    text-decoration: none;
+    color: rgba(19, 24, 61, 0.8);
     cursor: pointer;
-    /*font-weight: 500;*/
     font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+    margin: 0;
+}
+
+.action-button:hover {
+    opacity: 0.7;
 }
 .detail-actions .action-button.danger {
     border-color: #b81111;
