@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react";
-import styles from '../../../../styles/admin/reservation/DeleteAlertModal.module.css';
 import MessageModal from "@/components/ui/MessageModal";
 
 
@@ -37,9 +36,6 @@ export default function DeleteAlertModal({isShowDeleteModal, setIsShowDeleteModa
         }
     } 
     
-
-
-
     return (
         <>
             <MessageModal
