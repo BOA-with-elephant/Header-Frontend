@@ -141,7 +141,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
     useEffect(() => {
         const availableResvDateList = async() => {
             try{
-                const response = await fetch(`http://localhost:8080/shops/reservation/${SHOP_CODE}/available-schedule`);
+                const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
                 const data = await response.json();
                 setResvDateList(data);
             } catch(error){

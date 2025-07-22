@@ -3,7 +3,7 @@ import styles from '../../../../styles/admin/reservation/DetailReservationModal.
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function DetailReservationModal({selectedResvCode, setIsShowDetailReservation, setIsShowModal, setIsShowUpdateModal, setIsShowDeleteModal, selectedDate}){
+export default function DetailReservationModal({selectedResvCode, setIsShowDetailReservation, setIsShowModal, setIsShowUpdateModal, setIsShowDeleteModal, setIsShowRealDeleteModal, selectedDate}){
     const [detailResvInfo, sestDetailresvInfo] = useState({});
     const today = new Date();
     const todayOnlyDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -79,6 +79,12 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
         setIsShowDetailReservation(false);
     }
 
+    const showRealDeleteModalHandler = () => {
+        setIsShowModal(false);
+        setIsShowRealDeleteModal(true);
+        setIsShowDetailReservation(false);
+    }
+
     return(
         <>  
             <div className={styles.modalOverlay}/>
@@ -135,7 +141,7 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
                     <div className={styles.buttonsWrapper}>
                         <button className={styles.buttons} disabled={isBeforeToday} onClick={showUpdateReservationModalHandler}>예약 수정</button>
                         <button className={styles.buttons} disabled={isBeforeToday} onClick={showDeleteAlertModalHandler}>예약 취소</button>
-                        <button className={styles.buttons}>메모 추가</button>
+                        <button className={styles.buttons} onClick={showRealDeleteModalHandler}>예약 삭제</button>
                     </div>
                 </div>
             </div>

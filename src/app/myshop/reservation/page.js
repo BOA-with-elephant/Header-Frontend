@@ -11,6 +11,7 @@ import DetailReservationModal from "./components/DetailReservationModal";
 import UpdateReservationInfoModal from "./components/UpdateReservaionInfoModal";
 import NewReservationModal from "./components/NewReservationModal";
 import DeleteAlertModal from "./components/DeleteAlertModal";
+import RealDeleteAlertModal from "./components/RealDeleteAlertModal";
 
 export default function Reservation() {
     const [searchResultList, setSearchResultList] = useState([]);
@@ -26,6 +27,7 @@ export default function Reservation() {
     const [reservationInfo, setReservationInfo] = useState([]);
     const [isShowUpdateModal, setIsShowUpdateModal] = useState(false);
     const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
+    const [isShowRealDeleteModal, setIsShowRealDeleteModal] = useState(false);
 
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
@@ -43,7 +45,7 @@ export default function Reservation() {
             console.log('data', data);
             setReservationInfo(data);
 
-            const response2 = await fetch(`http://localhost:8080/shops/reservation/${SHOP_CODE}/available-schedule`);
+            const response2 = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
             const data2 = await response2.json();
             setResvDateList(data2);
             console.log('예약 가능 시간', data2);
@@ -101,6 +103,7 @@ export default function Reservation() {
                             setIsShowModal={setIsShowModal}
                             setIsShowUpdateModal={setIsShowUpdateModal}
                             setIsShowDeleteModal={setIsShowDeleteModal}
+                            setIsShowRealDeleteModal={setIsShowRealDeleteModal}
                             selectedDate={selectedDate}
                         />
                     )}
@@ -126,7 +129,7 @@ export default function Reservation() {
                         />
                     )}
                     {/* 예약 삭제 알림 모달 */}
-                    {isShowDeleteModal &&(
+                    {isShowDeleteModal && (
                         <DeleteAlertModal
                             isShowDeleteModal={isShowDeleteModal}
                             setIsShowDeleteModal={setIsShowDeleteModal}
@@ -134,6 +137,17 @@ export default function Reservation() {
                             selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
                         />
+                    )}
+                    {/* 예약 물리적 삭제 알림 모달 */}
+                    {isShowRealDeleteModal && (
+                        <RealDeleteAlertModal
+                            isShowRealDeleteModal={isShowRealDeleteModal}
+                            setIsShowRealDeleteModal={setIsShowRealDeleteModal}
+                            setIsShowModal={setIsShowModal}
+                            selectedResvCode={selectedResvCode}
+                            fetchReservationData={fetchReservationData}
+                        />
+
                     )}
             </div>
         </>

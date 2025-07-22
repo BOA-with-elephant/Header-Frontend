@@ -41,7 +41,7 @@ export default function UpdateReservationInfoModal({setIsShowUpdateModal, select
 
         const fetchDateAndTime = async() => {
             try{
-                const response = await fetch(`http://localhost:8080/shops/reservation/${SHOP_CODE}/resv-time-and-date`);
+                const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/resv-time-and-date`);
                 const data = await response.json();
                 setDateAndTimeList(data);
                 // console.log('💥날짜와 시간 : ', data);
