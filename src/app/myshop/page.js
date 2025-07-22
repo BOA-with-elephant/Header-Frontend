@@ -69,8 +69,8 @@ export default function MyShopPage() {
     const handleFormSubmit = async (formData) => {
         const isCreating = view === 'create';
         const url = isCreating
-            ? 'http://localhost:8080/myshop'
-            : `http://localhost:8080/myshop/${selectedShop.shopCode}?adminCode=${adminCode}`;
+            ? 'http://localhost:8080/api/v1/my-shops'
+            : `http://localhost:8080/api/v1/my-shops/${selectedShop.shopCode}?adminCode=${adminCode}`;
 
         const method = isCreating ? 'POST' : 'PUT';
 
@@ -91,8 +91,7 @@ export default function MyShopPage() {
         if (res.ok) {
             isCreating ? handleCreateSuccess() : handleUpdateSuccess();
         } else {
-            const errData = await res.json();
-            setAlert({ show: true, message: errData.message || '요청에 실패했습니다.' });
+            window.alert('요청에 실패하였습니다.')
         }
     };
 

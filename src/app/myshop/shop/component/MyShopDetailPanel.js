@@ -13,7 +13,7 @@ export default function MyShopDetailPanel({ shopData, onEdit, onDelete, onBack }
         }
 
         return shopDetail.menus.reduce((acc, menu) => {
-            const category = menu.menuCategoryName || '기타';
+            const category = menu.menuCategoryName || ''; // 메뉴 정보가 없는 가게는 메뉴 카테고리 이름도 없음
             if (!acc[category]) {
                 acc[category] = []; // 카테고리가 없으면 빈 배열 생성
             }
@@ -122,14 +122,14 @@ export default function MyShopDetailPanel({ shopData, onEdit, onDelete, onBack }
                                         if (hasInvalidInfo) {
                                             return (
                                                 <div key={menu.menuCode || Math.random()} className="menu-item">
-                                                    <span>메뉴 정보 없음. 시스템 내 예약 불가</span>
+                                                    <sapn>메뉴 정보 없음, 시스템 내 예약 불가</sapn>
                                                 </div>
                                             );
                                         }
 
                                         const priceText = menu.menuPrice != null
                                             ? `${menu.menuPrice?.toLocaleString()}원`
-                                            : '메뉴 정보 없음 - 시스템 내 예약 불가';
+                                            : '메뉴 정보 없음, 시스템 내 예약 불가';
 
                                         return (
                                             <div key={menu.menuCode || Math.random()} className="menu-item">
@@ -145,7 +145,7 @@ export default function MyShopDetailPanel({ shopData, onEdit, onDelete, onBack }
                             ))}
                         </div>
                     ) : (
-                        <p>샵 정보가 없습니다.</p>
+                        <p>표시할 정보가 없습니다</p>
                     )}
                 </div>
             </div>
