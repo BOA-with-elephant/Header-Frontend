@@ -62,7 +62,7 @@ export default function TemplateManagement() {
     const fetchTemplates = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/template`);
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages/template`);
 
             if (!response.ok) {
                 throw new Error('템플릿 목록 조회에 실패했습니다.');
