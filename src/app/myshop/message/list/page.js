@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from '@/styles/admin/message/MessageList.module.css';
 
 export default function MessageList() {
+    const router = useRouter();
     // 메시지 리스트 상태
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -102,8 +104,7 @@ export default function MessageList() {
 
     // 상세 조회 페이지로 이동
     const handleDetailView = (messageId) => {
-        // TODO: 상세 조회 페이지 라우팅 구현
-        console.log('상세 조회:', messageId);
+        router.push(`/myshop/message/list/detail/${messageId}`);
     };
 
     // 페이지 변경 처리
