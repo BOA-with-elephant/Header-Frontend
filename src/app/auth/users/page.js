@@ -1,7 +1,7 @@
 "use client";
 import Link from 'next/link';
 import React, { useState } from 'react';
-import styles from "../signup/page.module.css"; 
+import styles from "../users/page.module.css"; 
 
 function Checkbox({ children, disabled, checked, onChange }) {
   return (
@@ -42,11 +42,16 @@ export default function Signup() {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default browser form submission
 
-        // You would typically send this data to your backend
-        console.log('Form submitted with data:', formData);
+    // 서비스 이용약관 필수 체크 (추가)
+    if (!service) {
+        alert('서비스 이용약관에 동의해야 회원가입을 할 수 있습니다.');
+        return; // 전송 중단
+    }
+    //백엔드로 전송되는 데이터 확인
+     console.log('Form submitted with data:', formData);
 
         try {
-            const response = await fetch('/auth/signup', {
+            const response = await fetch('http://localhost:8080/auth/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,8 +63,7 @@ export default function Signup() {
                 // Handle successful signup (e.g., redirect, show success message)
                 console.log('Signup successful!');
                 alert('회원가입이 성공적으로 완료되었습니다!');
-                // Example: Redirect to a login page
-                // window.location.href = '/login';
+                window.location.href = '/auth/session';
             } else {
                 // Handle errors (e.g., show error message)
                 const errorData = await response.json();
@@ -73,10 +77,10 @@ export default function Signup() {
     };
 
     return (
-        <div className="signup-container"> {/* Added a container for overall styling */}
+        <div className="main-content">
             <h1>회원가입 페이지</h1>
             <div className="content-card">
-                <form onSubmit={handleSubmit}> {/* Use onSubmit for React forms */}
+                <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="userName">이름:</label>
                         <input
@@ -98,7 +102,7 @@ export default function Signup() {
                             value={formData.userPhone}
                             onChange={handleChange}
                             placeholder="예: 010-1234-5678"
-                            pattern="[0-9]{3}-?[0-9]{4}-?[0-9]{4}" // Basic pattern for phone number
+                            pattern="[0-9]{3}-?[0-9]{4}-?[0-9]{4}"
                             required
                         />
                         <button type="submit">
@@ -114,7 +118,8 @@ export default function Signup() {
                             name="userId"
                             value={formData.userId}
                             onChange={handleChange}                        
-                            minLength="4" // Example: Minimum length for ID
+                            minLength="6" // 아이디 최소 길이
+                            required
                         />
                     </div>
 
@@ -126,7 +131,8 @@ export default function Signup() {
                             name="userPwd"
                             value={formData.userPwd}
                             onChange={handleChange}
-                            minLength="6" // Example: Minimum length for password
+                            minLength="6" // 비밀번호 최소 길이
+                            required
                         />
                     </div>
 
@@ -153,7 +159,12 @@ export default function Signup() {
                         (선택) 마케팅 수신
                     </Checkbox>
                     <br/>
-                    <button type="submit">회원가입</button>
+                    <button
+                        type="submit"
+                        className={styles.loginButton}
+                    >
+                        회원가입
+                    </button>    
                 </form>
             </div>
         </div>

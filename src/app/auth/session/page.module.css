@@ -83,7 +83,7 @@
     background-color: #13183d;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 15px;
     font-size: 18px;
     font-weight: bold;
     letter-spacing: 2px;
@@ -93,7 +93,7 @@
 }
 
 .login-button:hover {
-    background-color: #34495e;
+    background-color: #000;
 }
 
 .login-button:active {
@@ -116,7 +116,7 @@
 }
 
 .login-links .link:hover {
-    color: #2c3e50;
+    color: #13183d;
     text-decoration: underline;
 }
 
