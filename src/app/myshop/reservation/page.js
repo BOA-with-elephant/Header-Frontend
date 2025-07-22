@@ -23,6 +23,7 @@ export default function Reservation() {
     const [isShowNewResvModal, setIsShowNewResvModal] = useState(false);
     const [resvDateList, setResvDateList] = useState([]);
     const [reservationInfo, setReservationInfo] = useState([]);
+    const [isShowUpdateModal, setIsShowUpdateModal] = useState(false);
 
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
@@ -56,6 +57,7 @@ export default function Reservation() {
     return (
         <>
             <div className="content-card" style={{ height : 'max-content', position: 'relative'}}>
+                    {/* 검색 결과창 */}
                     {isOpen && (
                         <SearchResultList 
                             searchResultList={searchResultList} 
@@ -65,6 +67,7 @@ export default function Reservation() {
                             setIsShowDetailReservation={setIsShowDetailReservation}
                         />
                     )}
+                    {/* 전체 조회 달력 */}
                     <ReservationCalendar
                         setSearchResultList={setSearchResultList}
                         setIsOpen={setIsOpen}
@@ -72,28 +75,32 @@ export default function Reservation() {
                         setSelectedDate={setSelectedDate}
                         resvDateList={resvDateList}
                         setResvDateList={setResvDateList}
-                        fetchReservationData={fetchReservationData}
                         reservationInfo={reservationInfo}
                         setReservationInfo={setReservationInfo}
                     />
+                    {/* 메뉴 모달 */}
                     {isShowModal && (
                         <ReservationMenuModal 
                             setIsShowModal={setIsShowModal}
                             selectedDate={selectedDate}
                             setSearchResultList={setSearchResultList}
                             setIsOpen={setIsOpen}
+                            resvDateList={resvDateList}
                             selectedResvCode={selectedResvCode}
-                            setIsShowUpdateModal={setIsShowUpdateModal}
                             setIsShowNewResvModal={setIsShowNewResvModal}
 
                         />
                     )}
+                    {/* 상세 조회 모달 */}
                     {isShowDetailReservation && (
                         <DetailReservationModal
                             setIsShowDetailReservation={setIsShowDetailReservation}
                             selectedResvCode={selectedResvCode}
+                            setIsShowModal={setIsShowModal}
+                            setIsShowUpdateModal={setIsShowUpdateModal}
                         />
                     )}
+                    {/* 예약 등록 모달 */}
                     {isShowNewResvModal && (
                         <NewReservationModal
                             isShowNewResvModal={isShowNewResvModal}
@@ -103,11 +110,13 @@ export default function Reservation() {
                             fetchReservationData={fetchReservationData}
                         />
                     )}
+                    {/* 예약 수정 모달 */}
                     {isShowUpdateModal && (
                         <UpdateReservationInfoModal
                             setIsShowUpdateModal={setIsShowUpdateModal}
                             selectedResvCode={selectedResvCode}
-
+                            selectedDate={selectedDate}
+                            resvDateList={resvDateList}
                         />
                     )}
             </div>
