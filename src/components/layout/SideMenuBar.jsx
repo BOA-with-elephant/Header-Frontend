@@ -22,7 +22,7 @@ const MENU_CONFIG = {
       firstPath: "/myshop/sales",
       items: [
         { path: "/myshop/sales", text: "매출조회/등록" },
-        { path: "/myshop/sales/analytics", text: "매출 통계" },
+        { path: "/myshop/sales/statistics", text: "매출 통계" },
       ]
     },
     {
