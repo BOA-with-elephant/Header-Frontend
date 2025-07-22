@@ -31,7 +31,7 @@ export default function ShopDetailPanel({shopCode, onBack, onShowBooking}) {
             setError(null);
 
             try {
-                const res = await fetch(`http://localhost:8080/shops/${shopCode}`);
+                const res = await fetch(`http://localhost:8080/api/v1/shops/${shopCode}`);
                 const data = await res.json();
 
                 if (res.ok && data.results && data.results['shop-detail']) {

@@ -84,7 +84,7 @@ export default function ShopListPanel({shops, setShops, onShopSelect, userLocati
     useEffect(() => {
         const fetchCategory = async () => {
             try {
-                const res = await fetch('http://localhost:8080/shops/categories');
+                const res = await fetch('http://localhost:8080/api/v1/shops/categories');
                 const data = await res.json();
                 if (res.ok) {
                     setCategory(data.results['shop-categories']);
