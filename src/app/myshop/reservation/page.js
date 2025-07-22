@@ -117,6 +117,8 @@ export default function Reservation() {
                             selectedResvCode={selectedResvCode}
                             selectedDate={selectedDate}
                             resvDateList={resvDateList}
+                            setIsShowDetailReservation={setIsShowDetailReservation}
+                            fetchReservationData={fetchReservationData}
                         />
                     )}
             </div>

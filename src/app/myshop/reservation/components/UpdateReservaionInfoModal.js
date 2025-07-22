@@ -6,19 +6,7 @@ import DatePicker from 'react-datepicker';
 import {ko} from 'date-fns/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 
-// const CustumInput = React.forwardRef(({ value, onClick }, ref) => (
-//   <input
-//     className={styles.inputTag} // styles 적용
-//     onClick={onClick}
-//     ref={ref}  // ref 전달
-//     value={value}
-//     readOnly
-//   />
-// ));
-
-// CustumInput.displayName = 'CustumInput';
-
-export default function UpdateReservationInfoModal({setIsShowUpdateModal, selectedResvCode, selectedDate, resvDateList}){
+export default function UpdateReservationInfoModal({setIsShowUpdateModal, selectedResvCode, selectedDate, resvDateList, setIsShowDetailReservation, fetchReservationData}){
     const [reservationInfo, setReservationInfo] = useState({
         userName : '',
         userPhone : '',
@@ -41,7 +29,7 @@ export default function UpdateReservationInfoModal({setIsShowUpdateModal, select
     useEffect(() => {
         const fetchMenuList = async () => {
             try {
-            const response = await fetch(`http://localhost:8080/api/v1/myshop/${SHOP_CODE}/menu`);
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/menu`);
             const data = await response.json();
             setMenuNameList(data);
             } catch (err) {
@@ -56,7 +44,7 @@ export default function UpdateReservationInfoModal({setIsShowUpdateModal, select
                 const response = await fetch(`http://localhost:8080/shops/reservation/${SHOP_CODE}/resv-time-and-date`);
                 const data = await response.json();
                 setDateAndTimeList(data);
-                console.log('💥날짜와 시간 : ', data);
+                // console.log('💥날짜와 시간 : ', data);
             } catch(error){
                 console.error('가게 운영 날짜 및 시간 조회 실패 : ', error);
             }
@@ -105,9 +93,40 @@ export default function UpdateReservationInfoModal({setIsShowUpdateModal, select
         setIsShowUpdateModal(false);
     }
 
-    const clickSubmitHandler = () => {
+    const clickSubmitHandler = async() => {
+        const {resvDate, resvTime, menuName, userComment} = reservationInfo;
 
-    }
+        const updatedInfo = {resvDate, resvTime, menuName, userComment};
+
+        if(resvDate && resvTime && menuName){
+            try{
+                const response = await fetch(`${API_BASE_URL}/${selectedResvCode}`,{
+                    method : 'PUT',
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body : JSON.stringify(updatedInfo)
+                });
+
+                const contentType = response.headers.get("Content-Type");
+
+                if(contentType && contentType.includes("application/json")){
+                    const data = await response.json();
+                    console.log('예약 수정 성공 : ', data);
+                    await fetchReservationData();
+                    setIsShowUpdateModal(false); 
+                    setIsShowDetailReservation(true);
+                } else {
+                    const text = await response.text();
+                    console.warn("받은 응답이 JSON이 아님 : ", text);
+                }
+            } catch (error){
+                console.error('예약 수정 실패 : ', error)
+            }
+        } else {
+            console.warn('모든 필드를 입력해주세요.');
+        }
+    }   
 
     return(
         <>
@@ -131,7 +150,8 @@ export default function UpdateReservationInfoModal({setIsShowUpdateModal, select
                         locale={ko}
                         className={styles.inputTag}
                         calendarClassName={styles.custumCalendar}
-                        popperClassName={styles.customPopper}                        dateFormat='yyyy-MM-dd'  // 날짜 형태
+                        popperClassName={styles.customPopper}                        
+                        dateFormat='yyyy-MM-dd'  // 날짜 형태
                         shouldCloseOnSelect  // 날짜를 선택하면 datepicker가 자동으로 닫힘
                         selected={new Date(reservationInfo.resvDate)}
                         name='resvDate'
@@ -231,7 +251,7 @@ export default function UpdateReservationInfoModal({setIsShowUpdateModal, select
                 </div>
                 <div className={styles.buttonRow}>
                     <button onClick={clickCancleHandler} className={styles.cancelBtn}>취소</button>
-                    <button onClick={clickSubmitHandler} className={styles.submitBtn}>등록</button>
+                    <button onClick={clickSubmitHandler} className={styles.submitBtn}>수정</button>
                 </div>
                 </div>
             </div>
