@@ -22,7 +22,7 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
     useEffect(() => {
         const fetchMenuList = async () => {
             try {
-            const response = await fetch(`http://localhost:8080/api/v1/myshop/${SHOP_CODE}/menu`);
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/menu`);
             const data = await response.json();
             setMenuNameList(data);
             } catch (err) {

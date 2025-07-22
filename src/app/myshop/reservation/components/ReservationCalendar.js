@@ -26,7 +26,7 @@ const getCalendarDates = (year, month) => {
     return dates;  // 날짜 배열을 반환
 };
 
-export default function ReservationCalendar({setSearchResultList, setIsOpen, setIsShowModal, setSelectedDate, resvDateList, setResvDateList, fetchReservationData, reservationInfo, setReservationInfo}) {
+export default function ReservationCalendar({setSearchResultList, setIsOpen, setIsShowModal, setSelectedDate, resvDateList, setResvDateList, reservationInfo, setReservationInfo}) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const dayList = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     const today = new Date();
@@ -137,34 +137,6 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                 break;
         }
     }
-
-    /* useEffect(() => {
-        const availableResvDateList = async() => {
-            try{
-                const response = await fetch(`http://localhost:8080/shops/reservation/${SHOP_CODE}/available-schedule`);
-                const data = await response.json();
-                setResvDateList(data);
-                console.log('예약 가능 시간', data);
-            } catch(err){
-                console.error('예약 가능 시간 리스트 조회 실패 : ', err);
-            }
-        };
-        availableResvDateList();
-
-        const reservationList = async () => {
-            try {
-                const formatMonth = String(month + 1).padStart(2, '0');
-                const thisMonth = `${year}-${formatMonth}`;
-                const res = await fetch(`${API_BASE_URL}?date=${thisMonth}`);
-                const data = await res.json();
-                console.log('data', data);
-                setReservationInfo(data);
-            } catch (error) {
-                console.error('예약 정보 불러오기 실패 :', error);
-            }
-        };
-        reservationList();
-    }, [year, month]); */
 
     useEffect(() => {
         const availableResvDateList = async() => {
