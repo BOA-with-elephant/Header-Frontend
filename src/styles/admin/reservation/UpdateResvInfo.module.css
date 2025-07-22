@@ -1,0 +1,138 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+    display: relative;
+}
+
+.modalWrapper{
+    position: fixed;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+    width : 800px;
+    height: auto;
+    max-height: 80vh;
+    z-index: 1001;
+    border-radius: var(--spacing-sm);
+}
+
+.modalHeaderWrapper{
+    background-color:#1f2937;
+    height: 70px;
+    display : flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    border-top-left-radius: var(--spacing-sm);
+    border-top-right-radius: var(--spacing-sm);
+}
+
+.menuTitle{
+    display: inline;
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: #FFFFFF;
+    margin-left: 10px;
+}
+
+.closeBtn{
+    width : 25px;
+    height : 25px;
+    display: inline;
+    float: right;
+    margin-right: 10px;
+    right : 10px;
+    cursor: pointer;
+}
+
+.modalBodyWrapper{
+    /* position: relative; */
+    padding: 20px;
+    background-color: var(--bg-primary);
+    border-bottom-left-radius: var(--spacing-sm);
+    border-bottom-right-radius: var(--spacing-sm);
+    font-family: 'GmarketSansMedium';
+}.formRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.formGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-right: 1rem;
+}
+
+.formGroup:last-child {
+  margin-right: 0;
+}
+
+.formGroup label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.inputTag, .selector, .textAreaTag {
+  appearance: none;
+  padding: 10px;
+  border: 1px solid var(--color-light-gray);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-weight: var(--font-md);
+  font-family: 'GmarketSansMedium';
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.selector{
+  background: #FFFFFF url('/images/reservation/Sort Down.png') no-repeat right 10px center;  /* 화살표 위치 */
+  background-size: 20px;  /* 화살표 크기 조절 */
+  cursor: pointer;
+}
+
+.textAreaTag {
+  resize: none;
+  height: 80px;
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancelBtn {
+  background-color: #f2f2f2;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+}
+
+.submitBtn {
+  background-color: #222b50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+}
+
+/* 달력 캘린더 박스 스타일 (calendarClassName) */
+.custumCalendar {
+  font-family: 'GmarketSansMedium';
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 팝업 컨테이너 위치 조정용 (popperClassName) */
+.custumPopper{
+  z-index: 999;
+  left: 50%;
+  transform: translateX(-50%);
+}

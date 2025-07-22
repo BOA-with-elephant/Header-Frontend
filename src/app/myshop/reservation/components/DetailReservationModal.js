@@ -3,7 +3,7 @@ import styles from '../../../../styles/admin/reservation/DetailReservationModal.
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function DetailReservationModal({selectedResvCode, setIsShowDetailReservation}){
+export default function DetailReservationModal({selectedResvCode, setIsShowDetailReservation, setIsShowModal, setIsShowUpdateModal}){
     const [detailResvInfo, sestDetailresvInfo] = useState({});
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
@@ -51,6 +51,12 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
             case "FINISH" : return "시술 완료"; break;
         }
     }
+
+    const showUpdateReservationModalHandler = () => {
+            setIsShowModal(false);
+            setIsShowUpdateModal(true);
+            setIsShowDetailReservation(false);
+        }
 
     return(
         <>  
@@ -106,12 +112,11 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
                         <p className={styles.userComment}>{detailResvInfo.userComment}</p>
                     </div>
                     <div className={styles.buttonsWrapper}>
-                        <button className={styles.buttons}>예약 수정</button>
+                        <button className={styles.buttons} onClick={showUpdateReservationModalHandler}>예약 수정</button>
                         <button className={styles.buttons}>예약 취소</button>
                         <button className={styles.buttons}>메모 추가</button>
                     </div>
                 </div>
-
             </div>
         </>
     )

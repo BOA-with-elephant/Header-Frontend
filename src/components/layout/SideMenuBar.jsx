@@ -11,8 +11,8 @@ const MENU_CONFIG = {
       type: "expandable", // 확장 가능한 메뉴
       firstPath: "/myshop/reservation",
       items: [
-        { path: "/myshop/reservation", text: "예약 등록" },
-        { path: "/myshop/reservation-list", text: "예약 조회" }
+        { path: "/myshop/reservation", text: "예약조회/등록" },
+        // { path: "/myshop/reservation-list", text: "예약 조회" }
       ]
     },
     {
@@ -22,7 +22,7 @@ const MENU_CONFIG = {
       firstPath: "/myshop/sales",
       items: [
         { path: "/myshop/sales", text: "매출조회/등록" },
-        { path: "/myshop/sales/analytics", text: "매출 통계" },
+        { path: "/myshop/sales/statistics", text: "매출 통계" },
       ]
     },
     {
@@ -47,7 +47,7 @@ const MENU_CONFIG = {
       firstPath: "/myshop/message",
       items: [
         { path: "/myshop/message", text: "새 메세지 작성" },
-        { path: "/myshop/message/template-setting", text: "템플릿 관리" },
+        { path: "/myshop/message/templateManagement", text: "템플릿 관리" },
         { path: "/myshop/message/auto-setting", text: "자동 발송 설정" },
         { path: "/myshop/message/list", text: "메시지 조회" }
       ]

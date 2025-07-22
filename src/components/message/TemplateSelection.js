@@ -1,61 +1,84 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '@/styles/admin/message/TemplateSelection.module.css';
 
 export default function TemplateSelection({ selectedTemplate, onTemplateSelect }) {
     // 템플릿 카테고리
-    const [selectedCategory, setSelectedCategory] = useState('promotion');
+    const [selectedCategory, setSelectedCategory] = useState('promotional');
+    
+    // 템플릿 데이터 상태
+    const [templates, setTemplates] = useState({
+        promotional: [],
+        informational: []
+    });
+    
+    const [loading, setLoading] = useState(true);
 
-    // 템플릿 데이터 (실제로는 API에서 가져올 데이터)
-    const templates = {
-        promotion: [
-            {
-                id: 1,
-                name: '할인 이벤트',
-                content: '안녕하세요 {고객명}님! 🎉\n\n특별 할인 이벤트를 진행합니다.\n{서비스명} 20% 할인!\n\n기간: {시작일} ~ {종료일}\n예약 문의: {연락처}',
-                category: '프로모션',
-                usageCount: 152
-            },
-            {
-                id: 2,
-                name: '신규 서비스 안내',
-                content: '{고객명}님께 새로운 서비스를 소개합니다! ✨\n\n{서비스명}이 새롭게 출시되었습니다.\n특별 런칭 이벤트로 30% 할인 제공!\n\n자세한 내용은 매장으로 문의해주세요.',
-                category: '프로모션',
-                usageCount: 89
+    // TODO: shop_id를 어디서 가져올지 결정되면 수정
+    const SHOP_ID = 2; // 임시값
+
+    // API 데이터를 내부 형식으로 변환
+    const transformApiData = (apiData) => {
+        const transformedTemplates = {
+            promotional: [],
+            informational: []
+        };
+
+        apiData.forEach(categoryData => {
+            const categoryType = categoryData.type;
+            
+            if (transformedTemplates[categoryType]) {
+                transformedTemplates[categoryType] = categoryData.templates.map((template, index) => ({
+                    id: `${categoryType}_${index + 1}`,
+                    name: template.title,
+                    content: template.content,
+                    category: categoryType === 'promotional' ? '프로모션' : '알림',
+                    usageCount: Math.floor(Math.random() * 200) + 50 // 임시 사용 횟수
+                }));
             }
-        ],
-        reminder: [
-            {
-                id: 3,
-                name: '예약 알림',
-                content: '안녕하세요 {고객명}님!\n\n예약 일정을 안내드립니다.\n📅 날짜: {예약일}\n⏰ 시간: {예약시간}\n💇 서비스: {서비스명}\n\n문의사항이 있으시면 연락주세요.',
-                category: '알림',
-                usageCount: 234
-            },
-            {
-                id: 4,
-                name: '방문 감사',
-                content: '{고객명}님, 오늘 방문해주셔서 감사합니다! 😊\n\n{서비스명} 만족스러우셨나요?\n다음 방문도 기다리겠습니다.\n\n궁금한 점이 있으시면 언제든 연락주세요!',
-                category: '알림',
-                usageCount: 167
-            }
-        ],
-        event: [
-            {
-                id: 5,
-                name: '생일 축하',
-                content: '🎂 {고객명}님, 생일을 축하드립니다! 🎉\n\n특별한 날을 맞아 생일 혜택을 준비했습니다.\n{서비스명} 무료 체험권 증정!\n\n소중한 하루 되세요! ✨',
-                category: '이벤트',
-                usageCount: 78
-            }
-        ]
+        });
+
+        return transformedTemplates;
     };
 
+    // 템플릿 목록 API 호출
+    const fetchTemplates = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/template`);
+            
+            if (!response.ok) {
+                throw new Error('템플릿 목록 조회에 실패했습니다.');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                const transformedData = transformApiData(result.data);
+                setTemplates(transformedData);
+            } else {
+                throw new Error(result.message || '템플릿 목록 조회에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('템플릿 목록 조회 오류:', error);
+            // 에러 발생 시 빈 데이터로 설정
+            setTemplates({
+                promotional: [],
+                informational: []
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 컴포넌트 마운트 시 템플릿 데이터 로드
+    useEffect(() => {
+        fetchTemplates();
+    }, []);
+
     const categories = [
-        { id: 'promotion', name: '프로모션', icon: '🎯' },
-        { id: 'reminder', name: '알림', icon: '🔔' },
-        { id: 'event', name: '이벤트', icon: '🎉' }
+        { id: 'promotional', name: '프로모션', icon: '🎯' }
     ];
 
     return (
@@ -83,52 +106,59 @@ export default function TemplateSelection({ selectedTemplate, onTemplateSelect }
                 ))}
             </div>
 
-            {/* 템플릿 목록 */}
-            <div className={styles.templateGrid}>
-                {templates[selectedCategory]?.map((template) => (
-                    <div
-                        key={template.id}
-                        className={`${styles.templateCard} ${
-                            selectedTemplate?.id === template.id ? styles.selected : ''
-                        }`}
-                        onClick={() => onTemplateSelect(template)}
-                    >
-                        <div className={styles.templateHeader}>
-                            <h3 className={styles.templateName}>{template.name}</h3>
-                            <span className={styles.usageCount}>
-                                사용 {template.usageCount}회
-                            </span>
-                        </div>
-                        
-                        <div className={styles.templateContent}>
-                            <p className={styles.templatePreview}>
-                                {template.content.length > 100 
-                                    ? `${template.content.substring(0, 100)}...`
-                                    : template.content
-                                }
+            {/* 로딩 상태 */}
+            {loading ? (
+                <div className={styles.loadingState}>
+                    <div className={styles.loadingSpinner}></div>
+                    <span>템플릿을 불러오는 중...</span>
+                </div>
+            ) : (
+                <>
+                    {/* 템플릿 목록 */}
+                    <div className={styles.templateGrid}>
+                        {templates[selectedCategory]?.map((template) => (
+                            <div
+                                key={template.id}
+                                className={`${styles.templateCard} ${
+                                    selectedTemplate?.id === template.id ? styles.selected : ''
+                                }`}
+                                onClick={() => onTemplateSelect(template)}
+                            >
+                                <div className={styles.templateHeader}>
+                                    <h3 className={styles.templateName}>{template.name}</h3>
+                                </div>
+                                
+                                <div className={styles.templateContent}>
+                                    <p className={styles.templatePreview}>
+                                        {template.content.length > 100 
+                                            ? `${template.content.substring(0, 100)}...`
+                                            : template.content
+                                        }
+                                    </p>
+                                </div>
+
+                                <div className={styles.templateFooter}>
+                                    <span className={styles.templateCategory}>
+                                        {template.category}
+                                    </span>
+                                    <button className={styles.selectButton}>
+                                        {selectedTemplate?.id === template.id ? '선택됨' : '선택하기'}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {templates[selectedCategory]?.length === 0 && (
+                        <div className={styles.emptyState}>
+                            <div className={styles.emptyIcon}>📝</div>
+                            <h3 className={styles.emptyTitle}>템플릿이 없습니다</h3>
+                            <p className={styles.emptyDescription}>
+                                해당 카테고리에 등록된 템플릿이 없습니다.
                             </p>
                         </div>
-
-                        <div className={styles.templateFooter}>
-                            <span className={styles.templateCategory}>
-                                {template.category}
-                            </span>
-                            <button className={styles.selectButton}>
-                                {selectedTemplate?.id === template.id ? '선택됨' : '선택하기'}
-                            </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {templates[selectedCategory]?.length === 0 && (
-                <div className={styles.emptyState}>
-                    <div className={styles.emptyIcon}>📝</div>
-                    <h3 className={styles.emptyTitle}>템플릿이 없습니다</h3>
-                    <p className={styles.emptyDescription}>
-                        해당 카테고리에 등록된 템플릿이 없습니다.
-                    </p>
-                </div>
+                    )}
+                </>
             )}
         </div>
     );
