@@ -22,7 +22,7 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
                 behavior : 'smooth'
             })
         } catch (error) {
-                console.error('검색 결과 불러오기 실패 : ', error)
+            console.error('검색 결과 불러오기 실패 : ', error)
         }
     }
 
@@ -36,42 +36,40 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
 
     useEffect(() => {
 
-            // 오늘 이전 날짜 예약 등록 막기
-            const formatSelectedDate = new Date(selectedDate);
-            const today = new Date();
+        // 오늘 이전 날짜 예약 등록 막기
+        const formatSelectedDate = new Date(selectedDate);
+        const today = new Date();
+        // 시간 제거해서 날짜만 비교 (00:00:00 기준)
+        formatSelectedDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
 
-            // 시간 제거해서 날짜만 비교 (00:00:00 기준)
-            formatSelectedDate.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
+        if (formatSelectedDate < today) {
+            setPastDay(true);
+        }
 
-            if (formatSelectedDate < today) {
-                setPastDay(true);
-            }
+        // 예약 가능 날짜가 아니면 예약 등록 막기
+        const availableDates = resvDateList?.results?.schedule?.map(item => item.targetDate) || [];
+        const isAvailableDate = availableDates.includes(selectedDate);
 
-            // 예약 가능 날짜가 아니면 예약 등록 막기
-            console.log('selectedDate!!!!!', selectedDate);
-            const availableDates = resvDateList?.results?.schedule?.map(item => item.targetDate) || [];
-            const isAvailableDate = availableDates.includes(selectedDate);
+        if(!isAvailableDate){
+            setPastDay(true);
+        }
 
-            if(!isAvailableDate){
-                setPastDay(true);
-            }
+        // 스크롤 막기
+        document.body.style.overflow = 'hidden';  
+        document.documentElement.style.overflow = 'hidden';
 
-            // 스크롤 막기
-            document.body.style.overflow = 'hidden';  
-            document.documentElement.style.overflow = 'hidden';
-    
-            const next = document.getElementById('__next');
-            if (next) next.style.overflow = 'hidden';
-    
-            return () => {
-                // 모달 닫힐 때 스크롤 원상 복구
-                document.body.style.overflow = 'auto';
-                document.documentElement.style.overflow = 'auto';
-                if (next) next.style.overflow = 'auto';
-            };
-        }, [])
-    
+        const next = document.getElementById('__next');
+        if (next) next.style.overflow = 'hidden';
+
+        return () => {
+            // 모달 닫힐 때 스크롤 원상 복구
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+            if (next) next.style.overflow = 'auto';
+        };
+    }, []);
+
     return(
         <>
             <div className={styles.modalOverlay}/>
