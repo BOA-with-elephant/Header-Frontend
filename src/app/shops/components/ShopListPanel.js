@@ -35,7 +35,7 @@ export default function ShopListPanel({shops, setShops, onShopSelect, userLocati
         if (keyword) params.append('keyword', keyword);
 
         try {
-            const res = await fetch(`http://localhost:8080/shops?${params.toString()}`);
+            const res = await fetch(`http://localhost:8080/api/v1/shops?${params.toString()}`);
             const data = await res.json();
 
             if (res.ok && data.results) {
@@ -84,7 +84,7 @@ export default function ShopListPanel({shops, setShops, onShopSelect, userLocati
     useEffect(() => {
         const fetchCategory = async () => {
             try {
-                const res = await fetch('http://localhost:8080/shops/categories');
+                const res = await fetch('http://localhost:8080/api/v1/shops/categories');
                 const data = await res.json();
                 if (res.ok) {
                     setCategory(data.results['shop-categories']);

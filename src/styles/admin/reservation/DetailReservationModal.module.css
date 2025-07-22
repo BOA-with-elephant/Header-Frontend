@@ -126,8 +126,6 @@
     height : 35px;
     border: 2px solid #353957;
     border-radius: var(--radius-lg);
-    /* border: none; */
-    /* background-color: var(--color-gray-300); */
     background-color: var(--bg-primary);
 }
 
@@ -137,3 +135,13 @@
     cursor: pointer;
 }
 
+.buttons:disabled{
+    background-color: var(--color-background);
+    color: var(--color-dark-gray);
+}
+
+.buttons:disabled:hover{
+    cursor: not-allowed;
+    color: var(--color-dark-gray);
+    background-color: var(--color-background);
+}

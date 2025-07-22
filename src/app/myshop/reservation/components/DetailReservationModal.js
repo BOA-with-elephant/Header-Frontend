@@ -3,8 +3,12 @@ import styles from '../../../../styles/admin/reservation/DetailReservationModal.
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function DetailReservationModal({selectedResvCode, setIsShowDetailReservation, setIsShowModal, setIsShowUpdateModal}){
+export default function DetailReservationModal({selectedResvCode, setIsShowDetailReservation, setIsShowModal, setIsShowUpdateModal, setIsShowDeleteModal, setIsShowRealDeleteModal, selectedDate}){
     const [detailResvInfo, sestDetailresvInfo] = useState({});
+    const today = new Date();
+    const todayOnlyDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const targetDate = new Date(selectedDate);
+    const isBeforeToday = targetDate < todayOnlyDate;
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
 
@@ -19,7 +23,8 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
             }
         };
         detailReservation();
-    },[])
+
+    },[]);
 
     useEffect(() => {
         // 스크롤 막기
@@ -53,10 +58,32 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
     }
 
     const showUpdateReservationModalHandler = () => {
-            setIsShowModal(false);
-            setIsShowUpdateModal(true);
-            setIsShowDetailReservation(false);
+
+        if(isBeforeToday){
+            return;
         }
+
+        setIsShowModal(false);
+        setIsShowUpdateModal(true);
+        setIsShowDetailReservation(false);
+    }
+
+    const showDeleteAlertModalHandler = () => {
+
+        if(isBeforeToday){
+            return;
+        }
+
+        setIsShowModal(false);
+        setIsShowDeleteModal(true);
+        setIsShowDetailReservation(false);
+    }
+
+    const showRealDeleteModalHandler = () => {
+        setIsShowModal(false);
+        setIsShowRealDeleteModal(true);
+        setIsShowDetailReservation(false);
+    }
 
     return(
         <>  
@@ -112,9 +139,9 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
                         <p className={styles.userComment}>{detailResvInfo.userComment}</p>
                     </div>
                     <div className={styles.buttonsWrapper}>
-                        <button className={styles.buttons} onClick={showUpdateReservationModalHandler}>예약 수정</button>
-                        <button className={styles.buttons}>예약 취소</button>
-                        <button className={styles.buttons}>메모 추가</button>
+                        <button className={styles.buttons} disabled={isBeforeToday} onClick={showUpdateReservationModalHandler}>예약 수정</button>
+                        <button className={styles.buttons} disabled={isBeforeToday} onClick={showDeleteAlertModalHandler}>예약 취소</button>
+                        <button className={styles.buttons} onClick={showRealDeleteModalHandler}>예약 삭제</button>
                     </div>
                 </div>
             </div>

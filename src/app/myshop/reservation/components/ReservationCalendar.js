@@ -141,7 +141,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
     useEffect(() => {
         const availableResvDateList = async() => {
             try{
-                const response = await fetch(`http://localhost:8080/shops/reservation/${SHOP_CODE}/available-schedule`);
+                const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
                 const data = await response.json();
                 setResvDateList(data);
             } catch(error){
@@ -249,7 +249,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                                         return `${year}-${month}-${day}`
                                     }
                                     // 하루의 예약 3개 이상인 경우 2개만 보여주고 나머지는 그 외 n건으로 표기
-                                    const dailyReservations = Array.isArray(reservationInfo) ? reservationInfo.filter(list => list.resvDate === formatDateToYML(date)) : [];
+                                    const dailyReservations = Array.isArray(reservationInfo) ? reservationInfo.filter(list => list.resvState === "APPROVE" && list.resvDate === formatDateToYML(date)) : [];
                                     const showReservations = dailyReservations.slice(0, 2);
                                     const hiddenCount = dailyReservations.length - 2;
 

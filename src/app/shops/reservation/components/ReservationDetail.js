@@ -20,7 +20,7 @@ export default function ReservationDetail ({resvCode, userCode, onClose}) {
 
             try {
                 const res = await fetch(
-                    `http://localhost:8080/shops/reservation/${resvCode}?userCode=${userCode}`
+                    `http://localhost:8080/api/v1/shops/reservation/${resvCode}?userCode=${userCode}`
                 );
 
                 if(!res.ok) {
@@ -43,7 +43,7 @@ export default function ReservationDetail ({resvCode, userCode, onClose}) {
 
         try {
             const res = await fetch(
-                `http://localhost:8080/shops/reservation/${resvCode}?userCode=${userCode}`,
+                `http://localhost:8080/api/v1/shops/reservation/${resvCode}?userCode=${userCode}`,
                 {
                     method: 'DELETE',
                     headers: {
