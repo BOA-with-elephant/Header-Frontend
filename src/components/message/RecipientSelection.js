@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import styles from '@/styles/admin/message/RecipientSelection.module.css';
 
-export default function RecipientSelection({
-    selectedRecipients,
-    filters,
-    onFiltersChange,
+export default function RecipientSelection({ 
+    selectedRecipients, 
+    filters, 
+    onFiltersChange, 
     onRecipientsChange,
     onComplete
 }) {
@@ -14,67 +14,91 @@ export default function RecipientSelection({
     const [filteredCustomers, setFilteredCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // 더미 고객 데이터 (실제로는 API에서 가져올 데이터)
-    const dummyCustomers = [
-        {
-            id: 1,
-            name: '김민수',
-            phone: '010-1234-5678',
-            preferredService: '헤어컷',
-            grade: 'VIP',
-            lastVisit: '2025-01-15',
-            age: 28,
-            sendable: true
-        },
-        {
-            id: 2,
-            name: '박영희',
-            phone: '010-2345-6789',
-            preferredService: '염색',
-            grade: '일반',
-            lastVisit: '2025-01-10',
-            age: 35,
-            sendable: true
-        },
-        {
-            id: 3,
-            name: '이철수',
-            phone: '010-3456-7890',
-            preferredService: '파마',
-            grade: 'VIP',
-            lastVisit: '2025-01-05',
-            age: 42,
-            sendable: false
-        },
-        {
-            id: 4,
-            name: '정수진',
-            phone: '010-4567-8901',
-            preferredService: '헤어컷',
-            grade: '일반',
-            lastVisit: '2024-12-20',
-            age: 31,
-            sendable: true
-        }
-    ];
+    // TODO: shop_id를 어디서 가져올지 결정되면 수정
+    const SHOP_ID = 2; // 임시값
 
-    // 필터 옵션들
-    const filterOptions = {
-        preferredService: ['전체', '헤어컷', '염색', '파마', '트리트먼트'],
-        customerGrade: ['전체', 'VIP', '일반'],
-        visitPeriod: ['전체', '1개월 이내', '3개월 이내', '6개월 이내', '1년 이내'],
-        ageGroup: ['전체', '20대', '30대', '40대', '50대 이상']
+    // API 데이터를 내부 형식으로 변환
+    const transformApiData = (apiData) => {
+        return apiData.map(customer => {
+            // 생년월일로 나이 계산
+            const calculateAge = (birthday) => {
+                if (!birthday) return 0;
+                const birth = new Date(birthday);
+                const today = new Date();
+                let age = today.getFullYear() - birth.getFullYear();
+                const monthDiff = today.getMonth() - birth.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                    age--;
+                }
+                return age;
+            };
+
+            return {
+                id: customer.clientCode, // API의 clientCode를 id로 사용
+                clientCode: customer.clientCode, // 발송시 사용할 식별자
+                name: customer.userName,
+                phone: customer.phone,
+                birthday: customer.birthday,
+                memo: customer.memo,
+                sendable: customer.sendable,
+                visitCount: customer.visitCount,
+                totalAmount: customer.totalPaymentAmount,
+                lastVisit: customer.lastVisited,
+                preferredService: customer.favoriteMenuName || '없음',
+                grade: customer.memo?.includes('VIP') ? 'VIP' : '일반', // 메모에 VIP가 있으면 VIP
+                age: calculateAge(customer.birthday)
+            };
+        });
+    };
+
+    // 고객 목록 API 호출
+    const fetchCustomers = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/customers`);
+            
+            if (!response.ok) {
+                throw new Error('고객 목록 조회에 실패했습니다.');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                const transformedData = transformApiData(result.data);
+                setCustomers(transformedData);
+                setFilteredCustomers(transformedData.filter(c => c.sendable));
+            } else {
+                throw new Error(result.message || '고객 목록 조회에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('고객 목록 조회 오류:', error);
+            // 에러 발생 시 빈 배열로 설정
+            setCustomers([]);
+            setFilteredCustomers([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
     // 컴포넌트 마운트 시 고객 데이터 로드
     useEffect(() => {
-        // 실제로는 API 호출
-        setTimeout(() => {
-            setCustomers(dummyCustomers);
-            setFilteredCustomers(dummyCustomers.filter(c => c.sendable));
-            setLoading(false);
-        }, 500);
+        fetchCustomers();
     }, []);
+
+    // 필터 옵션들 (동적으로 생성)
+    const getFilterOptions = () => {
+        const uniqueServices = [...new Set(customers.map(c => c.preferredService).filter(s => s && s !== '없음'))];
+        const uniqueGrades = [...new Set(customers.map(c => c.grade))];
+        
+        return {
+            preferredService: ['전체', ...uniqueServices],
+            customerGrade: ['전체', ...uniqueGrades],
+            visitPeriod: ['전체', '1개월 이내', '3개월 이내', '6개월 이내', '1년 이내'],
+            ageGroup: ['전체', '20대', '30대', '40대', '50대 이상']
+        };
+    };
+
+    const filterOptions = getFilterOptions();
 
     // 필터 적용
     useEffect(() => {
@@ -94,7 +118,7 @@ export default function RecipientSelection({
         if (filters.visitPeriod && filters.visitPeriod !== '전체') {
             const now = new Date();
             const filterDate = new Date();
-
+            
             switch (filters.visitPeriod) {
                 case '1개월 이내':
                     filterDate.setMonth(now.getMonth() - 1);
@@ -109,7 +133,7 @@ export default function RecipientSelection({
                     filterDate.setFullYear(now.getFullYear() - 1);
                     break;
             }
-
+            
             filtered = filtered.filter(c => new Date(c.lastVisit) >= filterDate);
         }
 
@@ -118,7 +142,7 @@ export default function RecipientSelection({
             const ageRange = filters.ageGroup.replace('대', '').replace(' 이상', '');
             const minAge = parseInt(ageRange);
             const maxAge = filters.ageGroup.includes('이상') ? 100 : minAge + 9;
-
+            
             filtered = filtered.filter(c => c.age >= minAge && c.age <= maxAge);
         }
 
@@ -133,36 +157,21 @@ export default function RecipientSelection({
         });
     };
 
-    // 체크박스 전용 핸들러 
-    const handleCheckboxClick = (e, customer) => {
-        e.preventDefault();
-        e.stopPropagation();
-        handleCustomerSelect(customer);
-    };
-
-    const handleCardClick = (e, customer) => {
-        // 체크박스나 그 부모 요소를 클릭한 경우 무시
-        if (e.target.type === 'checkbox' || e.target.closest('.customerCheckbox')) {
-            return;
-        }
-        handleCustomerSelect(customer);
-    };
-
     // 고객 선택/해제
     const handleCustomerSelect = (customer) => {
         const isSelected = selectedRecipients.some(r => r.id === customer.id);
         let newSelection;
-
+        
         if (isSelected) {
             newSelection = selectedRecipients.filter(r => r.id !== customer.id);
         } else {
             newSelection = [...selectedRecipients, customer];
         }
-
-        onRecipientsChange(newSelection); // 단순히 상태만 업데이트
+        
+        onRecipientsChange(newSelection);
     };
 
-    const handleComplete = () => {
+     const handleComplete = () => {
         if (selectedRecipients.length > 0 && onComplete) {
             onComplete();
         }
@@ -279,7 +288,7 @@ export default function RecipientSelection({
                             선택됨: {selectedRecipients.length}명
                         </span>
                     </div>
-                    <button
+                    <button 
                         className={styles.selectAllButton}
                         onClick={handleSelectAll}
                         disabled={filteredCustomers.length === 0}
@@ -298,21 +307,22 @@ export default function RecipientSelection({
                         {filteredCustomers.length > 0 ? (
                             filteredCustomers.map(customer => {
                                 const isSelected = selectedRecipients.some(r => r.id === customer.id);
-
+                                
                                 return (
                                     <div
                                         key={customer.id}
                                         className={`${styles.customerCard} ${isSelected ? styles.selected : ''}`}
-                                        onClick={(e) => handleCardClick(e, customer)}
+                                        onClick={() => handleCustomerSelect(customer)}
                                     >
-                                        <div className={styles.customerCheckbox} onClick={(e) => e.stopPropagation()}>
+                                        <div className={styles.customerCheckbox}>
                                             <input
                                                 type="checkbox"
                                                 checked={isSelected}
                                                 onChange={() => handleCustomerSelect(customer)}
+                                                onClick={(e) => e.stopPropagation()}
                                             />
                                         </div>
-
+                                        
                                         <div className={styles.customerInfo}>
                                             <div className={styles.customerMain}>
                                                 <span className={styles.customerName}>
@@ -325,7 +335,7 @@ export default function RecipientSelection({
                                                     {customer.phone}
                                                 </span>
                                             </div>
-
+                                            
                                             <div className={styles.customerDetails}>
                                                 <span className={styles.customerService}>
                                                     선호: {customer.preferredService}
@@ -350,6 +360,8 @@ export default function RecipientSelection({
                     </div>
                 )}
             </div>
+
+            {/* 수신자 선택 완료 섹션 */}
             <div className={styles.completeSection}>
                 <div className={styles.selectedSummary}>
                     <span className={styles.selectedText}>
