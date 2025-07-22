@@ -89,27 +89,27 @@ export default function MyShopDetailPanel({ shopData, onEdit, onDelete, onBack }
 
             <div className="detail-content">
                 <div className="detail-section">
-                    <label>업종</label>
+                    <h3>업종</h3>
                     <p>{shopDetail.categoryName}</p>
                 </div>
 
                 <div className="detail-section">
-                    <label>주소</label>
+                    <h3>주소</h3>
                     <p>{shopDetail.shopLocation}</p>
                 </div>
 
                 <div className="detail-section">
-                    <label>운영시간</label>
+                    <h3>운영시간</h3>
                     <p>{shopDetail.shopOpen || '미지정'} - {shopDetail.shopClose || '미지정'}</p>
                 </div>
 
                 <div className="detail-section">
-                    <label>연락처</label>
+                    <h3>연락처</h3>
                     <p>{shopDetail.shopPhone}</p>
                 </div>
 
                 <div className="detail-section">
-                    <label>시술 메뉴</label>
+                    <h3>시술 메뉴</h3>
                     {Object.keys(groupedMenus).length > 0 ? (
                         <div className="menu-section">
                             {Object.entries(groupedMenus).map(([category, menus]) => (
@@ -122,14 +122,14 @@ export default function MyShopDetailPanel({ shopData, onEdit, onDelete, onBack }
                                         if (hasInvalidInfo) {
                                             return (
                                                 <div key={menu.menuCode || Math.random()} className="menu-item">
-                                                    <sapn>메뉴 정보 없음, 시스템 내 예약 불가</sapn>
+                                                    <p>메뉴 정보 없음, 시스템 내 예약 불가</p>
                                                 </div>
                                             );
                                         }
 
                                         const priceText = menu.menuPrice != null
                                             ? `${menu.menuPrice?.toLocaleString()}원`
-                                            : '메뉴 정보 없음, 시스템 내 예약 불가';
+                                            : '메뉴 정보 없음';
 
                                         return (
                                             <div key={menu.menuCode || Math.random()} className="menu-item">
@@ -154,7 +154,7 @@ export default function MyShopDetailPanel({ shopData, onEdit, onDelete, onBack }
                 <button className="action-button" onClick={() => onEdit(shopDetail)}>
                     정보 수정
                 </button>
-                <a href={`/myshop/${shopDetail.shopCode}/holiday`} className="action-button">
+                <a href={`/myshop/${shopDetail.shopCode}/holidays`} className="action-button">
                     휴일 관리
                 </a>
                 <button className="action-button" onClick={() => onDelete(shopDetail.shopCode)}>

@@ -117,7 +117,7 @@ export default function ShopForm({ mode = 'create', initialData, onSubmit, onCan
             <div className="form-panel">
                 <Script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"/>
                 <form onSubmit={handleSubmit}>
-                    <h2>{mode === 'create' ? '가게 등록하기' : '가게 수정하기'}</h2>
+                    <h2>{mode === 'create' ? '샵 등록하기' : '샵 수정하기'}</h2>
 
                     <label>업체명을 입력해주세요 *</label>
                     <input
