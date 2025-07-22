@@ -167,7 +167,7 @@ export default function TemplateManagement() {
     };
 
     const addTemplateAPI = async (templateData) => {
-        const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/template`, {
+        const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages/template`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -184,7 +184,7 @@ export default function TemplateManagement() {
 
     // 템플릿 수정 API
     const updateTemplateAPI = async (templateData) => {
-        const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/template`, {
+        const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages/template`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -202,7 +202,7 @@ export default function TemplateManagement() {
 
     // 템플릿 삭제 API
     const deleteTemplateAPI = async (templateCode) => {
-        const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/template`, {
+        const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages/template`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
