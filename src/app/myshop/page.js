@@ -98,7 +98,7 @@ export default function MyShopPage() {
 
     const handleDeleteShop = async (shopCode) => {
         if (window.confirm('정말로 이 가게를 삭제하시겠습니까?')) {
-            const res = await fetch(`http://localhost:8080/myshop/${shopCode}?adminCode=${adminCode}`, {
+            const res = await fetch(`http://localhost:8080/my-shops/${shopCode}?adminCode=${adminCode}`, {
                 method: 'DELETE'
             });
             if(res.ok) {
