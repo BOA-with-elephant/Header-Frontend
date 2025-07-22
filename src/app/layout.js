@@ -9,7 +9,7 @@ export default function RootLayout({ children }) {
   const pathname = usePathname();
   
   // 랜딩페이지 경로들 (사이드메뉴 없는 페이지들)
-    const landingPaths = ['/', '/auth/session', '/auth/signup', "/auth/verification-code", "/auth/verification-code/validate", '/auth/terms-of-use'];
+    const landingPaths = ['/', '/auth/session', '/auth/users',"/auth/verification-code", "/auth/verification-code/validate", '/auth/terms-of-use'];
   const isLandingPage = landingPaths.includes(pathname);
 
   return (
