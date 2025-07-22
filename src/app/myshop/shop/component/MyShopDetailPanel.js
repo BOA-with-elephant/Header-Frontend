@@ -145,7 +145,7 @@ export default function MyShopDetailPanel({ shopData, onEdit, onDelete, onBack }
                             ))}
                         </div>
                     ) : (
-                        <p>등록된 메뉴가 없습니다.</p>
+                        <p>샵 정보가 없습니다.</p>
                     )}
                 </div>
             </div>
