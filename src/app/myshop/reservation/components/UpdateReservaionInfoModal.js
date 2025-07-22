@@ -91,6 +91,7 @@ export default function UpdateReservationInfoModal({setIsShowUpdateModal, select
 
     const clickCancleHandler = () => {
         setIsShowUpdateModal(false);
+        setIsShowDetailReservation(true);
     }
 
     const clickSubmitHandler = async() => {
@@ -177,7 +178,7 @@ export default function UpdateReservationInfoModal({setIsShowUpdateModal, select
                         >
                             <option value="">시간 선택</option>
                             {dateAndTimeList?.results?.schedule
-                            ?.filter(dateObj => dateObj.targetDate === selectedDate)
+                            ?.filter(dateObj => dateObj.targetDate === reservationInfo.resvDate)
                             ?.flatMap(dateObj => {
                                 const reservedSet = new Set(dateObj.reservedTimes);
                                 const allTimes = Array.from(new Set([...dateObj.availableTimes, ...dateObj.reservedTimes])).sort();

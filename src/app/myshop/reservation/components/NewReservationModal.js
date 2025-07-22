@@ -110,7 +110,7 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
 
                 if(contentType && contentType.includes("application/json")){
                     const data = await response.json();
-                    console.log('예약 성공 : ', data);
+                    console.log('예약 성공 (?) : ', data);
                     await fetchReservationData();
                     setIsShowNewResvModal(false); 
                 } else {
@@ -165,6 +165,8 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
                         const currentTime = new Date();
                         const currentHours = currentTime.getHours();
                         const currentMinutes = currentTime.getMinutes();
+
+                        console.log('😈😈',item)
 
                         return item.availableTimes.filter(time => {
                             if(!isToday) return true;
