@@ -11,7 +11,7 @@ import { MESSAGES } from '@/constants/messages';
 export default function SalesManagement() {
   // 상수 정의
   const SHOP_CODE = 1; // TODO: 실제 샵 코드에 따라 동적으로 변경하기
-  const API_BASE_URL = `http://localhost:8080/api/v1/myshop/${SHOP_CODE}`;
+  const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
 
   // 현재 월의 시작일과 종료일을 계산하는 함수
   const getInitialDateFilters = () => {

@@ -1,0 +1,165 @@
+/* --- 페이지 레이아웃 --- */
+.holiday-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fefefe;
+}
+
+.holiday-panel {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 1.5rem;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+/* --- 휴일 목록 --- */
+.holiday-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.holiday-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+}
+
+.holiday-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.tag {
+    padding: 4px 8px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    color: #fff;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.tag.repeat {
+    background-color: #027d33; /* success color */
+}
+
+.tag.temporary {
+    background-color: #004cc5; /* info color */
+}
+
+.holiday-date {
+    font-size: 1rem;
+    color: black;
+}
+
+.holiday-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.holiday-actions button {
+    font-family: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #13183D;
+}
+.holiday-actions button:hover {
+    color: #004cc5;
+}
+.holiday-actions button.danger {
+    color: #13183D;
+}
+.holiday-actions button.danger:hover {
+    color: #b81111;
+}
+
+.no-holidays {
+    text-align: center;
+    color: #868e96;
+    padding: 2rem 0;
+}
+
+/* --- 폼 모달 --- */
+.form-modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.form-modal-content h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 2rem;
+}
+
+.form-section {
+    margin-bottom: 1.5rem;
+}
+.form-section label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+.date-picker-input-full {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+/* --- 공용 버튼 (재사용) --- */
+.primary-button, .secondary-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+.primary-button {
+    background-color: #13183D;
+    color: white;
+}
+.secondary-button {
+    background-color: #fff;
+    color: #13183D;
+    border-color: #ced4da;
+}
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
