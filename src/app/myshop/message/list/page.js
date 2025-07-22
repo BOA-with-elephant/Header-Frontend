@@ -6,8 +6,10 @@ import styles from '@/styles/admin/message/MessageList.module.css';
 
 export default function MessageList() {
     const router = useRouter();
+    
     // 메시지 리스트 상태
     const [messages, setMessages] = useState([]);
+    const [allMessages, setAllMessages] = useState([]); // 전체 메시지 데이터
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -29,51 +31,32 @@ export default function MessageList() {
     // 컴포넌트 마운트 시 메시지 목록 불러오기
     useEffect(() => {
         fetchMessages();
-    }, [currentPage, filters]);
+    }, []);
+
+    // 필터 변경 시 필터링 처리
+    useEffect(() => {
+        applyFilters();
+    }, [allMessages, filters, currentPage]);
 
     // 메시지 목록 API 호출
     const fetchMessages = async () => {
         try {
             setLoading(true);
             
-            // TODO: API 요청 구현
-            // const response = await fetch(`/api/v1/my-shops/${SHOP_ID}/messages?page=${currentPage}&type=${filters.type}&dateFrom=${filters.dateFrom}&dateTo=${filters.dateTo}`);
-            // const data = await response.json();
-            // setMessages(data.messages);
-            // setTotalPages(data.totalPages);
-            // setTotalCount(data.totalCount);
-
-            // 임시 더미 데이터
-            const dummyData = [
-                {
-                    id: 1,
-                    date: '25.07.08',
-                    time: '10:00',
-                    type: 'GROUP',
-                    content: '새로운 이벤트 안내',
-                    recipientCount: 25
-                },
-                {
-                    id: 2,
-                    date: '25.06.29',
-                    time: '13:00',
-                    type: 'INDIVIDUAL',
-                    content: '예약 확인 안내',
-                    recipientCount: 1
-                },
-                {
-                    id: 3,
-                    date: '25.06.05',
-                    time: '11:00',
-                    type: 'GROUP',
-                    content: '개업 1주년 이벤트 안내',
-                    recipientCount: 45
-                }
-            ];
-
-            setMessages(dummyData);
-            setTotalPages(1);
-            setTotalCount(dummyData.length);
+            // 모든 데이터를 가져옴 (필터링 없이)
+            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages/history`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+                throw new Error(result.message || '메시지 목록을 불러오는데 실패했습니다.');
+            }
+            
+            setAllMessages(result.data); // 전체 데이터 저장
 
         } catch (error) {
             console.error('메시지 목록 불러오기 실패:', error);
@@ -81,6 +64,42 @@ export default function MessageList() {
         } finally {
             setLoading(false);
         }
+    };
+
+    // 프론트에서 필터링 처리
+    const applyFilters = () => {
+        let filteredMessages = [...allMessages];
+
+        // 타입 필터링
+        if (filters.type) {
+            filteredMessages = filteredMessages.filter(message => message.type === filters.type);
+        }
+
+        // 날짜 필터링
+        if (filters.dateFrom) {
+            filteredMessages = filteredMessages.filter(message => {
+                const messageDate = message.date.replace(/\./g, '-'); // "2025.07.21" -> "2025-07-21"
+                return messageDate >= filters.dateFrom;
+            });
+        }
+
+        if (filters.dateTo) {
+            filteredMessages = filteredMessages.filter(message => {
+                const messageDate = message.date.replace(/\./g, '-'); // "2025.07.21" -> "2025-07-21"
+                return messageDate <= filters.dateTo;
+            });
+        }
+
+        // 페이지네이션 처리 (필요시)
+        const itemsPerPage = 10; // 페이지당 아이템 수
+        const totalPages = Math.ceil(filteredMessages.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedMessages = filteredMessages.slice(startIndex, endIndex);
+
+        setMessages(paginatedMessages);
+        setTotalPages(totalPages);
+        setTotalCount(filteredMessages.length);
     };
 
     // 필터 변경 처리
@@ -237,9 +256,9 @@ export default function MessageList() {
                                         </span>
                                     </div>
                                     <div className={styles.listItem}>
-                                        <div className={styles.messageContent}>{message.content}</div>
+                                        <div className={styles.messageContent}>{message.subject}</div>
                                         <div className={styles.recipientInfo}>
-                                            {message.recipientCount}명 발송
+                                            {`총 ${message.sendCount}건 발송`}
                                         </div>
                                     </div>
                                     <div className={styles.listItem}>
