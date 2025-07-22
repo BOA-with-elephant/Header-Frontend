@@ -10,6 +10,7 @@ import ReservationMenuModal from "./components/ReservationMenuModal";
 import DetailReservationModal from "./components/DetailReservationModal";
 import UpdateReservationInfoModal from "./components/UpdateReservaionInfoModal";
 import NewReservationModal from "./components/NewReservationModal";
+import DeleteAlertModal from "./components/DeleteAlertModal";
 
 export default function Reservation() {
     const [searchResultList, setSearchResultList] = useState([]);
@@ -24,6 +25,7 @@ export default function Reservation() {
     const [resvDateList, setResvDateList] = useState([]);
     const [reservationInfo, setReservationInfo] = useState([]);
     const [isShowUpdateModal, setIsShowUpdateModal] = useState(false);
+    const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
 
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
@@ -98,6 +100,8 @@ export default function Reservation() {
                             selectedResvCode={selectedResvCode}
                             setIsShowModal={setIsShowModal}
                             setIsShowUpdateModal={setIsShowUpdateModal}
+                            setIsShowDeleteModal={setIsShowDeleteModal}
+                            selectedDate={selectedDate}
                         />
                     )}
                     {/* 예약 등록 모달 */}
@@ -118,6 +122,16 @@ export default function Reservation() {
                             selectedDate={selectedDate}
                             resvDateList={resvDateList}
                             setIsShowDetailReservation={setIsShowDetailReservation}
+                            fetchReservationData={fetchReservationData}
+                        />
+                    )}
+                    {/* 예약 삭제 알림 모달 */}
+                    {isShowDeleteModal &&(
+                        <DeleteAlertModal
+                            isShowDeleteModal={isShowDeleteModal}
+                            setIsShowDeleteModal={setIsShowDeleteModal}
+                            setIsShowModal={setIsShowModal}
+                            selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
                         />
                     )}
