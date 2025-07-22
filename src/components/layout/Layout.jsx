@@ -7,14 +7,9 @@ import SideMenuBar from "./SideMenuBar";
 
 // 사용자 권한 상수
 const USER_ROLES = {
-  CUSTOMER: 1,
-  SHOP_ADMIN: 2
+  CUSTOMER: "ROLE_USER",
+  SHOP_ADMIN: "ROLE_ADMIN"
 };
-
-// ===== 테스트용 설정 (이 값만 변경해서 테스트) =====
-const TEST_MODE = true;
-const TEST_USER_ROLE = USER_ROLES.SHOP_ADMIN; // .CUSTOMER or .SHOP_ADMIN 로 변경해서 테스트
-// ==============================================
 
 export default function Layout({ children }) {
   const pathname = usePathname();
@@ -31,37 +26,47 @@ export default function Layout({ children }) {
 
   // 사용자 정보 로드
   useEffect(() => {
-    const loadUserInfo = async () => {
-      if (TEST_MODE) {
-        // 테스트 모드: 임시 권한 설정
-        console.log('🔧 테스트 모드: 권한', TEST_USER_ROLE);
-        setUserRole(TEST_USER_ROLE);
-        setIsLoading(false);
-        return;
-      }
-
+    // 여기에 loadUserInfo 함수 정의가 정확히 들어가야 합니다.
+    const loadUserInfo = async () => { // <-- 여기에 async 키워드가 있어야 합니다.
       try {
-        // 실제 구현 시: API 호출로 사용자 정보 가져오기
-        const response = await fetch('/api/user/me', {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log('토큰이 없어 로그인이 안 된 사용자입니다.');
+          setUserRole(null);
+          setIsLoading(false);
+          return;
+        }
+
+        // 백엔드 사용자 정보 조회 API 엔드포인트
+        const response = await fetch('http://localhost:8080/auth/me', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${token}`
           }
         });
         
         if (response.ok) {
-          const userData = await response.json();
-          setUserRole(userData.role);
+          const responseData = await response.json();
+          const userData = responseData.data;
+
+          console.log('Layout: 사용자 정보 로드 성공:', userData);
+          setUserRole(userData.role); 
+        } else if (response.status === 401 || response.status === 403) {
+          console.error('Layout: 사용자 정보를 가져올 수 없습니다. 토큰 만료 또는 권한 없음.', response.status);
+          localStorage.removeItem('token');
+          setUserRole(null);
         } else {
-          console.error('사용자 정보를 가져올 수 없습니다.');
+          console.error('Layout: 사용자 정보 로드 실패 (알 수 없는 오류):', response.status);
+          setUserRole(null);
         }
       } catch (error) {
-        console.error('사용자 정보 로드 실패:', error);
+        console.error('Layout: 사용자 정보 로드 중 네트워크 오류 발생:', error);
+        setUserRole(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadUserInfo();
+    loadUserInfo(); // 정의된 비동기 함수를 호출합니다.
   }, []);
 
   // 첫 로드시에만 localStorage 체크

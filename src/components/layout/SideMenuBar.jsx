@@ -359,10 +359,10 @@ function SideMenuBar({
         {/* 하단 고정 메뉴 */}
         <div className="bottom-menu">
           {/* 설정 메뉴 */}
-          <Link href={isAdmin ? "/myshop/settings" : "/user/settings"}>
+          <Link href={isAdmin ? "/myshop/settings" : "/shops/settings"}>
             {/* ✨ Next.js Link - 설정 페이지로 최적화된 네비게이션 */}
             <div className={`bottom-menu-item ${
-              pathname === (isAdmin ? "/myshop/settings" : "/user/settings") 
+              pathname === (isAdmin ? "/myshop/settings" : "/shops/settings") 
                 ? 'bottom-menu-item-active' : ''
             }`}>
               <span className="bottom-menu-icon">⚙️</span>
