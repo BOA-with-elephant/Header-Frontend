@@ -44,7 +44,7 @@ export default function UserReservation() {
         try {
             console.log('포맷 전 데이터 확인' + start + ''  + end)
             const res = await fetch(
-                `http://localhost:8080/shops/reservation?startDate=${formatDate(start)}&endDate=${formatDate(end)}&userCode=${userCode}`
+                `http://localhost:8080/api/v1/shops/reservation?startDate=${formatDate(start)}&endDate=${formatDate(end)}&userCode=${userCode}`
             )
             console.log('데이트 포맷 확인: ' + formatDate(start) + 'and' + formatDate(end))
             if (!res.ok) {

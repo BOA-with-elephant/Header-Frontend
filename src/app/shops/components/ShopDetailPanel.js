@@ -31,7 +31,7 @@ export default function ShopDetailPanel({shopCode, onBack, onShowBooking}) {
             setError(null);
 
             try {
-                const res = await fetch(`http://localhost:8080/shops/${shopCode}`);
+                const res = await fetch(`http://localhost:8080/api/v1/shops/${shopCode}`);
                 const data = await res.json();
 
                 if (res.ok && data.results && data.results['shop-detail']) {
@@ -105,45 +105,63 @@ export default function ShopDetailPanel({shopCode, onBack, onShowBooking}) {
             </div>
 
         {/*    본문*/}
-            <div className={'panel-body'}>
-                <div className={'shop-contact-info'}>
+            <div className="panel-body">
+                <div className="shop-contact-info">
                     <span>📍 {shopInfo.location}</span>
                     <span>⏰ {shopInfo.open} - {shopInfo.close}</span>
-                    <div className={'header-buttons'}>
-                        <button
-                            className={'cta-button'}
-                            onClick={() => onShowBooking(shopInfo, groupedMenus)}
-                        >
-                            예약하기
-                        </button>
-                        <a href={`tel:${shopInfo.phone}`} className={'icon-button'}>📞</a>
+                    <div className="header-buttons">
+                        {/* 예약하기 버튼의 조건부 렌더링 */}
+                        {Object.values(groupedMenus).some(
+                            (menus) => menus.some((menu) => menu.menuName || menu.estTime || menu.menuPrice != null)
+                        )
+                            ? (
+                                <button
+                                    className="cta-button"
+                                    onClick={() => onShowBooking(shopInfo, groupedMenus)}
+                                >
+                                    예약하기
+                                </button>
+                            )
+                            : null}
+                        <a href={`tel:${shopInfo.phone}`} className="icon-button">📞</a>
                     </div>
                 </div>
 
-            {/*    메뉴 목록*/}
-                <div className={'menu-section'}>
-                    {/* Object.entries : 객체를 배열로 반환*/}
+                {/* 메뉴 목록은 기존과 동일 */}
+                <div className="menu-section">
                     {Object.entries(groupedMenus).map(([category, menus]) => (
-                        <div key={category} className={'menu-category'}>
+                        <div key={category} className="menu-category">
                             <h4>{category}</h4>
-                            {menus.map(menu => (
-                                <div
-                                  key={menu.menuCode}
-                                  className={'menu-item'}>
-                                    <div className={'menu-item-info'}>
-                                        <span>{menu.menuName}</span>
-                                        <small>약 {menu.estTime}분 예상</small>
+                            {menus.map((menu) => {
+                                const hasMenuInfo = menu.menuName || menu.estTime || menu.menuPrice != null;
+                                const hasPrice = menu.menuPrice != null;
+
+                                if (!hasMenuInfo) {
+                                    return (
+                                        <div key={menu.menuCode} className="menu-item-warning">
+                                            <p>메뉴 정보 없음 - 시스템 내 예약 불가</p>
+                                            <p>샵 관리자에게 문의하세요 </p>
+                                        </div>
+                                    );
+                                }
+
+                                const priceText = hasPrice
+                                    ? `${menu.menuPrice.toLocaleString()}원`
+                                    : '메뉴 정보 없음 - 시스템내 예약 불가, 샵 관리자에게 문의하세요';
+
+                                return (
+                                    <div key={menu.menuCode} className="menu-item">
+                                        <div className="menu-item-info">
+                                            <span>{menu.menuName}</span>
+                                            {menu.estTime && <small>약 {menu.estTime}분 예상</small>}
+                                        </div>
+                                        <span className="menu-price">{priceText}</span>
                                     </div>
-                                    <span className={'menu-price'}>
-                                        {menu.menuPrice.toLocaleString()}원
-                                    </span>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     ))}
                 </div>
-
-
             </div>
         </div>
     )
