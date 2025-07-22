@@ -12,6 +12,8 @@ export default function SearchResultList({searchResultList, setIsOpen, setSelect
         return date.toLocaleTimeString('en-US', {hour: 'numeric', hour12: true});
     };
 
+    const visibleList = searchResultList.filter(list => list.resvState !== 'CANCEL');
+
     const changeResvState = (resvState) => {
         switch(resvState){
             case "APPROVE" : return "예약 확정"; break;
@@ -48,21 +50,22 @@ export default function SearchResultList({searchResultList, setIsOpen, setSelect
                         </tr>
                     </thead>
                     <tbody>
-                        {searchResultList.length > 0 ? (
-                            searchResultList.map((list) => (
-                                <tr 
+                        {visibleList.length > 0 ? (
+                            visibleList.map((list) => (
+                                <tr
                                     key={list.resvCode}
                                     onClick={() => showDetailResvHandler(list.resvCode)}
                                 >
-                                <td>{list.resvDate}</td>
-                                <td>{formatTime(list.resvTime)}</td>
-                                <td>{list.userName}</td>
-                                <td>{list.menuName}</td>
-                                <td>{changeResvState(list.resvState)}</td>
+                                    <td>{list.resvDate}</td>
+                                    <td>{formatTime(list.resvTime)}</td>
+                                    <td>{list.userName}</td>
+                                    <td>{list.menuName}</td>
+                                    <td>{changeResvState(list.resvState)}</td>
                                 </tr>
-                        ))) : (
+                            ))
+                        ) : (
                             <tr>
-                                <td colSpan="7" style={{textAlign: "center", padding: "20px"}}>
+                                <td colSpan="7" className={styles.noResult}>
                                     검색 결과가 없습니다.
                                 </td>
                             </tr>
