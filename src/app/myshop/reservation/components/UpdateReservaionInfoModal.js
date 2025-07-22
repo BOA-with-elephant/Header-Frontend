@@ -6,7 +6,19 @@ import DatePicker from 'react-datepicker';
 import {ko} from 'date-fns/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 
-export default function UpdateReservationInfoModal({setIsShowUpdateModal, selectedResvCode, selectedDate, resvDateList, setIsShowDetailReservation, fetchReservationData}){
+export default function UpdateReservationInfoModal({
+    setIsShowUpdateModal, 
+    selectedResvCode, 
+    selectedDate, 
+    resvDateList, 
+    setIsShowDetailReservation, 
+    fetchReservationData,
+    setIsShowMessageModal,
+    setResultTitle,
+    setResultMessage,
+    setResultType,
+    setMessageContext
+}){
     const [reservationInfo, setReservationInfo] = useState({
         userName : '',
         userPhone : '',
@@ -116,16 +128,41 @@ export default function UpdateReservationInfoModal({setIsShowUpdateModal, select
                     console.log('예약 수정 성공 : ', data);
                     await fetchReservationData();
                     setIsShowUpdateModal(false); 
-                    setIsShowDetailReservation(true);
+                    setResultType('success');
+                    setResultTitle('예약 수정 성공');
+                    setResultMessage('예약 내용이 성공적으로 수정되었습니다.')
+                    setMessageContext('update')
+                    setTimeout(() => {
+                        setIsShowMessageModal(true);
+                    }, 100);
+                    // if(isCloseComplete){
+                    //     setIsShowDetailReservation(true);
+                    // }
                 } else {
                     const text = await response.text();
                     console.warn("받은 응답이 JSON이 아님 : ", text);
                 }
             } catch (error){
-                console.error('예약 수정 실패 : ', error)
+                console.error('예약 수정 실패 : ', error);
+                await fetchReservationData();
+                setIsShowUpdateModal(false); 
+                setResultType('error');
+                setResultTitle('예약 수정 실패');
+                setResultMessage('예약 내용 수정에 실패하였습니다.')
+                setTimeout(() => {
+                    setIsShowMessageModal(true);
+                }, 100);
+
+                setIsShowDetailReservation(true);
             }
         } else {
             console.warn('모든 필드를 입력해주세요.');
+            setResultType('warn');
+            setResultTitle('예약 등록 입력 검증');
+            setResultMessage('요청사항을 제외한 모든 필드를 입력해주세요.')
+            setTimeout(() => {
+                setIsShowMessageModal(true);
+            }, 100);
         }
     }   
 
