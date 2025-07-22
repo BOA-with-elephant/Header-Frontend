@@ -16,7 +16,7 @@ export default function MyShopPage() {
     const adminCode = 1; // TODO. 실제 유저 코드로 교체 필요
 
     const fetchMyShops = async () => {
-        const res = await fetch(`http://localhost:8080/myshop?adminCode=${adminCode}`);
+        const res = await fetch(`http://localhost:8080/api/v1/my-shops?adminCode=${adminCode}`);
         const data = await res.json();
         if (res.ok) setMyShops(data.results['shop-list']);
     };
@@ -98,7 +98,7 @@ export default function MyShopPage() {
 
     const handleDeleteShop = async (shopCode) => {
         if (window.confirm('정말로 이 가게를 삭제하시겠습니까?')) {
-            const res = await fetch(`http://localhost:8080/my-shops/${shopCode}?adminCode=${adminCode}`, {
+            const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}?adminCode=${adminCode}`, {
                 method: 'DELETE'
             });
             if(res.ok) {
