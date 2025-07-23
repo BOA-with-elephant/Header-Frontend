@@ -40,7 +40,7 @@ export default function Signup() {
 
     // Handle form submission
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent default browser form submission
+        e.preventDefault();
 
     // 서비스 이용약관 필수 체크 (추가)
     if (!service) {
@@ -77,11 +77,11 @@ export default function Signup() {
     };
 
     return (
-        <div className="main-content">
-            <h1>회원가입 페이지</h1>
-            <div className="content-card">
+        <div className={styles.mainContent}>
+            <div className={styles.contentCard}>
+                <h2>회원가입 페이지</h2>
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="userName">이름:</label>
                         <input
                             type="text"
@@ -93,7 +93,7 @@ export default function Signup() {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="userPhone">전화번호:</label>
                         <input
                             type="tel"
@@ -105,12 +105,12 @@ export default function Signup() {
                             pattern="[0-9]{3}-?[0-9]{4}-?[0-9]{4}"
                             required
                         />
-                        <button type="submit">
+                        {/* <button type="submit">
                             <Link href="/auth/verification-code">전화번호 인증</Link>
-                        </button>
+                        </button> */}
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="userId">아이디:</label>
                         <input
                             type="text"
@@ -123,7 +123,7 @@ export default function Signup() {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="userPwd">비밀번호:</label>
                         <input
                             type="password"
@@ -136,7 +136,7 @@ export default function Signup() {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="birthday">생년월일:</label>
                         <input
                             type="date"
