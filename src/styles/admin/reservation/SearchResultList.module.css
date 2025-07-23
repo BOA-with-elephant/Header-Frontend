@@ -53,3 +53,13 @@
     background-color: #f5f7fa;
     cursor: pointer;
 }
+
+.noResult{
+    text-align: center;
+    padding: 20px;
+    cursor: default;
+}
+
+.noResult:hover{
+    background-color: #FFFFFF;
+}
