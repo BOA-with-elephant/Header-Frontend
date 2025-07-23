@@ -6,10 +6,17 @@ import CustomerCard from '@/components/ui/CustomerCard';
 import CustomerRegisterModal from '@/components/ui/CustomerRegisterModal';
 import CustomerDetailModal from '@/components/ui/CustomerDetailModal';
 import CustomerHistoryModal from '@/components/ui/CustomerHistoryModal';
+import MessageSlideModal from '@/components/message/MessageSlideModal';
 import styles from '@/styles/admin/customer/Customer.module.css';
 
 export default function Customer() {
     const { modal, closeModal, showError, showSuccess, showConfirm, showWarning } = useMessageModal();
+
+    // 메세지 전송 모달 상태
+    const [messageModal, setMessageModal] = useState({
+        isOpen: false,
+        recipientSelection: null
+    });
 
     // 히스토리 모달 상태
     const [historyModal, setHistoryModal] = useState({
@@ -217,6 +224,17 @@ export default function Customer() {
         }
     };
 
+
+    // 메세지 모달 열기
+    const openMessageModal = (recipientSelection) => {
+        setMessageModal({ isOpen: true, recipientSelection: recipientSelection });
+    };
+
+    // 메세지 모달 닫기
+    const closeMessageModal = () => {
+        setMessageModal({ isOpen: false, recipientSelection: null });
+    };
+
     // 히스토리 모달 열기
     const openHistoryModal = async (customer) => {
         try {
@@ -231,6 +249,7 @@ export default function Customer() {
             showError('오류', '히스토리를 불러오는데 실패했습니다.');
         }
     };
+
 
     // 히스토리 모달 닫기
     const closeHistoryModal = () => {
@@ -425,7 +444,7 @@ export default function Customer() {
                 openHistoryModal(customer);
                 break;
             case 'message':
-                showSuccess('메세지 발송', `${customer.name}님에게 메세지를 발송했습니다.`);
+                openMessageModal(customer);
                 break;
             case 'delete':
                 handleDeleteCustomer(clientCode);
@@ -588,6 +607,13 @@ export default function Customer() {
                     </>
                 )}
             </div>
+
+            {/* 메세지 전송 모달 */}
+            <MessageSlideModal
+                isOpen={messageModal.isOpen}
+                onClose={closeMessageModal}
+                recipientSelection={messageModal.recipientSelection} 
+            />
 
             {/* 신규 고객 등록 모달 */}
             <CustomerRegisterModal
