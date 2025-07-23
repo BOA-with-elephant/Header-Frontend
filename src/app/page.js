@@ -18,13 +18,11 @@ export default function Home() {
               모두가 만족하는 뷰티샵 예약 및 관리 서비스입니다.
             </p>
             <div className={styles.heroButtons}>
-              <Link href="/signup" className={`${styles.ctaButton} ${styles.primary}`}>
+              <Link href="/auth/users" className={`${styles.ctaButton} ${styles.primary}`}>
                 지금 시작하기
               </Link>
-              <Link href="/shops" className={`${styles.ctaButton} ${styles.secondary}`}>
-                샵 찾아보기
-              </Link>
               <Link href="/myshop/main" className={`${styles.ctaButton} ${styles.secondary} `}>
+              {/** 샵 관리하기는 관리자만 접근가능하므로 로그인 창으로 유도되어야 함. 이후 /myshop/main으로 이동 가능 */}
                 샵 관리하기
               </Link>
             </div>
@@ -90,12 +88,9 @@ export default function Home() {
               고객도 사장님도 모두 만족하는 새로운 뷰티샵 경험을 시작하세요
             </p>
             <div className={styles.ctaButtons}>
-              <Link href="/signup" className={`${styles.ctaButton} ${styles.large} ${styles.primaryCta}`}>
+              <Link href="/auth/users" className={`${styles.ctaButton} ${styles.large} ${styles.primaryCta}`}>
                 시작하기
               </Link>
-              {/* <Link href="/login" className={`${styles.ctaButton} ${styles.large} ${styles.secondaryCta}`}>
-                예약하러 가기 (고객)
-              </Link> */}
             </div>
           </div>
         </section>

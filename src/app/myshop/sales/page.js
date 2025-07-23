@@ -1,146 +1,366 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import styles from "@/styles/admin/sales/SalesManagement.module.css";
-
+import Pagination from "@/components/ui/AdvancedPagination";
 import MessageModal from '@/components/ui/MessageModal';
+import AddEditSalesModal from './components/AddEditSalesModal';
 import { useMessageModal } from '@/hooks/useMessageModal';
 import { MESSAGES } from '@/constants/messages';
 
 export default function SalesManagement() {
   // 상수 정의
-  const itemsPerPage = 10;
-  const SHOP_CODE = 1; // TODO: 실제 샵 코드에 따라 동적으로 변경하기
-  const API_BASE_URL = `http://localhost:8080/api/v1/myshop/${SHOP_CODE}`;
+  const SHOP_CODE = 1;
+  const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
 
   // 현재 월의 시작일과 종료일을 계산하는 함수
   const getInitialDateFilters = () => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+    const month = String(today.getMonth() + 1).padStart(2, '0');
     const firstDay = `${year}-${month}-01`;
-    const lastDay = new Date(year, today.getMonth() + 1, 0).toISOString().split('T')[0]; // 다음 달의 0번째 날 = 이번 달의 마지막 날
+    const lastDay = today.toISOString().split('T')[0];
     return { startDate: firstDay, endDate: lastDay };
   };
 
   // 상태 변수 정의
-  const [salesData, setSalesData] = useState([]); // 전체 매출 데이터 (필터링 전 원본)
-  const [filteredData, setFilteredData] = useState([]); // 필터링된 매출 데이터
-  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
-  const [searchFilters, setSearchFilters] = useState(getInitialDateFilters()); // 초기 검색 필터를 현재 월로 설정
+  const [salesData, setSalesData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchFilters, setSearchFilters] = useState(getInitialDateFilters());
+  const [customers, setCustomers] = useState([]); // 예약에서 추출한 고객 목록
+  const [menus, setMenus] = useState([]); // 예약에서 추출한 메뉴 목록 (기본값용)
+  const [reservationData, setReservationData] = useState([]); // 전체 예약 데이터
+  const [isModalOpen, setIsModalOpen] = useState(false); // 매출 모달 상태
+  const [editingItem, setEditingItem] = useState(null); // 수정할 매출 항목
+  
+  const { modal, closeModal, showError, showConfirm, showSuccess } = useMessageModal();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // 메시지 모달 훅 사용
-  const { showMessage, MessageModalComponent } = useMessageModal();
-
-  // 컴포넌트 마운트 시 데이터 로딩 및 초기 필터 적용
-  useEffect(() => {
-    const fetchSalesData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`${API_BASE_URL}/sales`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+  // 예약 데이터에서 고객 목록 추출 (BossResvProjectionDTO 구조)
+  const extractCustomersFromReservations = (reservations) => {
+    const customerMap = new Map();
+    reservations.forEach(reservation => {
+      if (reservation.userName && reservation.userPhone) {
+        const key = `${reservation.userName}_${reservation.userPhone}`;
+        if (!customerMap.has(key)) {
+          customerMap.set(key, {
+            userCode: reservation.userCode || Math.floor(Math.random() * 10000) + 1000,
+            userName: reservation.userName,
+            userPhone: reservation.userPhone
+          });
         }
-        const data = await response.json();
-
-        // API 응답 데이터 구조에 맞게 매핑 (SalesDetailDTO와 일치하도록)
-        const formattedData = data.map(item => ({
-          id: item.salesCode,
-          date: item.resvDate, // YYYY-MM-DD 형식이라고 가정
-          time: item.resvTime, // HH:MM:SS 형식이라고 가정
-          customerName: item.userName,
-          customerPhone: '', // 백엔드 DTO에 필드가 없어 빈 문자열로 처리
-          serviceName: item.menuName,
-          servicePrice: item.menuPrice,
-          discount: item.menuPrice - item.finalAmount,
-          finalAmount: item.finalAmount,
-          paymentMethod: item.payMethod,
-          status: item.payStatus, // enum 값 (COMPLETED, CANCELLED, PARTIAL_CANCELLED)
-          memo: '', // 백엔드 DTO에 필드가 없어 빈 문자열로 처리
-          cancelAmount: item.cancelAmount
-        }));
-
-        setSalesData(formattedData); // 전체 데이터 저장
-
-        // 초기 로드 시 현재 월 필터 적용
-        const initialFilters = getInitialDateFilters();
-        const initiallyFiltered = formattedData.filter(item => {
-          // item.date가 Date 객체가 아닌 'YYYY-MM-DD' 문자열이므로 문자열 비교
-          const matchesDateRange = (!initialFilters.startDate || item.date >= initialFilters.startDate) &&
-                                   (!initialFilters.endDate || item.date <= initialFilters.endDate);
-          return matchesDateRange;
-        });
-        setFilteredData(initiallyFiltered); // 현재 월 데이터로 필터링된 데이터 설정
-        setCurrentPage(1); // 첫 페이지로 이동
-
-      } catch (error) {
-        console.error("매출 데이터를 불러오는 중 오류 발생:", error);
-        showMessage(MESSAGES.ERROR_FETCHING_SALES_DATA);
-        setSalesData([]);
-        setFilteredData([]);
-      } finally {
-        setIsLoading(false);
       }
-    };
-
-    fetchSalesData();
-  }, [SHOP_CODE, showMessage, API_BASE_URL]); // 의존성 배열 유지
-
-  // 검색 필터 변경 시 상태 업데이트
-  const handleFilterChange = (field, value) => {
-    setSearchFilters(prev => ({ ...prev, [field]: value }));
+    });
+    return Array.from(customerMap.values());
   };
 
-  // 검색 실행 핸들러
-  const handleSearch = () => {
+  // 예약 데이터에서 기본 메뉴 목록 추출 (모달에서 직접 선택할 때 사용)
+  const extractMenusFromReservations = (reservations) => {
+    const menuMap = new Map();
+    reservations.forEach(reservation => {
+      if (reservation.menuName) {
+        const key = reservation.menuName;
+        if (!menuMap.has(key)) {
+          menuMap.set(key, {
+            menuCode: Math.floor(Math.random() * 10000) + 1000,
+            menuName: reservation.menuName,
+            menuPrice: 50000, // 기본값 (모달에서 실제 API로 가격 조회)
+            menuColor: reservation.menuColor || '#007bff',
+            categoryName: '기본'
+          });
+        }
+      }
+    });
+    return Array.from(menuMap.values());
+  };
+
+  // 예약 데이터 불러오기 및 고객/기본메뉴 정보 추출
+  const fetchReservationData = async () => {
+    try {
+      // 최근 3개월간의 예약 데이터를 가져와서 고객/메뉴 정보 구성
+      const today = new Date();
+      const reservations = [];
+      
+      // 월별로 데이터 수집
+      for (let i = 0; i < 4; i++) {
+        const targetDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        const yearMonth = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
+        
+        try {
+          const response = await fetch(`http://localhost:8080/my-shops/${SHOP_CODE}/reservation?date=${yearMonth}`);
+          if (response.ok) {
+            const monthData = await response.json();
+            if (Array.isArray(monthData)) {
+              reservations.push(...monthData);
+            }
+          }
+        } catch (error) {
+          console.warn(`${yearMonth} 예약 데이터 로딩 실패:`, error);
+        }
+      }
+
+      setReservationData(reservations);
+      
+      // 예약 데이터에서 고객과 기본 메뉴 정보 추출
+      const extractedCustomers = extractCustomersFromReservations(reservations);
+      const extractedMenus = extractMenusFromReservations(reservations);
+      
+      setCustomers(extractedCustomers);
+      setMenus(extractedMenus);
+      
+      console.log('추출된 고객 목록:', extractedCustomers);
+      console.log('추출된 기본 메뉴 목록:', extractedMenus);
+      
+    } catch (error) {
+      console.error('예약 데이터 로딩 실패:', error);
+      setCustomers([]);
+      setMenus([]);
+      setReservationData([]);
+    }
+  };
+
+  async function fetchSalesData() {
+    setIsLoading(true);
+    try {
+      console.log('매출 데이터 조회 시작:', `${API_BASE_URL}/sales/active`);
+      
+      const response = await fetch(`${API_BASE_URL}/sales/active`);
+      console.log('API 응답 상태:', response.status, response.statusText);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('받은 매출 데이터:', data);
+      console.log('데이터 타입:', typeof data, '배열인가?', Array.isArray(data));
+
+      if (!Array.isArray(data)) {
+        console.warn('매출 데이터가 배열이 아님:', data);
+        setSalesData([]);
+        setFilteredData([]);
+        setCurrentPage(1);
+        return;
+      }
+
+      const formattedData = data.map((item, index) => {
+        console.log(`매출 항목 ${index}:`, item);
+        
+        return {
+          id: item.salesCode,
+          salesCode: item.salesCode,
+          userCode: item.userCode,
+          menuCode: item.menuCode,
+          date: item.resvDate,
+          time: item.resvTime,
+          customerName: item.userName,
+          customerPhone: item.userPhone,
+          serviceName: item.menuName,
+          servicePrice: item.menuPrice,
+          discount: (item.menuPrice || 0) - (item.finalAmount || 0),
+          finalAmount: item.finalAmount,
+          paymentMethod: item.payMethod,
+          status: item.payStatus,
+          memo: item.userComment,
+          cancelAmount: item.cancelAmount || 0,
+          cancelReason: item.cancelReason
+        };
+      });
+
+      console.log('포맷된 데이터:', formattedData);
+      setSalesData(formattedData);
+
+      // 초기 필터 설정 - 더 넓은 범위로 설정
+      const today = new Date();
+      const threeMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 3, 1);
+      const initialFilters = {
+        startDate: threeMonthsAgo.toISOString().split('T')[0],
+        endDate: today.toISOString().split('T')[0]
+      };
+      
+      console.log('초기 필터:', initialFilters);
+      
+      const initiallyFiltered = formattedData.filter(item => {
+        const matchesDateRange = (!initialFilters.startDate || item.date >= initialFilters.startDate) &&
+          (!initialFilters.endDate || item.date <= initialFilters.endDate);
+        console.log(`항목 ${item.id} 날짜 체크:`, item.date, '범위:', initialFilters.startDate, '~', initialFilters.endDate, '통과:', matchesDateRange);
+        return matchesDateRange;
+      });
+      
+      console.log('필터 후 데이터:', initiallyFiltered);
+      setFilteredData(initiallyFiltered);
+      setCurrentPage(1);
+
+    } catch (error) {
+      console.error("매출 데이터를 불러오는 중 오류 발생:", error);
+      showError('데이터 로딩 실패', `매출 데이터를 불러올 수 없습니다: ${error.message}`);
+      setSalesData([]);
+      setFilteredData([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchSalesData();
+    fetchReservationData(); // 예약 데이터에서 고객/기본메뉴 정보 추출
+  }, []);
+
+  // 매출 등록 버튼 클릭
+  const handleAddSales = () => {
+    console.log('매출 등록 버튼 클릭');
+    setEditingItem(null);
+    setIsModalOpen(true);
+    console.log('모달 상태 변경:', { isModalOpen: true, editingItem: null });
+  };
+
+  // 매출 수정 버튼 클릭
+  const handleEditSales = (item) => {
+    console.log('매출 수정 버튼 클릭:', item);
+    setEditingItem(item);
+    setIsModalOpen(true);
+    console.log('모달 상태 변경:', { isModalOpen: true, editingItem: item });
+  };
+
+  // 매출 모달 닫기
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingItem(null);
+  };
+
+  // 매출 모달 성공 처리 (showSuccess 사용)
+  const handleModalSuccess = () => {
+    fetchSalesData(); // 데이터 새로고침
+    showSuccess(
+      '등록/수정 완료', 
+      editingItem ? MESSAGES.SALES.UPDATE_SUCCESS : MESSAGES.SALES.CREATE_SUCCESS
+    );
+  };
+
+  // 엑셀 다운로드 핸들러
+  const handleExcelDownload = () => {
+    const excelData = filteredData.map(item => ({
+      '시술일시': `${item.date} ${item.time}`,
+      '고객명': item.customerName,
+      '시술명': item.serviceName,
+      '시술가격': item.servicePrice,
+      '할인금액': item.discount,
+      '최종금액': item.finalAmount,
+      '결제방법': item.paymentMethod,
+      '상태': item.status === 'COMPLETED' ? '완료' :
+        item.status === 'CANCELLED' ? '취소' : '부분취소',
+      '취소금액': item.cancelAmount || 0
+    }));
+
+    const csvContent = [
+      Object.keys(excelData[0]).join(','),
+      ...excelData.map(row => Object.values(row).join(','))
+    ].join('\n');
+
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `매출내역_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // 검색 필터 변경
+  const handleFilterChange = (field, value) => {
+    const newFilters = { ...searchFilters, [field]: value };
+    setSearchFilters(newFilters);
+
     const filtered = salesData.filter(item => {
-      const matchesDateRange = (!searchFilters.startDate || item.date >= searchFilters.startDate) &&
-                               (!searchFilters.endDate || item.date <= searchFilters.endDate);
-      const matchesCustomer = !searchFilters.customerName || item.customerName.toLowerCase().includes(searchFilters.customerName.toLowerCase());
-      const matchesService = !searchFilters.serviceName || item.serviceName.toLowerCase().includes(searchFilters.serviceName.toLowerCase());
-      const matchesStatus = !searchFilters.status || item.status === searchFilters.status;
+      const matchesDateRange = (!newFilters.startDate || item.date >= newFilters.startDate) &&
+        (!newFilters.endDate || item.date <= newFilters.endDate);
+      const matchesCustomer = !newFilters.customerName || item.customerName.toLowerCase().includes(newFilters.customerName.toLowerCase());
+      const matchesService = !newFilters.serviceName || item.serviceName.toLowerCase().includes(newFilters.serviceName.toLowerCase());
+      const matchesStatus = !newFilters.status || item.status === newFilters.status;
       return matchesDateRange && matchesCustomer && matchesService && matchesStatus;
     });
     setFilteredData(filtered);
     setCurrentPage(1);
   };
 
-  // 검색 초기화 핸들러
+  // 검색 초기화
   const handleReset = () => {
-    // 필터 초기화 시 현재 월로 다시 설정
-    const initialFilters = getInitialDateFilters();
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const firstDay = `${year}-${month}-01`;
+    const lastDay = today.toISOString().split('T')[0];
+
+    const initialFilters = {
+      startDate: firstDay,
+      endDate: lastDay,
+      customerName: '',
+      serviceName: '',
+      status: ''
+    };
+
     setSearchFilters(initialFilters);
 
-    // 초기화된 필터로 전체 salesData에서 다시 필터링
     const resetFiltered = salesData.filter(item => {
       const matchesDateRange = (!initialFilters.startDate || item.date >= initialFilters.startDate) &&
-                               (!initialFilters.endDate || item.date <= initialFilters.endDate);
+        (!initialFilters.endDate || item.date <= initialFilters.endDate);
       return matchesDateRange;
     });
     setFilteredData(resetFiltered);
     setCurrentPage(1);
   };
 
-  // 페이징 처리
+  // 페이지네이션 상태
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+  const totalItems = filteredData.length;
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setItemsPerPage(newSize);
+    setCurrentPage(1);
+  };
 
   // 통계 계산
   const todaySales = filteredData.reduce((sum, item) => {
-    // 취소 또는 부분 취소된 금액은 총 매출에서 마이너스로 처리
-    if (item.status === 'CANCELLED' || item.status === 'PARTIAL_CANCELLED') {
-      return sum - item.cancelAmount;
+    if (searchFilters.status === 'COMPLETED') {
+      return item.status === 'COMPLETED' ? sum + item.finalAmount : sum;
+    } else if (searchFilters.status === 'CANCELLED') {
+      return item.status === 'CANCELLED' ? sum - item.cancelAmount : sum;
+    } else if (searchFilters.status === 'PARTIAL_CANCELLED') {
+      return item.status === 'PARTIAL_CANCELLED' ? sum - item.cancelAmount : sum;
+    } else {
+      switch (item.status) {
+        case 'COMPLETED':
+          return sum + item.finalAmount;
+        case 'PARTIAL_CANCELLED':
+          return sum + item.finalAmount;
+        default:
+          return sum;
+      }
     }
-    return sum + item.finalAmount; // 완료된 금액은 정상적으로 합산
   }, 0);
 
-  const completedCount = filteredData.filter(item => item.status === 'COMPLETED').length;
+  const completedCount = filteredData.filter(item =>
+    item.status === 'COMPLETED' ||
+    item.status === 'CANCELLED' ||
+    item.status === 'PARTIAL_CANCELLED'
+  ).length;
   const avgTransaction = filteredData.length > 0 ? Math.round(todaySales / filteredData.length) : 0;
 
-  // 상태값 뱃지 반환
+  // 상태 뱃지
   const getStatusBadge = (status) => {
     const statusConfig = {
       COMPLETED: { text: '완료', className: styles.completed },
@@ -151,25 +371,77 @@ export default function SalesManagement() {
     return <span className={`${styles.statusBadge} ${config.className}`}>{config.text}</span>;
   };
 
-  // 숫자 포맷 (3자리마다 콤마)
+  // 삭제 처리
+  const handleDelete = (item) => {
+    showConfirm(
+      '매출 삭제',
+      MESSAGES.SALES.DELETE_CONFIRM(item.customerName),
+      async () => {
+        closeModal();
+        setLoading(true);
+        setError(null);
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/sales/${item.salesCode}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (!response.ok) {
+            const errorMessage = parseErrorMessage(response, MESSAGES.SALES.DELETE_ERROR);
+            showError('삭제 실패', errorMessage);
+            return;
+          }
+
+          await fetchSalesData();
+          showSuccess('삭제 완료', MESSAGES.SALES.DELETE_SUCCESS);
+        } catch (err) {
+          console.error('매출 삭제 실패:', err);
+          showError('삭제 오류', MESSAGES.COMMON.NETWORK_ERROR);
+        } finally {
+          setLoading(false);
+        }
+      }
+    );
+  };
+
+  // 에러 메시지 파싱
+  const parseErrorMessage = (response, defaultMessage) => {
+    if (response.status === 400) return MESSAGES.COMMON.VALIDATION_ERROR;
+    if (response.status === 409) return MESSAGES.SALES.DUPLICATE_ERROR;
+    if (response.status === 404) return MESSAGES.SALES.NOT_FOUND;
+    if (response.status === 500) return MESSAGES.COMMON.SERVER_ERROR;
+    return defaultMessage;
+  };
+
+  // 숫자 포맷
   const formatNumber = (num) => num.toLocaleString('ko-KR');
 
-  // 로딩 중일 경우 출력
   if (isLoading) {
     return (
       <div className="content-card">
         <div className="loading-container" style={{ textAlign: 'center', padding: '50px' }}>
           <div>매출 데이터를 불러오는 중...</div>
+          <div style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
+            API 호출: {API_BASE_URL}/sales/active
+          </div>
         </div>
       </div>
     );
   }
 
+  // 디버깅 정보 표시
+  console.log('현재 상태:', {
+    salesData: salesData.length,
+    filteredData: filteredData.length,
+    currentData: currentData.length,
+    customers: customers.length,
+    menus: menus.length,
+    isLoading
+  });
+
   return (
     <div className="content-card">
-      {/* 메시지 모달 컴포넌트 */}
-      <MessageModal />
-
       {/* 페이지 헤더 */}
       <div className={styles.pageHeader}>
         <div className={styles.headerContent}>
@@ -178,10 +450,13 @@ export default function SalesManagement() {
             <p>매출 내역을 조회하고 새로운 매출을 등록할 수 있습니다.</p>
           </div>
           <div className={styles.headerActions}>
-            <Link href="/myshop/sales/register" className={styles.primaryButton}>
+            <button 
+              className={styles.primaryButton}
+              onClick={handleAddSales}
+            >
               매출 등록
-            </Link>
-            <button className={styles.secondaryButton}>
+            </button>
+            <button className={styles.secondaryButton} onClick={handleExcelDownload}>
               엑셀다운로드
             </button>
           </div>
@@ -192,7 +467,9 @@ export default function SalesManagement() {
       <div className={styles.statsContainer}>
         <div className={`${styles.statCard} ${styles.blue}`}>
           <div className={styles.statTitle}>총 금액</div>
-          <div className={styles.statValue}>{formatNumber(todaySales)}원</div>
+          <div className={styles.statValue} style={{ color: todaySales < 0 ? 'var(--color-error)' : 'inherit' }}>
+            {formatNumber(todaySales)}원
+          </div>
         </div>
         <div className={`${styles.statCard} ${styles.green}`}>
           <div className={styles.statTitle}>완료된 건수</div>
@@ -210,7 +487,12 @@ export default function SalesManagement() {
 
       {/* 검색 필터 */}
       <div className={styles.searchSection}>
-        <h3 className={styles.searchTitle}>🔍 매출 검색</h3>
+        <div className={styles.searchHeader}>
+          <h3 className={styles.searchTitle}>🔍 매출 검색</h3>
+          <button className={styles.resetButton} onClick={handleReset}>
+            초기화
+          </button>
+        </div>
         <div className={styles.searchGrid}>
           <div className={styles.searchField}>
             <label className={styles.searchLabel}>시작일</label>
@@ -258,19 +540,11 @@ export default function SalesManagement() {
               onChange={(e) => handleFilterChange('status', e.target.value)}
             >
               <option value="">전체</option>
-              <option value="COMPLETED">완료</option>
-              <option value="CANCELLED">취소</option>
+              <option value="COMPLETED">정상결제</option>
+              <option value="CANCELLED">전체취소</option>
               <option value="PARTIAL_CANCELLED">부분취소</option>
             </select>
           </div>
-        </div>
-        <div className={styles.searchActions}>
-          <button className={styles.searchButton} onClick={handleSearch}>
-            검색
-          </button>
-          <button className={styles.resetButton} onClick={handleReset}>
-            초기화
-          </button>
         </div>
       </div>
 
@@ -285,9 +559,9 @@ export default function SalesManagement() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>날짜/시간</th>
+                <th>시술일시</th>
                 <th>고객정보</th>
-                <th>시술내용</th>
+                <th>시술명</th>
                 <th>금액</th>
                 <th>결제방법</th>
                 <th>상태</th>
@@ -307,13 +581,9 @@ export default function SalesManagement() {
                   </td>
                   <td>
                     <div>{item.serviceName}</div>
-                    {item.memo && (
-                      <div style={{ fontSize: '12px', color: '#6b7280' }}>{item.memo}</div>
-                    )}
                   </td>
                   <td>
                     <div style={{ fontSize: '12px', color: '#565555ff' }}>{formatNumber(item.servicePrice)}원</div>
-                    {/* 할인 금액 또는 취소/부분취소 여부 표시 로직 변경 */}
                     {item.status === 'CANCELLED' || item.status === 'PARTIAL_CANCELLED' ? (
                       <div style={{ fontSize: '12px', color: '#ef4444' }}>
                         취소: -{formatNumber(item.cancelAmount)}원
@@ -333,10 +603,16 @@ export default function SalesManagement() {
                   <td>{getStatusBadge(item.status)}</td>
                   <td>
                     <div className={styles.actionButtons}>
-                      <button className={`${styles.actionButton} ${styles.editButton}`}>
+                      <button 
+                        className={`${styles.actionButton} ${styles.editButton}`}
+                        onClick={() => handleEditSales(item)}
+                      >
                         수정
                       </button>
-                      <button className={`${styles.actionButton} ${styles.deleteButton}`}>
+                      <button
+                        className={`${styles.actionButton} ${styles.deleteButton}`}
+                        onClick={() => handleDelete(item)}
+                      >
                         삭제
                       </button>
                     </div>
@@ -350,42 +626,52 @@ export default function SalesManagement() {
             <div className={styles.emptyIcon}>📊</div>
             <h3 className={styles.emptyTitle}>매출 데이터가 없습니다</h3>
             <p className={styles.emptyDescription}>
-              검색 조건을 변경하거나 새로운 매출을 등록해보세요.
+              {salesData.length === 0 
+                ? '등록된 매출이 없습니다. 예약에서 매출을 등록해보세요.' 
+                : '검색 조건에 맞는 매출이 없습니다. 검색 조건을 변경해보세요.'}
             </p>
+            <div style={{ fontSize: '12px', color: '#999', marginTop: '10px' }}>
+              전체 매출: {salesData.length}건 | 필터 후: {filteredData.length}건
+            </div>
           </div>
         )}
       </div>
 
       {/* 페이지네이션 */}
-      {totalPages > 1 && (
-        <div className={styles.pagination}>
-          <button
-            className={styles.paginationButton}
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            이전
-          </button>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(totalItems / itemsPerPage)}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+        showPageSizeSelector={true}
+        showFirstLast={true}
+      />
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-            <button
-              key={page}
-              className={`${styles.paginationButton} ${page === currentPage ? styles.active : ''}`}
-              onClick={() => setCurrentPage(page)}
-            >
-              {page}
-            </button>
-          ))}
+      {/* 매출 등록/수정 모달 */}
+      <AddEditSalesModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onSuccess={handleModalSuccess}
+        initialData={editingItem}
+        customers={customers}
+        menus={menus}
+        reservationData={reservationData}
+      />
 
-          <button
-            className={styles.paginationButton}
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            다음
-          </button>
-        </div>
-      )}
+      {/* 메시지 모달 */}
+      <MessageModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        onConfirm={modal.onConfirm}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        showCancel={modal.showCancel}
+        confirmText={modal.type === 'confirm' ? '삭제' : '확인'}
+        cancelText="취소"
+      />
     </div>
   );
 }

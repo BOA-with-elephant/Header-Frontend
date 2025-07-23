@@ -11,8 +11,8 @@ const MENU_CONFIG = {
       type: "expandable", // 확장 가능한 메뉴
       firstPath: "/myshop/reservation",
       items: [
-        { path: "/myshop/reservation", text: "예약 등록" },
-        { path: "/myshop/reservation-list", text: "예약 조회" }
+        { path: "/myshop/reservation", text: "예약조회/등록" },
+        { path: "/myshop/reservation-noshow", text: "노쇼/예약취소" }
       ]
     },
     {
@@ -22,7 +22,7 @@ const MENU_CONFIG = {
       firstPath: "/myshop/sales",
       items: [
         { path: "/myshop/sales", text: "매출조회/등록" },
-        { path: "/myshop/sales/analytics", text: "매출 통계" },
+        { path: "/myshop/sales/statistics", text: "매출 통계" },
       ]
     },
     {
@@ -31,8 +31,7 @@ const MENU_CONFIG = {
       type: "expandable", // 확장 가능한 메뉴
       firstPath: "/myshop/customer",
       items: [
-        { path: "/myshop/customer", text: "고객 등록" },
-        { path: "/myshop/customer-list", text: "고객 조회" }
+        { path: "/myshop/customer", text: "고객 조회/등록" },
       ]
     },
     {
@@ -47,9 +46,17 @@ const MENU_CONFIG = {
       type: "expandable", // 확장 가능한 메뉴
       firstPath: "/myshop/message",
       items: [
-        { path: "/myshop/message", text: "메시지 등록" },
-        { path: "/myshop/message-list", text: "메시지 조회" }
+        { path: "/myshop/message", text: "새 메세지 작성" },
+        { path: "/myshop/message/templateManagement", text: "템플릿 관리" },
+        { path: "/myshop/message/auto-setting", text: "자동 발송 설정" },
+        { path: "/myshop/message/list", text: "메시지 조회" }
       ]
+    },
+    {
+      key: "admin-shop",
+      title: "샵 등록 및 관리",
+      type: "direct", // 바로 이동하는 메뉴
+      path: "/myshop"
     }
   ],
   customer: [
@@ -61,21 +68,24 @@ const MENU_CONFIG = {
 // 사용자 프로필 컴포넌트 분리
 const UserProfile = ({ userRole, isAdmin, getProfilePath, userInfo }) => {
   // 권한별 프로필 정보 설정
+
+  console.log( '유저인포 확인',userInfo)
+
   const getProfileInfo = () => {
     if (userRole === 1) {
       // 권한 1: 일반고객 - 고객이름과 아이디
       return {
-        displayName: userInfo?.customerName || "홍길동",
-        displayId: userInfo?.customerId || "customer123",
-        circleText: userInfo?.customerName?.charAt(0) || "홍",
+        displayName: userInfo?.userName || "홍길동",
+        displayId: userInfo?.userId || "customer123",
+        circleText: userInfo?.userName?.charAt(0) || "홍",
         isCustomer: true
       };
     } else if (userRole === 2) {
       // 권한 2: 샵관리자 - 회원아이디와 샵이름
       return {
-        displayName: userInfo?.shopName || "펌앤코드",
+        displayName: userInfo?.userName || "펌앤코드",
         displayId: userInfo?.userId || "boa",
-        circleText: userInfo?.shopName?.charAt(0) || "펌",
+        circleText: userInfo?.userName?.charAt(0) || "펌",
         isCustomer: false
       };
     }
@@ -248,7 +258,7 @@ const useMenuLogic = (userRole, viewMode, onViewModeChange, closeSideMenu) => {
 
   // 샵 등록 및 관리 페이지로 이동 (권한 1 전용)
   const handleShopManagement = () => {
-    router.push("/shop-management"); // ✨ Next.js router.push
+    router.push("/myshop"); // ✨ Next.js router.push
   };
 
   // 프로필 경로 결정 로직
@@ -359,17 +369,17 @@ function SideMenuBar({
 
         {/* 하단 고정 메뉴 */}
         <div className="bottom-menu">
-          {/* 설정 메뉴 */}
-          <Link href={isAdmin ? "/myshop/settings" : "/user/settings"}>
-            {/* ✨ Next.js Link - 설정 페이지로 최적화된 네비게이션 */}
+          {/* 설정 메뉴 
+          <Link href={isAdmin ? "/myshop/settings" : "/shops/settings"}>
+             ✨ Next.js Link - 설정 페이지로 최적화된 네비게이션 
             <div className={`bottom-menu-item ${
-              pathname === (isAdmin ? "/myshop/settings" : "/user/settings") 
+              pathname === (isAdmin ? "/myshop/settings" : "/shops/settings") 
                 ? 'bottom-menu-item-active' : ''
             }`}>
               <span className="bottom-menu-icon">⚙️</span>
               <span className="bottom-menu-text">설정</span>
             </div>
-          </Link>
+          </Link>*/}
           
           {/* 권한별 하단 메뉴 */}
           {userRole === 1 ? (
@@ -383,7 +393,7 @@ function SideMenuBar({
             <div className="bottom-menu-item clickable" onClick={handleViewModeToggle}>
               <span className="bottom-menu-icon">{isAdmin ? "👤" : "🔧"}</span>
               <span className="bottom-menu-text">
-                {isAdmin ? "고객 페이지 전환" : "관리자 페이지 전환"}
+                {isAdmin? "고객 페이지 전환" : "관리자 페이지 전환"}
               </span>
             </div>
           ) : null}

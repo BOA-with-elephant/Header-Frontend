@@ -1,0 +1,178 @@
+.page {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f2f2f2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 로그인 페이지 전체 화면 중앙 정렬 */
+.container {
+    min-height: calc(100vh - 120px); /* 헤더+푸터 높이 고려 */
+    display: flex;
+    justify-content: center; /* 수평 정렬 */
+    min-height: 100vh;
+    padding: var(--spacing-2xl);
+}
+
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+/* 로그인 박스 스타일 */
+.loginContainer {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--spacing-2xl);
+  background-color: var(--background=#000);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.login-form {
+    display: flex;
+    justify-content: center; /* 수평 정렬 */
+    align-items: center;     /* 수직 정렬 */
+    gap: 20px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    background-color: #f2f2f2;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #2c3e50;
+    background-color: white;
+}
+
+.input-group input::placeholder {
+    color: #999;
+    font-weight: 400;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 14px;
+    text-align: center;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.login-button {
+    width: 100%;
+    padding: 18px;
+    background-color: #13183d;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.login-button:hover {
+    background-color: #000;
+}
+
+.login-button:active {
+    transform: translateY(1px);
+}
+
+.login-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.login-links .link {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-links .link:hover {
+    color: #13183d;
+    text-decoration: underline;
+}
+
+.login-links .separator {
+    color: #ccc;
+}
+
+.company-info {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.company-info p {
+    margin: 5px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-container {
+        margin: 20px;
+        padding: 40px 30px;
+    }
+    
+    .header-text {
+        font-size: 20px;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .footer-links .separator {
+        display: none;
+    }
+    
+    .company-info {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 30px 20px;
+    }
+    
+    .input-group input {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+    
+    .login-button {
+        padding: 16px;
+        font-size: 16px;
+    }
+}

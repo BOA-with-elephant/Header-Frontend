@@ -44,7 +44,7 @@ export default function MenuManagement() {
     const SHOP_CODE = 1; // TODO: 실제 샵 코드에 따라 동적으로 변경하기(추후 로그인한 사용자의 실제 샵 코드를 이곳에 적용해야 함)
     // --- 2. API 통신 기본 URL ---
     // 백엔드 서버와 통신할 때 사용할 기본 주소
-    const API_BASE_URL = `http://localhost:8080/api/v1/myshop/${SHOP_CODE}`;
+    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
 
     // --- 3. 메시지 모달 헬퍼 함수들 ---
     // 공통 메시지 모달을 쉽게 제어하기 위해 커스텀 훅을 사용(import)
@@ -272,7 +272,7 @@ export default function MenuManagement() {
         if (updatedCategory) { // 업데이트된 카테고리 데이터가 있으면 (수정 완료)
             showSuccess('카테고리 수정 완료', MESSAGES.CATEGORY.UPDATE_SUCCESS);
         } else { // 데이터가 없으면 (삭제 완료)
-            showWarning('카테고리 삭제 완료', MESSAGES.CATEGORY.DELETE_SUCCESS + '\n관련 시술들도 함께 삭제되었습니다.');
+            showSuccess('카테고리 삭제 완료', MESSAGES.CATEGORY.DELETE_SUCCESS + '\n관련 시술들도 함께 삭제되었습니다.');
         }
     };
 

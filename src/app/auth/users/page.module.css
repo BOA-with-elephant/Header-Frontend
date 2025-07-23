@@ -1,0 +1,36 @@
+.linkStyle {
+  color: #3b82f6;
+  font-size: x-small;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.content-card {
+  width: 200px;
+  max-width: 250px;
+  padding: var(--spacing-2xl);
+  background-color: var(--background=#000);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-group {
+    justify-content: center; /* 수평 정렬 */
+    align-items: center;     /* 수직 정렬 */
+    gap: 5px;
+}
+
+.loginButton {
+    width: 25%;
+    padding: 15px;
+    background-color: #13183d;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
