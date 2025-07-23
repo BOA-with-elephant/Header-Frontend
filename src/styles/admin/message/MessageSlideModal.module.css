@@ -1,0 +1,212 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--spacing-lg);
+}
+
+.modalContainer {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh; /* 뷰포트 높이의 90%로 제한 */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* 컨테이너 자체는 숨김 */
+}
+
+.modalHeader {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0; /* 헤더가 줄어들지 않도록 */
+}
+
+.headerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.modalTitle {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+}
+
+.closeButton:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.progressContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.progressBar {
+    width: 100%;
+    height: 4px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+    border-radius: var(--radius-full);
+}
+
+.progressText {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-weight: var(--font-medium);
+}
+
+.modalContent {
+    flex: 1; /* 남은 공간을 모두 차지 */
+    overflow-y: auto; /* 세로 스크롤 활성화 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+    padding: var(--spacing-lg);
+    /* 스크롤바 스타일링 (선택사항) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+/* 웹킷 브라우저용 스크롤바 스타일링 */
+.modalContent::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+}
+
+.modalContent::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+.stepContent {
+    min-height: 100%; /* 컨텐츠가 최소한 전체 높이를 가지도록 */
+}
+
+.modalFooter {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-shrink: 0; /* 푸터가 줄어들지 않도록 */
+    background: var(--bg-primary); /* 스크롤 시 푸터 배경 보장 */
+}
+
+.navButton {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 80px;
+}
+
+.navButton.prev {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+}
+
+.navButton.prev:hover:not(:disabled) {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.navButton.next {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.navButton.next:hover:not(:disabled) {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.navButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .modalOverlay {
+        padding: var(--spacing-md);
+    }
+    
+    .modalContainer {
+        max-height: 95vh; /* 모바일에서는 더 많은 공간 활용 */
+    }
+    
+    .modalHeader,
+    .modalContent,
+    .modalFooter {
+        padding: var(--spacing-md);
+    }
+    
+    .modalTitle {
+        font-size: var(--text-lg);
+    }
+    
+    .navButton {
+        min-width: 70px;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .modalOverlay {
+        padding: var(--spacing-sm);
+    }
+    
+    .modalContainer {
+        max-height: 98vh;
+    }
+    
+    .modalFooter {
+        flex-direction: column-reverse;
+    }
+    
+    .navButton {
+        width: 100%;
+        min-width: unset;
+    }
+}
