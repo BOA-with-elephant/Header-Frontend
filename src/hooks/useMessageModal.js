@@ -27,21 +27,23 @@ export function useMessageModal() {
         });
     };
 
-    const showSuccess = (title, message) => {
+    const showSuccess = (title, message, onClose = null) => {
         setModal({
             isOpen: true,
             type: 'success',
             title,
             message,
-            onConfirm: closeModal,
+            onConfirm: () => {
+                closeModal();
+                if (onClose) onClose(); // 콜백 실행
+            },
             showCancel: false
         });
     };
-
     const showWarning = (title, message) => {
         setModal({
             isOpen: true,
-            type: 'warning', 
+            type: 'warning',
             title,
             message,
             onConfirm: closeModal,
