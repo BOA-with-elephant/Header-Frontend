@@ -6,7 +6,6 @@ import styles from '@/styles/admin/message/MessageList.module.css';
 
 export default function MessageList() {
     const router = useRouter();
-    
     // 메시지 리스트 상태
     const [messages, setMessages] = useState([]);
     const [allMessages, setAllMessages] = useState([]); // 전체 메시지 데이터
@@ -42,20 +41,15 @@ export default function MessageList() {
     const fetchMessages = async () => {
         try {
             setLoading(true);
-            
             // 모든 데이터를 가져옴 (필터링 없이)
             const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages/history`);
-            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
             const result = await response.json();
-            
             if (!result.success) {
                 throw new Error(result.message || '메시지 목록을 불러오는데 실패했습니다.');
             }
-            
             setAllMessages(result.data); // 전체 데이터 저장
 
         } catch (error) {
@@ -122,8 +116,16 @@ export default function MessageList() {
     };
 
     // 상세 조회 페이지로 이동
-    const handleDetailView = (messageId) => {
-        router.push(`/myshop/message/list/detail/${messageId}`);
+    const handleDetailView = (message) => {
+        const queryParams = new URLSearchParams({
+            date: message.date,
+            time: message.time,
+            type: message.type,
+            title: message.subject,
+            totalCount: message.sendCount
+        });
+
+        router.push(`/myshop/message/list/detail/${message.id}?${queryParams.toString()}`);
     };
 
     // 페이지 변경 처리
@@ -140,8 +142,8 @@ export default function MessageList() {
         // 이전 페이지 버튼
         if (currentPage > 1) {
             pages.push(
-                <button 
-                    key="prev" 
+                <button
+                    key="prev"
                     onClick={() => handlePageChange(currentPage - 1)}
                     className={styles.paginationButton}
                 >
@@ -166,8 +168,8 @@ export default function MessageList() {
         // 다음 페이지 버튼
         if (currentPage < totalPages) {
             pages.push(
-                <button 
-                    key="next" 
+                <button
+                    key="next"
                     onClick={() => handlePageChange(currentPage + 1)}
                     className={styles.paginationButton}
                 >
@@ -187,7 +189,7 @@ export default function MessageList() {
             <div className={styles.filterSection}>
                 <div className={styles.filterGroup}>
                     <label className={styles.filterLabel}>발송 유형</label>
-                    <select 
+                    <select
                         value={filters.type}
                         onChange={(e) => handleFilterChange('type', e.target.value)}
                         className={styles.filterSelect}
@@ -217,7 +219,7 @@ export default function MessageList() {
                     </div>
                 </div>
 
-                <button 
+                <button
                     onClick={handleResetFilters}
                     className={styles.resetButton}
                 >
@@ -249,9 +251,8 @@ export default function MessageList() {
                                     <div className={styles.listItem}>{message.date}</div>
                                     <div className={styles.listItem}>{message.time}</div>
                                     <div className={styles.listItem}>
-                                        <span className={`${styles.typeTag} ${
-                                            message.type === 'GROUP' ? styles.groupType : styles.individualType
-                                        }`}>
+                                        <span className={`${styles.typeTag} ${message.type === 'GROUP' ? styles.groupType : styles.individualType
+                                            }`}>
                                             {message.type === 'GROUP' ? '그룹' : '개별'}
                                         </span>
                                     </div>
@@ -262,8 +263,8 @@ export default function MessageList() {
                                         </div>
                                     </div>
                                     <div className={styles.listItem}>
-                                        <button 
-                                            onClick={() => handleDetailView(message.id)}
+                                        <button
+                                            onClick={() => handleDetailView(message)}
                                             className={styles.detailButton}
                                         >
                                             상세보기
