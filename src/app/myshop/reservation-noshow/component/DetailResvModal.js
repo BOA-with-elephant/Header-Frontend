@@ -17,7 +17,7 @@ export default function DetailResvModal({
 }){
     const [detailResvInfo, sestDetailresvInfo] = useState({});
     const SHOP_CODE = 1;
-    const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
+    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     useEffect(() => {
         const detailReservation = async() => {

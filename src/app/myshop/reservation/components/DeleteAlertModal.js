@@ -2,10 +2,10 @@ import React, {useState, useEffect} from "react";
 import MessageModal from "@/components/ui/MessageModal";
 
 
-export default function DeleteAlertModal({isShowDeleteModal, setIsShowDeleteModal, setIsShowModal, selectedResvCode, fetchReservationData}){
+export default function DeleteAlertModal({isShowDeleteModal, setIsShowDeleteModal, setIsShowModal, selectedResvCode, fetchReservationData, fetchSearchResult}){
 
     const SHOP_CODE = 1;
-    const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
+    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     useEffect(() => {
         setIsShowModal(false);
@@ -27,6 +27,7 @@ export default function DeleteAlertModal({isShowDeleteModal, setIsShowDeleteModa
             console.log('예약 취소 성공 (?) : ', data);
             await fetchReservationData();
             setIsShowDeleteModal(false);
+            await fetchSearchResult();
         } else {
                 const text = await response.text();
                 console.warn("받은 응답이 JSON이 아님 : ", text);

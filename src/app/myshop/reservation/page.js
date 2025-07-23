@@ -13,7 +13,6 @@ import NewReservationModal from "./components/NewReservationModal";
 import DeleteAlertModal from "./components/DeleteAlertModal";
 import RealDeleteAlertModal from "./components/RealDeleteAlertModal";
 import ResultCustomMessageModal from "./components/ResultCustomMessageModal";
-import AddEditMenuModal from "../menu/components/AddEditMenuModal";
 import AddEditSalesModal from "../sales/components/AddEditSalesModal";
 
 export default function Reservation() {
@@ -47,7 +46,7 @@ export default function Reservation() {
     
 
     const SHOP_CODE = 1;
-    const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
+    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
       
 
     const fetchReservationData = async() => {
@@ -203,6 +202,7 @@ export default function Reservation() {
                             setIsShowModal={setIsShowModal}
                             selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
+                            fetchSearchResult={fetchSearchResult}
                             
                         />
                     )}
@@ -214,6 +214,7 @@ export default function Reservation() {
                             setIsShowModal={setIsShowModal}
                             selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
+                            fetchSearchResult={fetchSearchResult}
                         />
                     )}
                     {/* 성공 메시지 모달 */}

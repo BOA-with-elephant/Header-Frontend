@@ -37,7 +37,7 @@ export default function AddEditSalesModal({
     // 상수
     const isEdit = !!initialData?.salesCode;
     const API_BASE_URL = 'http://localhost:8080/api/v1/my-shops/1';
-    const RESERVATION_API_URL = 'http://localhost:8080/my-shops/1/reservation';
+    const RESERVATION_API_URL = 'http://localhost:8080/api/v1/my-shops/1/reservation';
 
     // 유틸리티 함수
     const getToday = () => new Date().toISOString().split('T')[0];
@@ -316,6 +316,7 @@ export default function AddEditSalesModal({
                         console.log('시술 완료 처리 성공(?) :', data);
                         setIsShowDetailReservation(true);
                         await fetchSearchResult();
+                        setIsOpen(false);
                     }else {
                         const text = await response.text();
                         console.log('📄 텍스트 응답:', text);
