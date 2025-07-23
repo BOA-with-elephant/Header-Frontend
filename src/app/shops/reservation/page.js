@@ -24,8 +24,6 @@ export default function UserReservation() {
 
     const [endDate, setEndDate] = useState(new Date()); //오늘까지
 
-    const userCode = 1; //TODO. 사용자코드 처리
-
     const fetchReservations = async (start, end) => {
         if (!start || !end) {
             alert('조회 날짜를 선택해 주세요')
@@ -55,7 +53,7 @@ export default function UserReservation() {
             )
             console.log('데이트 포맷 확인: ' + formatDate(start) + 'and' + formatDate(end))
             if (!res.ok) {
-                throw new Error('예약 내역 조회에 실패했습니다.');
+                window.alert('예약 내역 조회에 실패했습니다.')
             }
             const json = await res.json();
             console.log('데이터 확인' + json);
@@ -134,7 +132,6 @@ export default function UserReservation() {
             {selectedResvCode && (
                 <ReservationDetail
                     resvCode={selectedResvCode}
-                    userCode={userCode}
                     onClose={handleCloseDetail}
                 />
             )}

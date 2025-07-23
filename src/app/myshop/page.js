@@ -16,19 +16,14 @@ export default function MyShopPage() {
 
     const fetchMyShops = async () => {
 
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.alert('사용자 정보가 유효하지 않습니다')
-        }
-        console.log(token);
-
         const testRes = await fetch('http://localhost:8080/api/v1/my-shops', {
             method: 'GET',
             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
             }
         });
+
         const testData = await testRes.json();
         console.log(testData);
         if (testRes.ok) setMyShops(testData.results['shop-list']);
