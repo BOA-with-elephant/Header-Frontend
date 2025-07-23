@@ -7,6 +7,8 @@ import CustomerRegisterModal from '@/components/ui/CustomerRegisterModal';
 import CustomerDetailModal from '@/components/ui/CustomerDetailModal';
 import CustomerHistoryModal from '@/components/ui/CustomerHistoryModal';
 import MessageSlideModal from '@/components/message/MessageSlideModal';
+import NewReservationModal from '@/app/myshop/reservation/components/NewReservationModal';
+import ResultCustomMessageModal from '../reservation/components/ResultCustomMessageModal';
 import styles from '@/styles/admin/customer/Customer.module.css';
 
 export default function Customer() {
@@ -35,6 +37,25 @@ export default function Customer() {
         isOpen: false,
         customer: null
     });
+
+    // ======= 예약 관련 상태 추가 =======
+    // 예약 등록 모달 상태
+    const [reservationModal, setReservationModal] = useState({
+        isOpen: false,
+        selectedCustomer: null,
+        selectedDate: new Date().toISOString().split('T')[0] // 기본값: 오늘 날짜
+    });
+
+    // 예약 결과 메시지 모달 상태
+    const [reservationResultModal, setReservationResultModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'success'
+    });
+
+    // 예약 가능 시간 데이터
+    const [resvDateList, setResvDateList] = useState([]);
 
     // 고객 데이터 상태
     const [customers, setCustomers] = useState([]);
@@ -98,9 +119,26 @@ export default function Customer() {
         }
     };
 
-    // 컴포넌트 마운트 시 고객 목록 조회
+    // ======= 예약 관련 API 호출 함수 추가 =======
+    // 예약 가능 시간 데이터 조회
+    const fetchReservationData = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_ID}/available-schedule`);
+            if (!response.ok) {
+                throw new Error('예약 가능 시간 조회에 실패했습니다.');
+            }
+            const data = await response.json();
+            setResvDateList(data);
+        } catch (error) {
+            console.error('예약 가능 시간 조회 실패:', error);
+            showError('오류', '예약 가능 시간을 불러오는데 실패했습니다.');
+        }
+    };
+
+    // 컴포넌트 마운트 시 고객 목록 및 예약 데이터 조회
     useEffect(() => {
         fetchCustomers();
+        fetchReservationData(); // 예약 데이터도 함께 조회
     }, []);
 
     // 고객 메모 수정 API 호출
@@ -224,6 +262,45 @@ export default function Customer() {
         }
     };
 
+    // ======= 예약 관련 모달 핸들러 추가 =======
+    // 예약 등록 모달 열기
+    const openReservationModal = (customer) => {
+        const today = new Date().toISOString().split('T')[0];
+        setReservationModal({
+            isOpen: true,
+            selectedCustomer: customer,
+            selectedDate: today // 기본값으로 오늘 날짜 설정
+        });
+    };
+
+    // 예약 등록 모달 닫기
+    const closeReservationModal = () => {
+        setReservationModal({
+            isOpen: false,
+            selectedCustomer: null,
+            selectedDate: new Date().toISOString().split('T')[0]
+        });
+    };
+
+    // 예약 결과 메시지 모달 열기
+    const showReservationResult = (title, message, type = 'success') => {
+        setReservationResultModal({
+            isOpen: true,
+            title,
+            message,
+            type
+        });
+    };
+
+    // 예약 결과 메시지 모달 닫기
+    const closeReservationResultModal = () => {
+        setReservationResultModal({
+            isOpen: false,
+            title: '',
+            message: '',
+            type: 'success'
+        });
+    };
 
     // 메세지 모달 열기
     const openMessageModal = (recipientSelection) => {
@@ -249,7 +326,6 @@ export default function Customer() {
             showError('오류', '히스토리를 불러오는데 실패했습니다.');
         }
     };
-
 
     // 히스토리 모달 닫기
     const closeHistoryModal = () => {
@@ -377,7 +453,6 @@ export default function Customer() {
         setRegisterModal({ isOpen: true });
     };
 
-
     // 신규 고객 등록 확인
     const handleCustomerRegister = async (customerData) => {
         try {
@@ -422,7 +497,6 @@ export default function Customer() {
         );
     };
 
-
     // 고객 액션 처리 (이벤트 전파 방지 포함)
     const handleCustomerAction = (clientCode, action, event) => {
         // 이벤트 전파 방지
@@ -438,7 +512,8 @@ export default function Customer() {
                 openDetailModal(customer);
                 break;
             case 'reservation':
-                showSuccess('예약 완료', `${customer.name}님의 예약이 완료되었습니다.`);
+                // ======= 예약 액션 수정 =======
+                openReservationModal(customer); // 실제 예약 모달 열기로 변경
                 break;
             case 'history':
                 openHistoryModal(customer);
@@ -636,6 +711,38 @@ export default function Customer() {
                 onClose={closeHistoryModal}
                 title={historyModal.title}
                 historyData={historyModal.historyData}
+            />
+
+            {/* ======= 예약 관련 모달 추가 ======= */}
+            {/* 예약 등록 모달 */}
+            {reservationModal.isOpen && reservationModal.selectedCustomer && (
+                <NewReservationModal
+                    isShowNewResvModal={reservationModal.isOpen}
+                    setIsShowNewResvModal={closeReservationModal}
+                    selectedDate={reservationModal.selectedDate}
+                    selectedCustomer={reservationModal.selectedCustomer} // 선택된 고객 정보 전달
+                    resvDateList={resvDateList}
+                    fetchReservationData={fetchReservationData}
+                    setIsShowMessageModal={(isOpen) => {
+                        if (!isOpen) {
+                            closeReservationResultModal();
+                        }
+                    }}
+                    setResultTitle={(title) => setReservationResultModal(prev => ({ ...prev, title }))}
+                    setResultMessage={(message) => setReservationResultModal(prev => ({ ...prev, message }))}
+                    setResultType={(type) => setReservationResultModal(prev => ({ ...prev, type }))}
+                    setMessageContext={() => {}} // 필요에 따라 구현
+                />
+            )}
+
+            {/* 예약 결과 메시지 모달 */}
+            <ResultCustomMessageModal
+                isShowMessageModal={reservationResultModal.isOpen}
+                setIsShowMessageModal={closeReservationResultModal}
+                resultMessage={reservationResultModal.message}
+                resultTitle={reservationResultModal.title}
+                resultType={reservationResultModal.type}
+                messageContext="customer-reservation"
             />
 
             {/* 메시지 모달 */}

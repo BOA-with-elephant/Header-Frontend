@@ -120,4 +120,14 @@
   border: none;
 }
 
+.customerInfo {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+    padding: 8px 12px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
 
