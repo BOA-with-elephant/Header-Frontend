@@ -9,6 +9,7 @@ import CustomerCard from '@/components/ui/CustomerCard';
 import CustomerRegisterModal from '@/components/ui/CustomerRegisterModal';
 import CustomerDetailModal from '@/components/ui/CustomerDetailModal';
 import CustomerHistoryModal from '@/components/ui/CustomerHistoryModal';
+import MessageSlideModal from '@/components/message/MessageSlideModal';
 import styles from '@/styles/admin/customer/Customer.module.css';
 
 export default function Customer() {
@@ -87,6 +88,11 @@ export default function Customer() {
         setMessageModal({ isOpen: true, recipientSelection });
     };
 
+     // 메세지 모달 닫기
+    const closeMessageModal = () => {
+        setMessageModal({ isOpen: false, recipientSelection: null });
+    };
+
     // 히스토리 모달 열기
     const openHistoryModal = async (customer) => {
         try {
@@ -101,6 +107,7 @@ export default function Customer() {
             showError('오류', '히스토리를 불러오는데 실패했습니다.');
         }
     };
+
 
     // 히스토리 모달 닫기
     const closeHistoryModal = () => {
@@ -291,6 +298,7 @@ export default function Customer() {
                 break;
             case 'message':
                 openMessageModal(customer);
+                openMessageModal(customer);
                 break;
             case 'delete':
                 handleDeleteCustomer(clientCode);
@@ -472,6 +480,13 @@ export default function Customer() {
                     </>
                 )}
             </div>
+
+            {/* 메세지 전송 모달 */}
+            <MessageSlideModal
+                isOpen={messageModal.isOpen}
+                onClose={closeMessageModal}
+                recipientSelection={messageModal.recipientSelection} 
+            />
 
             {/* 신규 고객 등록 모달 */}
             <CustomerRegisterModal
