@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react'; // useState, useEffect 임�
 // 헤더 액션 버튼 설정을 별도 객체로 분리
 const HEADER_ACTIONS = {
   authenticated: [
-    { href: "/profile", text: "프로필", type: "link" },
+    { href: "/auth/profile", text: "프로필", type: "link" },
     { text: "로그아웃", type: "action" } // href 제거, type: "action"으로 변경
   ],
   unauthenticated: [
