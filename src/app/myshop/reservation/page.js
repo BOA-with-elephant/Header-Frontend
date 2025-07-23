@@ -13,6 +13,7 @@ import NewReservationModal from "./components/NewReservationModal";
 import DeleteAlertModal from "./components/DeleteAlertModal";
 import RealDeleteAlertModal from "./components/RealDeleteAlertModal";
 import ResultCustomMessageModal from "./components/ResultCustomMessageModal";
+import AddEditSalesModal from "../sales/components/AddEditSalesModal";
 
 export default function Reservation() {
     const [searchResultList, setSearchResultList] = useState([]);
@@ -37,10 +38,15 @@ export default function Reservation() {
     const [messageContext, setMessageContext] = useState('');
     const [isPreventRegist, setIsPreventRegist] = useState(false);
     const [preventRegistDate, setPreventRegistDate] = useState();
+    const [isOpenSalesModal, setIsOpenSalesModal] = useState(false);
+    // const [onCloseSalesModal, setOnCloseSalesModal] = useState(false);
+    const [detailReservation, setDetailReservation] = useState({});
+    const [isModalOpen, setIsModalOpen] = useState(false); // 매출 모달 상태
+    const [editingItem, setEditingItem] = useState(null);
     
 
     const SHOP_CODE = 1;
-    const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
+    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
       
 
     const fetchReservationData = async() => {
@@ -59,14 +65,33 @@ export default function Reservation() {
             const data2 = await response2.json();
             setResvDateList(data2);
             console.log('예약 가능 시간', data2);
+
         } catch (error){
             console.error('예약 정보 불러오기 실패 :', error);
         }
     }
 
+    const fetchSearchResult = async() => {
+        try{
+            // const formattedResvDate = `${selectedDate.slice(0, 4)}-${selectedDate.slice(4, 6)}-${selectedDate.slice(6, 8)}`;
+            const response3 = await fetch(`${API_BASE_URL}?resvDate=${selectedDate}`);
+            const data3 = await response3.json();
+            setSearchResultList(data3);
+        }catch (error){
+            console.error('예약 정보 불러오기 실패 :', error);
+        };
+    };
+
+
     useEffect(() => {
         fetchReservationData();
     }, []);
+
+    useEffect(() => {
+        if (selectedDate) {
+            fetchSearchResult();
+        }
+    }, [selectedDate]);
 
     useEffect(() => {
         if(isCloseComplete){
@@ -74,6 +99,11 @@ export default function Reservation() {
             setIsCloseComplete(false);
         }
     },[isCloseComplete]);
+
+    const handleModalClose = () => {
+        setIsOpenSalesModal(false);
+        setEditingItem(null);
+    };
 
     return (
         <>
@@ -125,6 +155,8 @@ export default function Reservation() {
                             setIsShowDeleteModal={setIsShowDeleteModal}
                             setIsShowRealDeleteModal={setIsShowRealDeleteModal}
                             selectedDate={selectedDate}
+                            setIsOpenSalesModal={setIsOpenSalesModal}
+                            setDetailReservation={setDetailReservation}
                         />
                     )}
                     {/* 예약 등록 모달 */}
@@ -170,6 +202,7 @@ export default function Reservation() {
                             setIsShowModal={setIsShowModal}
                             selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
+                            fetchSearchResult={fetchSearchResult}
                             
                         />
                     )}
@@ -181,6 +214,7 @@ export default function Reservation() {
                             setIsShowModal={setIsShowModal}
                             selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
+                            fetchSearchResult={fetchSearchResult}
                         />
                     )}
                     {/* 성공 메시지 모달 */}
@@ -194,7 +228,16 @@ export default function Reservation() {
                         setIsCloseComplete={setIsCloseComplete}
                         messageContext={messageContext}
                     />
-                    {/*  */}
+                    {/* 매출 등록 */}
+                    <AddEditSalesModal
+                        detailReservation={detailReservation}
+                        isOpen={isOpenSalesModal}
+                        chosedDate={selectedDate}
+                        setIsShowDetailReservation={setIsShowDetailReservation}
+                        setIsOpen={setIsOpenSalesModal}
+                        fetchSearchResult={fetchSearchResult}
+                        onClose={handleModalClose}
+                    />
             </div>
         </>
     )
