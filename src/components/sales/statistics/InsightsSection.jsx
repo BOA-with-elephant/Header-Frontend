@@ -46,16 +46,13 @@ const InsightsSection = ({ monthlyTrend, categoryStats, paymentMethodStats, tran
         <div className={styles.insightCard}>
           <h4 className={styles.insightTitle}>매출 트렌드</h4>
           <p className={styles.insightText}>
-            {monthlyTrend.data.length > 1 ? (
-              `최근 ${monthlyTrend.data.length}개월 중 최고 매출: ${Math.max(
-                ...monthlyTrend.data.map(d => {
-                  const num = Number(d.amount);
-                  return !isNaN(num) ? num : 0;
-                })
-              ).toLocaleString()}원`
-            ) : (
-              '충분한 데이터가 필요합니다.'
-            )}
+            {monthlyTrend.data.length > 1 ? (() => {
+              // 가장 높은 매출 찾기
+              const maxItem = monthlyTrend.data.reduce((max, cur) =>
+                Number(cur.totalAmount) > Number(max.totalAmount) ? cur : max
+              );
+              return `가장 높은 매출: ${Number(maxItem.totalAmount).toLocaleString()}원 (${maxItem.label})`;
+            })() : '충분한 데이터가 필요합니다.'}
           </p>
           {/* 
               향후 확장 가능한 분석:

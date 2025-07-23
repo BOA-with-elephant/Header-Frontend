@@ -3,9 +3,19 @@ import styles from '../../../../styles/admin/reservation/ReservationMenuModal.mo
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function ReservationMenuModal({setIsShowModal ,selectedDate, setSearchResultList, setIsOpen, setIsShowNewResvModal, resvDateList}){
+export default function ReservationMenuModal({
+    setIsShowModal, 
+    selectedDate, 
+    setSearchResultList, 
+    setIsOpen, 
+    setIsShowNewResvModal, 
+    resvDateList,
+    isPreventRegist,
+    setIsPreventRegist,
+    preventRegistDate,
+    setPreventRegistDate
+}){
     const [pastDay, setPastDay] = useState(false);
-    const [isPreventRegist, setIsPreventRegist] = useState(false);
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
     
@@ -27,9 +37,9 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
         }
     }
 
-    const ShowNewResvModalHandler = () => {
+    const ShowNewResvModalHandler = () => { 
 
-        if(pastDay || isPreventRegist) return ; // 클릭 막기
+        if(pastDay || isPreventRegist && preventRegistDate === selectedDate) return ; // 클릭 막기
 
         setIsShowModal(false);
         setIsShowNewResvModal(true);
@@ -73,6 +83,7 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
 
     const PreventRegistHandler = () => {
         setIsPreventRegist(prev => !prev);
+        setPreventRegistDate(selectedDate);
     }
 
     return(
@@ -89,13 +100,13 @@ export default function ReservationMenuModal({setIsShowModal ,selectedDate, setS
                     /> 
                 </div>
                 <div className={styles.modalBodyWrapper}>
-                    <div className={`${styles.menus} ${pastDay ? styles.pastDay : ''} ${isPreventRegist ? styles.preventRegist : ''}`} 
+                    <div className={`${styles.menus} ${pastDay ? styles.pastDay : ''} ${isPreventRegist && preventRegistDate === selectedDate? styles.preventRegist : ''}`} 
                         onClick={ShowNewResvModalHandler}
                     >
                         예약 등록
                     </div>
                     <div className={styles.menus} onClick={ShowDetailReservationHandler}>예약 조회</div>
-                    <div className={styles.menus} onClick={PreventRegistHandler}>{ isPreventRegist ? '예약 풀기' : '예약 막기'}</div>
+                    <div className={styles.menus} onClick={PreventRegistHandler}>{ isPreventRegist && preventRegistDate === selectedDate ? '예약 풀기' : '예약 막기'}</div>
                 </div>
             </div>
         </>

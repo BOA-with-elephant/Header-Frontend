@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../../../../styles/admin/reservation/DetailReservationModal.module.css';
+import styles from '../../../../styles/admin/reservation-noshow/DetailResvModal.module.css';
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function DetailReservationModal({selectedResvCode, setIsShowDetailReservation, setIsShowModal, setIsShowUpdateModal, setIsShowDeleteModal, setIsShowRealDeleteModal, selectedDate}){
+export default function DetailResvModal({
+    selectedResvCode, 
+    setIsShowDetailReservation, 
+    setIsShowRealDeleteModal, 
+    onlyNoShowList,
+    setIsShowMessageModal,
+    setResultTitle,
+    setResultMessage,
+    setResultType,
+    onDeleteSuccess,
+    setMessageContext
+}){
     const [detailResvInfo, sestDetailresvInfo] = useState({});
-    const today = new Date();
-    const todayOnlyDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const targetDate = new Date(selectedDate);
-    const isBeforeToday = targetDate < todayOnlyDate;
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
 
@@ -24,7 +31,7 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
         };
         detailReservation();
 
-    },[]);
+    },[selectedResvCode]);
 
     useEffect(() => {
         // 스크롤 막기
@@ -57,39 +64,53 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
         }
     }
 
-    const showUpdateReservationModalHandler = () => {
-
-        if(isBeforeToday){
-            return;
-        }
-
-        setIsShowModal(false);
-        setIsShowUpdateModal(true);
-        setIsShowDetailReservation(false);
-    }
-
-    const showDeleteAlertModalHandler = () => {
-
-        if(isBeforeToday){
-            return;
-        }
-
-        setIsShowModal(false);
-        setIsShowDeleteModal(true);
-        setIsShowDetailReservation(false);
-    }
-
     const showRealDeleteModalHandler = () => {
-        setIsShowModal(false);
         setIsShowRealDeleteModal(true);
         setIsShowDetailReservation(false);
     }
 
-    const completeProcedureHandler = async() => {
-        sestDetailresvInfo(prev => ({
-            ...prev,
-            resvState : 'FINISH'
-        }));
+    // '노쇼 처리' 버튼을 표시할지 여부를 결정하는 로직
+    const isNoShow = onlyNoShowList.some((item) => item.resvCode === selectedResvCode);
+
+    const noShowHandler = async() => {
+
+        try{
+            const response = await fetch(`${API_BASE_URL}/noshow/${selectedResvCode}`, {
+                method : "PUT",
+                headers : {
+                    "Content-Type" : "application/json"
+                },
+                body : JSON.stringify({})
+            });
+
+            const contentType = response.headers.get("Content-Type");
+
+            if(contentType && contentType.includes("application/json")){
+                const data = await response.json();
+                console.log('노쇼 처리 성공 : ', data);
+                
+                if (onDeleteSuccess) {
+                    onDeleteSuccess();
+                }
+                setIsShowDetailReservation(false);
+                setResultType('success');
+                setResultTitle('노쇼 처리 성공');
+                setResultMessage('노쇼 처리가 성공적으로 처리되었습니다.')
+                setMessageContext('noshow');
+                setIsShowMessageModal(true);
+            } else {
+                const text = await response.text();
+                console.warn("받은 응답이 JSON이 아님 : ", text);
+            }
+        } catch(error) {
+            console.error('노쇼 처리 실패 :', error);
+            setResultType('error');
+            setResultTitle('노쇼 처리 실패');
+            setResultMessage('노쇼 처리를 실패하였습니다.')
+            setTimeout(() => {
+                setIsShowMessageModal(true);
+            }, 100);
+        }
     }
 
     return(
@@ -108,11 +129,6 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
                 <div className={styles.modalBodyWrapper}>
                     <div className={styles.valueRow}>
                         <p className={styles.bigTitle}>📅 예약 정보</p>
-                        {
-                            detailResvInfo.resvState === 'APPROVE' && (
-                            <button className={styles.buttons} onClick={completeProcedureHandler}>시술 완료</button>
-                            )
-                        }
                     </div>
                     <div className={styles.resvInfoWrapper}>
                         <div className={styles.resvInfo}>
@@ -153,8 +169,9 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
                         <p className={styles.userComment}>{detailResvInfo.userComment}</p>
                     </div>
                     <div className={styles.buttonsWrapper}>
-                        <button className={styles.buttons} disabled={isBeforeToday} onClick={showUpdateReservationModalHandler}>예약 수정</button>
-                        <button className={styles.buttons} disabled={isBeforeToday} onClick={showDeleteAlertModalHandler}>예약 취소</button>
+                        {isNoShow && (
+                            <button className={styles.buttons} onClick={noShowHandler}>노쇼 처리</button>
+                        )}
                         <button className={styles.buttons} onClick={showRealDeleteModalHandler}>예약 삭제</button>
                     </div>
                 </div>
