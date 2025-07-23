@@ -33,9 +33,10 @@ export default function Reservation() {
     const [resultMessage, setResultMessage] = useState('');
     const [resultTitle, setResultTitle] = useState('');
     const [resultType, setResultType] = useState('');
-    // const [onMessageClose, setOnMessageClose] = useState(null);
     const [isCloseComplete, setIsCloseComplete] = useState(false);
     const [messageContext, setMessageContext] = useState('');
+    const [isPreventRegist, setIsPreventRegist] = useState(false);
+    const [preventRegistDate, setPreventRegistDate] = useState();
     
 
     const SHOP_CODE = 1;
@@ -108,7 +109,10 @@ export default function Reservation() {
                             resvDateList={resvDateList}
                             selectedResvCode={selectedResvCode}
                             setIsShowNewResvModal={setIsShowNewResvModal}
-
+                            isPreventRegist={isPreventRegist}
+                            setIsPreventRegist={setIsPreventRegist}
+                            preventRegistDate={preventRegistDate}
+                            setPreventRegistDate={setPreventRegistDate}
                         />
                     )}
                     {/* 상세 조회 모달 */}
