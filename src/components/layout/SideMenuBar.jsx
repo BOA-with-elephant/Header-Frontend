@@ -51,6 +51,12 @@ const MENU_CONFIG = {
         { path: "/myshop/message/auto-setting", text: "자동 발송 설정" },
         { path: "/myshop/message/list", text: "메시지 조회" }
       ]
+    },
+    {
+      key: "admin-shop",
+      title: "샵 등록 및 관리",
+      type: "direct", // 바로 이동하는 메뉴
+      path: "/myshop"
     }
   ],
   customer: [
@@ -62,21 +68,24 @@ const MENU_CONFIG = {
 // 사용자 프로필 컴포넌트 분리
 const UserProfile = ({ userRole, isAdmin, getProfilePath, userInfo }) => {
   // 권한별 프로필 정보 설정
+
+  console.log( '유저인포 확인',userInfo)
+
   const getProfileInfo = () => {
     if (userRole === 1) {
       // 권한 1: 일반고객 - 고객이름과 아이디
       return {
-        displayName: userInfo?.customerName || "홍길동",
-        displayId: userInfo?.customerId || "customer123",
-        circleText: userInfo?.customerName?.charAt(0) || "홍",
+        displayName: userInfo?.userName || "홍길동",
+        displayId: userInfo?.userId || "customer123",
+        circleText: userInfo?.userName?.charAt(0) || "홍",
         isCustomer: true
       };
     } else if (userRole === 2) {
       // 권한 2: 샵관리자 - 회원아이디와 샵이름
       return {
-        displayName: userInfo?.shopName || "펌앤코드",
+        displayName: userInfo?.userName || "펌앤코드",
         displayId: userInfo?.userId || "boa",
-        circleText: userInfo?.shopName?.charAt(0) || "펌",
+        circleText: userInfo?.userName?.charAt(0) || "펌",
         isCustomer: false
       };
     }
