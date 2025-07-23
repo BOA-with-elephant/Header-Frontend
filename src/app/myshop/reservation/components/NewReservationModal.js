@@ -31,28 +31,6 @@ export default function NewReservationModal({
     const [menuNameList, setMenuNameList] = useState([]);
     const [today, setToday] = useState();
 
-    // 디버깅: resvDateList 구조 확인
-    useEffect(() => {
-        console.log('=== 예약 시간 데이터 디버깅 ===');
-        console.log('resvDateList:', resvDateList);
-        console.log('reservationData.resvDate:', reservationData.resvDate);
-        
-        if (resvDateList) {
-            console.log('resvDateList keys:', Object.keys(resvDateList));
-            console.log('resvDateList type:', typeof resvDateList);
-            
-            // 다양한 경우의 데이터 구조 확인
-            if (resvDateList.results) {
-                console.log('resvDateList.results:', resvDateList.results);
-            }
-            if (resvDateList.data) {
-                console.log('resvDateList.data:', resvDateList.data);
-            }
-            if (Array.isArray(resvDateList)) {
-                console.log('resvDateList는 배열입니다');
-            }
-        }
-    }, [resvDateList, reservationData.resvDate]); // selectedDate 대신 reservationData.resvDate 사용
 
     // 고객 정보가 있을 때 예약 데이터에 미리 채우기
     useEffect(() => {
