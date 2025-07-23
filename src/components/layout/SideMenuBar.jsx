@@ -249,7 +249,7 @@ const useMenuLogic = (userRole, viewMode, onViewModeChange, closeSideMenu) => {
 
   // 샵 등록 및 관리 페이지로 이동 (권한 1 전용)
   const handleShopManagement = () => {
-    router.push("/shop-management"); // ✨ Next.js router.push
+    router.push("/myshop"); // ✨ Next.js router.push
   };
 
   // 프로필 경로 결정 로직
@@ -360,9 +360,9 @@ function SideMenuBar({
 
         {/* 하단 고정 메뉴 */}
         <div className="bottom-menu">
-          {/* 설정 메뉴 */}
+          {/* 설정 메뉴 
           <Link href={isAdmin ? "/myshop/settings" : "/shops/settings"}>
-            {/* ✨ Next.js Link - 설정 페이지로 최적화된 네비게이션 */}
+             ✨ Next.js Link - 설정 페이지로 최적화된 네비게이션 
             <div className={`bottom-menu-item ${
               pathname === (isAdmin ? "/myshop/settings" : "/shops/settings") 
                 ? 'bottom-menu-item-active' : ''
@@ -370,7 +370,7 @@ function SideMenuBar({
               <span className="bottom-menu-icon">⚙️</span>
               <span className="bottom-menu-text">설정</span>
             </div>
-          </Link>
+          </Link>*/}
           
           {/* 권한별 하단 메뉴 */}
           {userRole === 1 ? (

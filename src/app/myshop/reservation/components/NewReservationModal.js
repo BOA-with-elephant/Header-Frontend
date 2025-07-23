@@ -3,7 +3,18 @@ import styles from '../../../../styles/admin/reservation/NewReservationModal.mod
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function NewReservationModal({ isShowNewResvModal, setIsShowNewResvModal, selectedDate, resvDateList, fetchReservationData }) {
+export default function NewReservationModal({ 
+    isShowNewResvModal, 
+    setIsShowNewResvModal, 
+    selectedDate, 
+    resvDateList, 
+    fetchReservationData, 
+    setIsShowMessageModal,
+    setResultTitle,
+    setResultMessage,
+    setResultType,
+    setMessageContext
+}) {
   
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
@@ -112,13 +123,28 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
                     const data = await response.json();
                     console.log('예약 성공 (?) : ', data);
                     await fetchReservationData();
-                    setIsShowNewResvModal(false); 
+                    setResultType('success');
+                    setResultTitle('예약 등록 성공');
+                    setResultMessage('예약이 성공적으로 등록되었습니다.');
+                    setMessageContext('register');
+                    setIsShowMessageModal(true);
+                    setTimeout(() => {
+                        setIsShowNewResvModal(false);
+                    }, 0);
                 } else {
                     const text = await response.text();
                     console.warn("받은 응답이 JSON이 아님 : ", text);
                 }
             } catch(error){
-                console.error('예약 실패 : ', error)
+                console.error('예약 실패 : ', error);
+                await fetchReservationData();
+                setIsShowNewResvModal(false);
+                setResultType('error');
+                setResultTitle('예약 등록 실패');
+                setResultMessage('예약 등록에 실패했습니다.')
+                setTimeout(() => {
+                    setIsShowMessageModal(true);
+                }, 100);
             }
         } else {
             console.warn('모든 필드를 입력해주세요');
@@ -166,7 +192,7 @@ export default function NewReservationModal({ isShowNewResvModal, setIsShowNewRe
                         const currentHours = currentTime.getHours();
                         const currentMinutes = currentTime.getMinutes();
 
-                        console.log('😈😈',item)
+                        // console.log('😈😈',item)
 
                         return item.availableTimes.filter(time => {
                             if(!isToday) return true;
