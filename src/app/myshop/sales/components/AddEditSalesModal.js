@@ -1,228 +1,146 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import styles from '@/styles/admin/sales/AddEditSalesModal.module.css';
-import MessageModal from '@/components/ui/MessageModal';
-import { useMessageModal } from '@/hooks/useMessageModal';
-import { MESSAGES } from '@/constants/messages';
 
 export default function AddEditSalesModal({ 
     isOpen, 
     onClose, 
     onSuccess, 
-    initialData = null, 
+    initialData = null,
     customers = [], 
-    menus = [],
-    reservationData = [] // 예약 데이터 추가
+    menus = []
 }) {
-    const { modal, closeModal, showError, showConfirm } = useMessageModal();
-    
+    // 상태 관리
     const [formData, setFormData] = useState({
         userCode: '',
         menuCode: '',
-        resvDate: '',
-        resvTime: '',
         payAmount: '',
         payMethod: '신용카드',
-        payStatus: 'COMPLETED',
-        cancelAmount: '0',
-        cancelReason: '',
-        userComment: ''
+        customerName: '',
+        customerPhone: '',
+        serviceName: ''
     });
+    
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [selectedMenu, setSelectedMenu] = useState(null);
-    const [isFromReservation, setIsFromReservation] = useState(false);
-    
-    // 예약 관련 상태
     const [selectedDate, setSelectedDate] = useState('');
-    const [reservationList, setReservationList] = useState([]);
+    const [reservations, setReservations] = useState([]);
     const [selectedReservation, setSelectedReservation] = useState(null);
     const [reservationLoading, setReservationLoading] = useState(false);
-
+    
+    // 상수
+    const isEdit = !!initialData?.salesCode;
     const API_BASE_URL = 'http://localhost:8080/api/v1/my-shops/1';
-    const RESERVATION_API_BASE_URL = 'http://localhost:8080/my-shops/1/reservation';
-    const isEdit = !!initialData && !initialData.isFromReservation;
+    const RESERVATION_API_URL = 'http://localhost:8080/my-shops/1/reservation';
 
-    // 오늘 날짜를 기본값으로 설정
-    const getTodayDate = () => {
-        const today = new Date();
-        return today.toISOString().split('T')[0];
-    };
-
-    // 현재 시간을 기본값으로 설정
-    const getCurrentTime = () => {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(Math.floor(now.getMinutes() / 10) * 10).padStart(2, '0');
-        return `${hours}:${minutes}`;
-    };
-
-    // 예약 목록 조회 (예약확정 상태만)
-    const fetchReservationsByDate = async (date) => {
+    // 유틸리티 함수
+    const getToday = () => new Date().toISOString().split('T')[0];
+    
+    // 예약 목록 조회
+    const fetchReservations = async (date) => {
         if (!date) return;
-        
         setReservationLoading(true);
+        
         try {
-            const response = await fetch(`${RESERVATION_API_BASE_URL}?resvDate=${date}`);
-            if (!response.ok) throw new Error('예약 목록을 불러올 수 없습니다.');
-            
-            const data = await response.json();
-            
-            // 예약확정 상태의 예약만 필터링
-            const approvedReservations = data.filter(item => 
-                item.resvState === 'APPROVE' || item.resvState === '예약확정'
-            );
-            
-            setReservationList(approvedReservations);
+            const response = await fetch(`${RESERVATION_API_URL}?resvDate=${date}`);
+            if (response.ok) {
+                const data = await response.json();
+                setReservations(data.filter(r => r.resvState === 'APPROVE'));
+            }
         } catch (error) {
-            console.error('예약 목록 조회 실패:', error);
-            showError('조회 실패', '해당 날짜의 예약 목록을 불러올 수 없습니다.');
-            setReservationList([]);
+            console.error('예약 조회 실패:', error);
+            setReservations([]);
         } finally {
             setReservationLoading(false);
         }
     };
 
-    // 예약 선택 시 폼 데이터 자동 설정 (BossResvProjectionDTO 구조)
-    const handleReservationSelect = (reservation) => {
+    // 예약 선택 처리
+    const selectReservation = (reservation) => {
         setSelectedReservation(reservation);
-        setIsFromReservation(true);
         
-        console.log('선택된 예약 (BossResvProjectionDTO):', reservation);
-        
-        // 고객 정보 찾기 (userName과 userPhone으로 매칭)
-        const customer = Array.isArray(customers) ? 
-            customers.find(c => c.userName === reservation.userName && c.userPhone === reservation.userPhone) : null;
-        
-        // 메뉴 정보 찾기 (menuName으로 매칭)
-        const menu = Array.isArray(menus) ? 
-            menus.find(m => m.menuName === reservation.menuName) : null;
-        
-        console.log('찾은 고객:', customer);
-        console.log('찾은 메뉴:', menu);
-        
-        // BossResvProjectionDTO에는 userCode, menuCode가 없으므로 찾은 것 사용
-        const finalUserCode = customer?.userCode;
-        const finalMenuCode = menu?.menuCode;
-        const finalMenuPrice = menu?.menuPrice || 50000; // 기본 가격
+        const customer = customers.find(c => 
+            c.userName === reservation.userName && c.userPhone === reservation.userPhone
+        );
+        const menu = menus.find(m => m.menuName === reservation.menuName);
         
         setFormData({
-            userCode: finalUserCode?.toString() || '',
-            menuCode: finalMenuCode?.toString() || '',
-            resvDate: reservation.resvDate || '',
-            resvTime: reservation.resvTime || '',
-            payAmount: finalMenuPrice?.toString() || '',
+            userCode: customer?.userCode?.toString() || '',
+            menuCode: menu?.menuCode?.toString() || '',
+            payAmount: '',
             payMethod: '신용카드',
-            payStatus: 'COMPLETED',
-            cancelAmount: '0',
-            cancelReason: '',
-            userComment: reservation.userComment || ''
-        });
-        
-        // 선택된 메뉴 정보 설정
-        const selectedMenuInfo = {
-            menuCode: finalMenuCode,
-            menuName: reservation.menuName,
-            menuPrice: finalMenuPrice,
-            menuColor: reservation.menuColor || '#007bff',
-            categoryName: '기본'
-        };
-        setSelectedMenu(selectedMenuInfo);
-        
-        console.log('설정된 formData:', {
-            userCode: finalUserCode?.toString() || '',
-            menuCode: finalMenuCode?.toString() || '',
-            payAmount: finalMenuPrice?.toString() || ''
+            customerName: reservation.userName || '',
+            customerPhone: reservation.userPhone || '',
+            serviceName: reservation.menuName || ''
         });
     };
-
-    // 모달이 열릴 때 초기 데이터 설정
-    useEffect(() => {
-        if (isOpen) {
-            if (initialData) {
-                // 예약에서 매출 등록하는 경우
-                if (initialData.isFromReservation) {
-                    setIsFromReservation(true);
-                    setFormData({
-                        userCode: initialData.userCode?.toString() || '',
-                        menuCode: initialData.menuCode?.toString() || '',
-                        resvDate: initialData.date || '',
-                        resvTime: initialData.time || '',
-                        payAmount: initialData.servicePrice?.toString() || '',
-                        payMethod: '신용카드',
-                        payStatus: 'COMPLETED',
-                        cancelAmount: '0',
-                        cancelReason: '',
-                        userComment: initialData.memo || ''
-                    });
-                } else {
-                    // 기존 매출 수정하는 경우
-                    setIsFromReservation(false);
-                    setFormData({
-                        userCode: initialData.userCode?.toString() || '',
-                        menuCode: initialData.menuCode?.toString() || '',
-                        resvDate: initialData.date || '',
-                        resvTime: initialData.time || '',
-                        payAmount: initialData.servicePrice?.toString() || '',
-                        payMethod: initialData.paymentMethod || '신용카드',
-                        payStatus: initialData.status || 'COMPLETED',
-                        cancelAmount: initialData.cancelAmount?.toString() || '0',
-                        cancelReason: initialData.cancelReason || '',
-                        userComment: initialData.memo || ''
-                    });
-                }
-                
-                // 선택된 메뉴 정보 설정
-                const menu = menus.find(m => m.menuCode === initialData.menuCode);
-                setSelectedMenu(menu);
-            } else {
-                // 새로운 매출 등록 - 예약에서만 등록 가능
-                setIsFromReservation(false);
-                setSelectedDate(getTodayDate());
-                setFormData({
-                    userCode: '',
-                    menuCode: '',
-                    resvDate: getTodayDate(),
-                    resvTime: getCurrentTime(),
-                    payAmount: '',
-                    payMethod: '신용카드',
-                    payStatus: 'COMPLETED',
-                    cancelAmount: '0',
-                    cancelReason: '',
-                    userComment: ''
-                });
-                setSelectedMenu(null);
-                setSelectedReservation(null);
-                
-                // 오늘 날짜의 예약 목록 자동 조회
-                fetchReservationsByDate(getTodayDate());
-            }
-            setError('');
+    
+    // 폼 초기화
+    const initializeForm = () => {
+        if (isEdit) {
+            setFormData({
+                userCode: initialData.userCode?.toString() || '',
+                menuCode: initialData.menuCode?.toString() || '',
+                payAmount: initialData.finalAmount?.toString() || '',
+                payMethod: initialData.paymentMethod || '신용카드',
+                customerName: initialData.customerName || '',
+                customerPhone: initialData.customerPhone || '',
+                serviceName: initialData.serviceName || ''
+            });
+        } else {
+            const today = getToday();
+            setSelectedDate(today);
+            setFormData({
+                userCode: '',
+                menuCode: '',
+                payAmount: '',
+                payMethod: '신용카드',
+                customerName: '',
+                customerPhone: '',
+                serviceName: ''
+            });
+            fetchReservations(today);
         }
-    }, [isOpen, initialData, menus, customers]);
+        setError('');
+        setSelectedReservation(null);
+    };
 
-    // 날짜 변경 시 예약 목록 조회
+    // Effects
+    useEffect(() => {
+        if (isOpen) initializeForm();
+    }, [isOpen, initialData]);
+
     useEffect(() => {
         if (selectedDate && !isEdit) {
-            fetchReservationsByDate(selectedDate);
+            fetchReservations(selectedDate);
+            setSelectedReservation(null);
         }
     }, [selectedDate, isEdit]);
 
-    // 메뉴 선택 시 가격 자동 설정
     useEffect(() => {
-        if (formData.menuCode && !isFromReservation && Array.isArray(menus)) {
+        if (!isEdit && formData.menuCode && !selectedReservation && menus.length > 0) {
             const menu = menus.find(m => m.menuCode.toString() === formData.menuCode);
             if (menu) {
-                setSelectedMenu(menu);
+                setFormData(prev => ({ ...prev, serviceName: menu.menuName }));
+            }
+        }
+    }, [formData.menuCode, selectedReservation, menus.length, isEdit]);
+
+    useEffect(() => {
+        if (!isEdit && formData.userCode && !selectedReservation && customers.length > 0) {
+            const customer = customers.find(c => c.userCode.toString() === formData.userCode);
+            if (customer) {
                 setFormData(prev => ({ 
                     ...prev, 
-                    payAmount: menu.menuPrice.toString() 
+                    customerName: customer.userName,
+                    customerPhone: customer.userPhone
                 }));
             }
         }
-    }, [formData.menuCode, menus, isFromReservation]);
+    }, [formData.userCode, selectedReservation, customers.length, isEdit]);
 
+    // 이벤트 핸들러
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -230,171 +148,56 @@ export default function AddEditSalesModal({
 
     const handleNumberChange = (e) => {
         const { name, value } = e.target;
-        const numberValue = value.replace(/[^0-9]/g, '');
-        setFormData(prev => ({ ...prev, [name]: numberValue }));
+        setFormData(prev => ({ ...prev, [name]: value.replace(/[^0-9]/g, '') }));
     };
 
-    // 날짜 선택 변경
     const handleDateChange = (date) => {
         setSelectedDate(date);
-        setSelectedReservation(null);
-        setFormData(prev => ({ 
-            ...prev, 
-            resvDate: date,
-            userCode: '',
-            menuCode: '',
-            payAmount: '',
-            userComment: ''
-        }));
-    };
-
-    // 최종 금액 계산
-    const getFinalAmount = () => {
-        const payAmount = parseInt(formData.payAmount) || 0;
-        const cancelAmount = parseInt(formData.cancelAmount) || 0;
-        
-        if (formData.payStatus === 'CANCELLED') {
-            return 0;
-        } else if (formData.payStatus === 'PARTIAL_CANCELLED') {
-            return payAmount - cancelAmount;
-        }
-        return payAmount;
     };
 
     // 유효성 검사
     const validateForm = () => {
-        if (!selectedReservation && !isEdit) {
-            setError('예약을 선택해주세요.');
-            return false;
-        }
-        if (!formData.userCode) {
-            setError('고객을 선택해주세요.');
-            return false;
-        }
-        if (!formData.menuCode) {
-            setError('시술을 선택해주세요.');
-            return false;
-        }
-        if (!formData.payAmount || parseInt(formData.payAmount) <= 0) {
-            setError('결제 금액을 입력해주세요.');
-            return false;
-        }
-        if (!formData.resvDate) {
-            setError('시술 날짜를 선택해주세요.');
-            return false;
-        }
-        if (!formData.resvTime) {
-            setError('시술 시간을 선택해주세요.');
-            return false;
-        }
-        if (formData.payStatus === 'PARTIAL_CANCELLED' && parseInt(formData.cancelAmount) >= parseInt(formData.payAmount)) {
-            setError('부분취소 금액은 결제 금액보다 작아야 합니다.');
-            return false;
-        }
-        if ((formData.payStatus === 'CANCELLED' || formData.payStatus === 'PARTIAL_CANCELLED') && !formData.cancelReason.trim()) {
-            setError('취소 사유를 입력해주세요.');
-            return false;
-        }
-        return true;
+        if (!formData.customerName) return '고객 정보가 필요합니다.';
+        if (!formData.serviceName) return '시술 정보가 필요합니다.';
+        if (!formData.payAmount || parseInt(formData.payAmount) <= 0) return '결제 금액을 입력해주세요.';
+        return null;
     };
 
-    // 에러 메시지 파싱 함수
-    const parseErrorMessage = (response, defaultMessage) => {
-        switch (response.status) {
-            case 400: return '잘못된 요청입니다.';
-            case 404: return '요청한 데이터를 찾을 수 없습니다.';
-            case 409: return '이미 등록된 매출입니다.';
-            case 500: return '서버 오류가 발생했습니다.';
-            default: return defaultMessage;
+    // 제출 데이터 구성
+    const buildSubmitData = () => {
+        const payAmount = parseInt(formData.payAmount);
+        
+        if (isNaN(payAmount) || payAmount <= 0) {
+            throw new Error('결제 금액이 유효하지 않습니다.');
         }
-    };
+        if (!formData.customerName || !formData.serviceName) {
+            throw new Error('고객명 또는 시술명이 누락되었습니다.');
+        }
 
-    // 예약 상태를 시술완료로 변경
-    const updateReservationStatus = async (resvCode) => {
-        try {
-            const response = await fetch(`${RESERVATION_API_BASE_URL}/${resvCode}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ resvState: 'FINISH' })
-            });
-            
-            if (!response.ok) {
-                console.warn('예약 상태 업데이트 실패, 매출 등록은 계속 진행');
-            }
-        } catch (error) {
-            console.warn('예약 상태 업데이트 오류:', error);
-        }
-    };
-
-    // SalesDetailDTO 형태로 데이터 구성
-    const buildSalesDetailDTO = () => {
-        const finalAmount = getFinalAmount();
-        const currentDateTime = new Date().toISOString();
-        
-        // 날짜와 시간을 올바른 형식으로 변환
-        const resvDate = formData.resvDate; // "2025-08-05" 형식
-        const resvTime = formData.resvTime; // "10:00" 형식
-        
-        // 예약이 선택된 경우 예약 데이터 우선 사용 (BossResvProjectionDTO 구조)
-        let userCode, menuCode, userName, userPhone, menuName, menuPrice;
-        
-        if (selectedReservation) {
-            // BossResvProjectionDTO는 평면 구조
-            userName = selectedReservation.userName || '';
-            userPhone = selectedReservation.userPhone || '';
-            menuName = selectedReservation.menuName || '';
-            
-            // userCode, menuCode는 없으므로 고객/메뉴 목록에서 찾기
-            const customer = Array.isArray(customers) ? 
-                customers.find(c => c.userName === userName && c.userPhone === userPhone) : null;
-            const menu = Array.isArray(menus) ? 
-                menus.find(m => m.menuName === menuName) : null;
-                
-            userCode = customer?.userCode || parseInt(formData.userCode) || 0;
-            menuCode = menu?.menuCode || parseInt(formData.menuCode) || 0;
-            menuPrice = menu?.menuPrice || parseInt(formData.payAmount) || 0;
-        } else {
-            userCode = parseInt(formData.userCode) || 0;
-            menuCode = parseInt(formData.menuCode) || 0;
-            userName = Array.isArray(customers) ? (customers.find(c => c.userCode.toString() === formData.userCode)?.userName || '') : '';
-            userPhone = Array.isArray(customers) ? (customers.find(c => c.userCode.toString() === formData.userCode)?.userPhone || '') : '';
-            menuName = Array.isArray(menus) ? (menus.find(m => m.menuCode.toString() === formData.menuCode)?.menuName || '') : '';
-            menuPrice = Array.isArray(menus) ? (menus.find(m => m.menuCode.toString() === formData.menuCode)?.menuPrice || 0) : 0;
-        }
-        
         const submitData = {
-            // Sales 관련 필드
             salesCode: isEdit ? (initialData.salesCode || initialData.id) : null,
-            resvCode: selectedReservation?.resvCode || null,
-            payAmount: parseInt(formData.payAmount) || 0,
-            payMethod: formData.payMethod || '신용카드',
-            payDatetime: currentDateTime,
-            payStatus: formData.payStatus || 'COMPLETED',
-            cancelAmount: parseInt(formData.cancelAmount) || 0,
-            cancelDatetime: (formData.payStatus === 'CANCELLED' || formData.payStatus === 'PARTIAL_CANCELLED') ? currentDateTime : null,
-            cancelReason: formData.cancelReason ? formData.cancelReason.trim() : null,
-            finalAmount: finalAmount,
-            
-            // Reservation 관련 필드
-            shopCode: 1,
-            userCode: userCode,
-            menuCode: menuCode,
-            resvDate: resvDate,
-            resvTime: resvTime,
-            userComment: formData.userComment ? formData.userComment.trim() : null,
-            
-            // User/Menu 관련 필드
-            userName: userName,
-            userPhone: userPhone,
-            menuName: menuName,
-            menuPrice: menuPrice,
-            menuColor: selectedReservation?.menuColor || 
-                      (Array.isArray(menus) ? (menus.find(m => m.menuCode.toString() === formData.menuCode)?.menuColor || '#007bff') : '#007bff'),
-            categoryName: selectedReservation?.categoryName || 
-                         (Array.isArray(menus) ? (menus.find(m => m.menuCode.toString() === formData.menuCode)?.categoryName || '기본') : '기본')
+            resvCode: isEdit ? (initialData.resvCode || null) : (selectedReservation?.resvCode || null),
+            payAmount: payAmount,
+            payMethod: formData.payMethod,
+            payDatetime: isEdit ? initialData.payDatetime : null,
+            payStatus: 'COMPLETED',
+            cancelAmount: isEdit ? (initialData.cancelAmount || 0) : 0,
+            cancelDatetime: isEdit ? initialData.cancelDatetime : null,
+            cancelReason: isEdit ? initialData.cancelReason : null,
+            finalAmount: payAmount, // 수정된 금액으로 업데이트
+            statusNote: isEdit ? initialData.statusNote : null,
+            userName: formData.customerName,
+            userPhone: formData.customerPhone || '',
+            menuName: formData.serviceName,
+            menuPrice: payAmount
         };
-        
-        console.log('전송할 데이터:', submitData);
+
+        console.log('=== 제출 데이터 구성 완료 ===');
+        console.log('수정 모드:', isEdit);
+        console.log('원본 데이터:', initialData);
+        console.log('폼 데이터:', formData);
+        console.log('최종 제출 데이터:', submitData);
+
         return submitData;
     };
 
@@ -402,478 +205,267 @@ export default function AddEditSalesModal({
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!validateForm()) return;
+        const validationError = validateForm();
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
 
         setLoading(true);
         setError('');
 
         try {
             const url = isEdit 
-                ? `${API_BASE_URL}/sales/${initialData.salesCode || initialData.id}`
+                ? `${API_BASE_URL}/sales/${initialData.salesCode}`
                 : `${API_BASE_URL}/sales`;
             
-            const method = isEdit ? 'PUT' : 'POST';
-            const submitData = buildSalesDetailDTO();
-
-            console.log('전송할 데이터:', submitData); // 디버깅용
-
+            const submitData = buildSubmitData();
+            
+            console.log('=== API 요청 정보 ===');
+            console.log('요청 URL:', url);
+            console.log('요청 방법:', isEdit ? 'PUT' : 'POST');
+            console.log('요청 데이터:', JSON.stringify(submitData, null, 2));
+            
             const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
+                method: isEdit ? 'PUT' : 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify(submitData)
             });
 
+            console.log('=== API 응답 정보 ===');
+            console.log('응답 상태:', response.status);
+            console.log('응답 상태 텍스트:', response.statusText);
+
             if (!response.ok) {
-                const defaultMessage = isEdit ? '매출 수정에 실패했습니다.' : '매출 등록에 실패했습니다.';
-                let errorMessage = defaultMessage;
+                let errorMessage = '서버 오류가 발생했습니다.';
                 
                 try {
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        const errorData = await response.json();
-                        errorMessage = errorData.message || errorData.error || defaultMessage;
-                    } else {
-                        errorMessage = parseErrorMessage(response, defaultMessage);
+                    const errorData = await response.json();
+                    console.error('에러 응답 데이터:', errorData);
+                    if (errorData.details && Array.isArray(errorData.details)) {
+                        errorMessage = errorData.details.join(', ');
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
                     }
-                } catch (parseError) {
-                    errorMessage = parseErrorMessage(response, defaultMessage);
+                } catch (e) {
+                    const errorText = await response.text();
+                    console.error('에러 응답 텍스트:', errorText);
+                    if (errorText) errorMessage = errorText;
                 }
                 
-                setError(errorMessage);
-                return;
+                throw new Error(`${isEdit ? '수정' : '등록'}에 실패했습니다. ${errorMessage}`);
             }
 
-            // 예약 기반 매출 등록 시 예약 상태를 시술완료로 변경
-            if (!isEdit && selectedReservation?.resvCode) {
-                await updateReservationStatus(selectedReservation.resvCode);
-            }
-
-            // 성공 처리
-            let result = null;
-            try {
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    result = await response.json();
-                } else {
-                    result = { success: true };
-                }
-            } catch (parseError) {
-                result = { success: true };
-            }
+            const result = await response.json();
+            console.log('=== API 성공 응답 ===');
+            console.log('응답 데이터:', result);
             
-            onSuccess(result);
+            if (isEdit) {
+                console.log('매출 수정 완료 - 수정된 데이터:', result);
+                console.log('수정 성공: 데이터 새로고침을 위해 onSuccess 호출');
+            } else if (selectedReservation?.resvCode) {
+                console.log('예약 기반 매출 등록 완료 - 예약 상태는 백엔드에서 자동 업데이트됨');
+            }
+
+            // 성공 시 부모 컴포넌트에 알려서 데이터 새로고침
+            if (typeof onSuccess === 'function') {
+                onSuccess(result); // 수정된 데이터를 함께 전달
+            }
             onClose();
             
         } catch (err) {
-            console.error('Network error:', err);
-            
-            if (err.name === 'TypeError' && err.message.includes('fetch')) {
-                showError('네트워크 오류', '네트워크 연결을 확인해주세요.');
-            } else {
-                showError('처리 오류', `처리 중 오류가 발생했습니다.\n${err.message}`);
-            }
+            console.error('매출 등록/수정 오류:', err);
+            setError(err.message);
         } finally {
             setLoading(false);
         }
     };
 
-    // 삭제 처리
-    const handleDelete = () => {
-        const customerName = Array.isArray(customers) ? 
-            (customers.find(c => c.userCode.toString() === formData.userCode)?.userName || '고객') : '고객';
-        showConfirm(
-            '매출 삭제',
-            `${customerName} 고객의 매출 내역을 삭제하시겠습니까?`,
-            async () => {
-                closeModal();
-                setLoading(true);
-                setError('');
-
-                try {
-                    const response = await fetch(`${API_BASE_URL}/sales/${initialData.salesCode || initialData.id}`, {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-
-                    if (!response.ok) {
-                        const errorMessage = parseErrorMessage(response, '매출 삭제에 실패했습니다.');
-                        showError('삭제 실패', errorMessage);
-                        return;
-                    }
-
-                    onSuccess();
-                    onClose();
-                    
-                } catch (err) {
-                    console.error('Delete error:', err);
-                    showError('삭제 오류', '네트워크 연결을 확인해주세요.');
-                } finally {
-                    setLoading(false);
-                }
-            }
-        );
-    };
-
+    // 렌더링
     if (!isOpen) return null;
 
-    // 모달 제목 결정
-    const getModalTitle = () => {
-        if (isFromReservation || selectedReservation) return '예약 → 매출 등록';
-        if (isEdit) return '매출 수정';
-        return '예약에서 매출 등록';
-    };
-
-    // 예약 상태 텍스트 변환
-    const getReservationStatusText = (status) => {
-        switch(status) {
-            case 'APPROVE': return '예약확정';
-            case 'FINISH': return '시술완료';
-            case 'CANCEL': return '예약취소';
-            default: return status;
-        }
-    };
-
     return (
-        <>
-            <div className={styles.modalOverlay} onClick={onClose}>
-                <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                    <div className={styles.modalHeader}>
-                        <h2>{getModalTitle()}</h2>
-                    </div>
+        <div className={styles.modalOverlay} onClick={onClose}>
+            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                {/* 헤더 */}
+                <div className={styles.modalHeader}>
+                    <h2>{isEdit ? '매출 수정' : '매출 등록'}</h2>
+                </div>
 
-                    <form onSubmit={handleSubmit} className={styles.modalBody}>
-                        {error && <div className={styles.error}>{error}</div>}
+                <form onSubmit={handleSubmit} className={styles.modalBody}>
+                    {error && (
+                        <div className={styles.error}>
+                            ⚠️ {error}
+                        </div>
+                    )}
 
-                        {/* 예약 선택 섹션 - 수정 모드가 아닐 때만 표시 */}
-                        {!isEdit && (
-                            <div className={styles.reservationSection}>
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="selectedDate">
-                                        날짜 선택 <span className={styles.required}>*</span>
-                                    </label>
-                                    <input
-                                        type="date"
-                                        id="selectedDate"
-                                        value={selectedDate}
-                                        onChange={(e) => handleDateChange(e.target.value)}
-                                        className={styles.textInput}
-                                    />
-                                </div>
-
-                                <div className={styles.reservationListSection}>
-                                    <label>예약 목록 (예약확정만 표시)</label>
-                                    {reservationLoading ? (
-                                        <div className={styles.loadingText}>예약 목록을 불러오는 중...</div>
-                                    ) : reservationList.length > 0 ? (
-                                        <div className={styles.reservationList}>
-                                            {reservationList.map((reservation) => (
-                                                <div
-                                                    key={reservation.resvCode}
-                                                    className={`${styles.reservationItem} ${
-                                                        selectedReservation?.resvCode === reservation.resvCode ? styles.selected : ''
-                                                    }`}
-                                                    onClick={() => handleReservationSelect(reservation)}
-                                                >
-                                                    <div className={styles.reservationInfo}>
-                                                        <div className={styles.reservationTime}>
-                                                            🕐 {reservation.resvTime}
-                                                        </div>
-                                                        <div className={styles.reservationCustomer}>
-                                                            👤 {reservation.userName} ({reservation.userPhone})
-                                                        </div>
-                                                        <div className={styles.reservationMenu}>
-                                                            <span style={{ color: reservation.menuColor || '#007bff' }}>●</span> {reservation.menuName}
-                                                        </div>
-                                                        <div className={styles.reservationStatus}>
-                                                            📋 {getReservationStatusText(reservation.resvState)}
-                                                        </div>
-                                                        {reservation.userComment && (
-                                                            <div className={styles.reservationComment}>
-                                                                💬 {reservation.userComment}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className={styles.emptyReservation}>
-                                            해당 날짜에 예약확정된 예약이 없습니다.
-                                        </div>
-                                    )}
-                                </div>
+                    {/* 예약 선택 (등록 모드만) */}
+                    {!isEdit && (
+                        <div className={styles.reservationSection}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="selectedDate">날짜 선택 *</label>
+                                <input
+                                    type="date"
+                                    id="selectedDate"
+                                    value={selectedDate}
+                                    onChange={(e) => handleDateChange(e.target.value)}
+                                    className={styles.textInput}
+                                />
                             </div>
-                        )}
-
-                        {/* 매출 입력 폼 */}
-                        <div className={styles.formSection}>
-                            <div className={styles.formRow}>
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="userCode">
-                                        고객 <span className={styles.required}>*</span>
-                                    </label>
-                                    <div className={styles.selectWrapper}>
-                                        <select
-                                            id="userCode"
-                                            name="userCode"
-                                            value={formData.userCode}
-                                            onChange={handleChange}
-                                            disabled={loading || (isFromReservation && selectedReservation)}
-                                            className={styles.selectInput}
-                                        >
-                                            <option value="">고객 선택</option>
-                                            {Array.isArray(customers) && customers.map(customer => (
-                                                <option key={customer.userCode} value={customer.userCode.toString()}>
-                                                    {customer.userName} ({customer.userPhone})
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    {(isFromReservation && selectedReservation) && (
-                                        <small className={styles.helperText}>예약 정보에서 자동 설정됨</small>
-                                    )}
-                                </div>
-
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="menuCode">
-                                        시술 <span className={styles.required}>*</span>
-                                    </label>
-                                    <div className={styles.selectWrapper}>
-                                        <select
-                                            id="menuCode"
-                                            name="menuCode"
-                                            value={formData.menuCode}
-                                            onChange={handleChange}
-                                            disabled={loading || (isFromReservation && selectedReservation)}
-                                            className={styles.selectInput}
-                                        >
-                                            <option value="">시술 선택</option>
-                                            {Array.isArray(menus) && menus.map(menu => (
-                                                <option key={menu.menuCode} value={menu.menuCode.toString()}>
-                                                    {menu.menuName} ({menu.menuPrice.toLocaleString()}원)
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    {(isFromReservation && selectedReservation) && (
-                                        <small className={styles.helperText}>예약 정보에서 자동 설정됨</small>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className={styles.formRow}>
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="resvDate">
-                                        시술 날짜 <span className={styles.required}>*</span>
-                                    </label>
-                                    <input
-                                        type="date"
-                                        id="resvDate"
-                                        name="resvDate"
-                                        value={formData.resvDate}
-                                        onChange={handleChange}
-                                        disabled={loading}
-                                        className={styles.textInput}
-                                    />
-                                    {(isFromReservation && selectedReservation) && (
-                                        <small className={styles.helperText}>예약 정보에서 자동 설정됨 (수정 가능)</small>
-                                    )}
-                                </div>
-
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="resvTime">
-                                        시술 시간 <span className={styles.required}>*</span>
-                                    </label>
-                                    <input
-                                        type="time"
-                                        id="resvTime"
-                                        name="resvTime"
-                                        value={formData.resvTime}
-                                        onChange={handleChange}
-                                        disabled={loading}
-                                        className={styles.textInput}
-                                    />
-                                    {(isFromReservation && selectedReservation) && (
-                                        <small className={styles.helperText}>예약 정보에서 자동 설정됨 (수정 가능)</small>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className={styles.formRow}>
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="payAmount">
-                                        결제 금액 <span className={styles.required}>*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="payAmount"
-                                        name="payAmount"
-                                        value={formData.payAmount}
-                                        onChange={handleNumberChange}
-                                        placeholder="결제 금액을 입력해 주세요."
-                                        disabled={loading}
-                                        className={styles.textInput}
-                                    />
-                                    {(isFromReservation && selectedReservation) && (
-                                        <small className={styles.helperText}>시술 가격에서 자동 설정됨 (수정 가능)</small>
-                                    )}
-                                </div>
-
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="payMethod">
-                                        결제 방법 <span className={styles.required}>*</span>
-                                    </label>
-                                    <div className={styles.selectWrapper}>
-                                        <select
-                                            id="payMethod"
-                                            name="payMethod"
-                                            value={formData.payMethod}
-                                            onChange={handleChange}
-                                            disabled={loading}
-                                            className={styles.selectInput}
-                                        >
-                                            <option value="신용카드">신용카드</option>
-                                            <option value="현금">현금</option>
-                                            <option value="카카오페이">카카오페이</option>
-                                            <option value="계좌이체">계좌이체</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className={styles.formRow}>
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="payStatus">
-                                        결제 상태 <span className={styles.required}>*</span>
-                                    </label>
-                                    <div className={styles.selectWrapper}>
-                                        <select
-                                            id="payStatus"
-                                            name="payStatus"
-                                            value={formData.payStatus}
-                                            onChange={handleChange}
-                                            disabled={loading}
-                                            className={styles.selectInput}
-                                        >
-                                            <option value="COMPLETED">정상결제</option>
-                                            <option value="PARTIAL_CANCELLED">부분취소</option>
-                                            <option value="CANCELLED">전체취소</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {(formData.payStatus === 'CANCELLED' || formData.payStatus === 'PARTIAL_CANCELLED') && (
-                                    <div className={styles.formGroup}>
-                                        <label htmlFor="cancelAmount">
-                                            취소 금액 <span className={styles.required}>*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="cancelAmount"
-                                            name="cancelAmount"
-                                            value={formData.payStatus === 'CANCELLED' ? formData.payAmount : formData.cancelAmount}
-                                            onChange={handleNumberChange}
-                                            placeholder="취소 금액을 입력해 주세요."
-                                            disabled={loading || formData.payStatus === 'CANCELLED'}
-                                            className={styles.textInput}
-                                        />
-                                        {formData.payStatus === 'CANCELLED' && (
-                                            <small className={styles.helperText}>전체취소의 경우 자동으로 전액 취소됩니다.</small>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {(formData.payStatus === 'CANCELLED' || formData.payStatus === 'PARTIAL_CANCELLED') && (
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="cancelReason">
-                                        취소 사유 <span className={styles.required}>*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="cancelReason"
-                                        name="cancelReason"
-                                        value={formData.cancelReason}
-                                        onChange={handleChange}
-                                        placeholder="취소 사유를 입력해 주세요."
-                                        disabled={loading}
-                                        className={styles.textInput}
-                                    />
-                                </div>
-                            )}
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="userComment">메모</label>
-                                <textarea
-                                    id="userComment"
-                                    name="userComment"
-                                    value={formData.userComment}
-                                    onChange={handleChange}
-                                    placeholder="시술 관련 메모를 입력해 주세요."
+                                <label>예약 목록 (예약확정만)</label>
+                                {reservationLoading ? (
+                                    <div className={styles.loadingText}>예약 목록 로딩 중...</div>
+                                ) : reservations.length > 0 ? (
+                                    <div className={styles.reservationList}>
+                                        {reservations.map((reservation) => (
+                                            <div
+                                                key={reservation.resvCode}
+                                                className={`${styles.reservationItem} ${
+                                                    selectedReservation?.resvCode === reservation.resvCode ? styles.selected : ''
+                                                }`}
+                                                onClick={() => selectReservation(reservation)}
+                                            >
+                                                <div><strong>{reservation.resvTime}</strong></div>
+                                                <div>{reservation.userName} ({reservation.userPhone})</div>
+                                                <div style={{ color: reservation.menuColor }}>{reservation.menuName}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.emptyMessage}>해당 날짜에 예약확정된 예약이 없습니다.</div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 매출 정보 입력 */}
+                    <div className={styles.formSection}>
+                        <div className={styles.formRow}>
+                            <div className={styles.formGroup}>
+                                <label>고객 정보 *</label>
+                                {isEdit || selectedReservation ? (
+                                    <div className={styles.displayInfo}>
+                                        <div className={styles.displayValue}>
+                                            {formData.customerName} ({formData.customerPhone})
+                                        </div>
+                                        <small>
+                                            {isEdit ? '수정 시에는 고객 정보를 변경할 수 없습니다.' : '선택된 예약의 고객 정보'}
+                                        </small>
+                                    </div>
+                                ) : (
+                                    <select
+                                        name="userCode"
+                                        value={formData.userCode}
+                                        onChange={handleChange}
+                                        disabled={loading}
+                                        className={styles.selectInput}
+                                    >
+                                        <option value="">고객 선택</option>
+                                        {customers.map(customer => (
+                                            <option key={customer.userCode} value={customer.userCode}>
+                                                {customer.userName} ({customer.userPhone})
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label>시술 정보 *</label>
+                                {isEdit || selectedReservation ? (
+                                    <div className={styles.displayInfo}>
+                                        <div className={styles.displayValue}>{formData.serviceName}</div>
+                                        <small>
+                                            {isEdit ? '수정 시에는 시술 정보를 변경할 수 없습니다.' : '선택된 예약의 시술 정보'}
+                                        </small>
+                                    </div>
+                                ) : (
+                                    <select
+                                        name="menuCode"
+                                        value={formData.menuCode}
+                                        onChange={handleChange}
+                                        disabled={loading}
+                                        className={styles.selectInput}
+                                    >
+                                        <option value="">시술 선택</option>
+                                        {menus.map(menu => (
+                                            <option key={menu.menuCode} value={menu.menuCode}>
+                                                {menu.menuName}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className={styles.formRow}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="payAmount">결제 금액 *</label>
+                                <input
+                                    type="text"
+                                    id="payAmount"
+                                    name="payAmount"
+                                    value={formData.payAmount}
+                                    onChange={handleNumberChange}
+                                    placeholder="결제 금액을 입력하세요"
                                     disabled={loading}
-                                    className={styles.textareaInput}
-                                    rows={3}
+                                    className={styles.textInput}
                                 />
-                                {(isFromReservation && selectedReservation) && (
-                                    <small className={styles.helperText}>예약 메모에서 자동 설정됨 (수정 가능)</small>
-                                )}
+                                <small className={styles.helpText}>
+                                    실제 받은 금액을 입력해주세요.
+                                </small>
                             </div>
-
-                            {/* 최종 금액 표시 */}
-                            <div className={styles.finalAmountSection}>
-                                <div className={styles.finalAmountLabel}>최종 금액</div>
-                                <div className={styles.finalAmountValue}>
-                                    {getFinalAmount().toLocaleString()}원
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className={styles.modalFooter}>
-                            <button
-                                type="button"
-                                className={styles.cancelBtn}
-                                onClick={onClose}
-                                disabled={loading}
-                            >
-                                취소
-                            </button>
-                            {isEdit && (
-                                <button
-                                    type="button"
-                                    className={styles.deleteBtn}
-                                    onClick={handleDelete}
+                            <div className={styles.formGroup}>
+                                <label htmlFor="payMethod">결제 방법 *</label>
+                                <select
+                                    id="payMethod"
+                                    name="payMethod"
+                                    value={formData.payMethod}
+                                    onChange={handleChange}
                                     disabled={loading}
+                                    className={styles.selectInput}
                                 >
-                                    {loading ? '삭제 중...' : '삭제'}
-                                </button>
-                            )}
-                            <button
-                                type="submit"
-                                className={styles.submitBtn}
-                                disabled={loading || (!selectedReservation && !isEdit)}
-                            >
-                                {loading ? '처리 중...' : (
-                                    selectedReservation ? '매출 등록 + 시술완료 처리' : 
-                                    isEdit ? '수정' : '예약을 선택해주세요'
-                                )}
-                            </button>
+                                    <option value="신용카드">신용카드</option>
+                                    <option value="현금">현금</option>
+                                    <option value="카카오페이">카카오페이</option>
+                                    <option value="계좌이체">계좌이체</option>
+                                </select>
+                            </div>
                         </div>
-                    </form>
-                </div>
-            </div>
 
-            {/* 메시지 모달 */}
-            <MessageModal
-                isOpen={modal.isOpen}
-                onClose={closeModal}
-                onConfirm={modal.onConfirm}
-                type={modal.type}
-                title={modal.title}
-                message={modal.message}
-                showCancel={modal.showCancel}
-                confirmText={modal.type === 'confirm' ? '삭제' : '확인'}
-                cancelText="취소"
-            />
-        </>
+                        <div className={styles.finalAmountSection}>
+                            <span>최종 금액: </span>
+                            <strong>{parseInt(formData.payAmount || 0).toLocaleString()}원</strong>
+                        </div>
+                    </div>
+
+                    <div className={styles.modalFooter}>
+                        <button
+                            type="button"
+                            className={styles.cancelBtn}
+                            onClick={onClose}
+                            disabled={loading}
+                        >
+                            취소
+                        </button>
+                        <button
+                            type="submit"
+                            className={styles.submitBtn}
+                            disabled={loading}
+                        >
+                            {loading ? '처리 중...' : 
+                             isEdit ? '수정' :
+                             selectedReservation ? '매출 등록 + 시술완료' : 
+                             '매출 등록'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     );
 }

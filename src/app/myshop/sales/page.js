@@ -29,7 +29,7 @@ export default function SalesManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchFilters, setSearchFilters] = useState(getInitialDateFilters());
   const [customers, setCustomers] = useState([]); // 예약에서 추출한 고객 목록
-  const [menus, setMenus] = useState([]); // 예약에서 추출한 메뉴 목록
+  const [menus, setMenus] = useState([]); // 예약에서 추출한 메뉴 목록 (기본값용)
   const [reservationData, setReservationData] = useState([]); // 전체 예약 데이터
   const [isModalOpen, setIsModalOpen] = useState(false); // 매출 모달 상태
   const [editingItem, setEditingItem] = useState(null); // 수정할 매출 항목
@@ -56,7 +56,7 @@ export default function SalesManagement() {
     return Array.from(customerMap.values());
   };
 
-  // 예약 데이터에서 메뉴 목록 추출 (BossResvProjectionDTO 구조)
+  // 예약 데이터에서 기본 메뉴 목록 추출 (모달에서 직접 선택할 때 사용)
   const extractMenusFromReservations = (reservations) => {
     const menuMap = new Map();
     reservations.forEach(reservation => {
@@ -64,9 +64,9 @@ export default function SalesManagement() {
         const key = reservation.menuName;
         if (!menuMap.has(key)) {
           menuMap.set(key, {
-            menuCode: Math.floor(Math.random() * 10000) + 1000, // menuCode가 없으므로 임시 생성
+            menuCode: Math.floor(Math.random() * 10000) + 1000,
             menuName: reservation.menuName,
-            menuPrice: 50000, // 기본 가격 (실제로는 메뉴 테이블에서 가져와야 함)
+            menuPrice: 50000, // 기본값 (모달에서 실제 API로 가격 조회)
             menuColor: reservation.menuColor || '#007bff',
             categoryName: '기본'
           });
@@ -76,16 +76,14 @@ export default function SalesManagement() {
     return Array.from(menuMap.values());
   };
 
-  // 예약 데이터 불러오기 및 고객/메뉴 정보 추출
+  // 예약 데이터 불러오기 및 고객/기본메뉴 정보 추출
   const fetchReservationData = async () => {
     try {
       // 최근 3개월간의 예약 데이터를 가져와서 고객/메뉴 정보 구성
       const today = new Date();
-      const threeMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 3, 1);
-      const startDate = threeMonthsAgo.toISOString().split('T')[0];
-      
-      // 월별로 데이터 수집 (예약 API는 월별 조회만 지원하는 것 같으니)
       const reservations = [];
+      
+      // 월별로 데이터 수집
       for (let i = 0; i < 4; i++) {
         const targetDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
         const yearMonth = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
@@ -105,7 +103,7 @@ export default function SalesManagement() {
 
       setReservationData(reservations);
       
-      // 예약 데이터에서 고객과 메뉴 정보 추출
+      // 예약 데이터에서 고객과 기본 메뉴 정보 추출
       const extractedCustomers = extractCustomersFromReservations(reservations);
       const extractedMenus = extractMenusFromReservations(reservations);
       
@@ -113,7 +111,7 @@ export default function SalesManagement() {
       setMenus(extractedMenus);
       
       console.log('추출된 고객 목록:', extractedCustomers);
-      console.log('추출된 메뉴 목록:', extractedMenus);
+      console.log('추출된 기본 메뉴 목록:', extractedMenus);
       
     } catch (error) {
       console.error('예약 데이터 로딩 실패:', error);
@@ -207,19 +205,23 @@ export default function SalesManagement() {
 
   useEffect(() => {
     fetchSalesData();
-    fetchReservationData(); // 예약 데이터에서 고객/메뉴 정보 추출
+    fetchReservationData(); // 예약 데이터에서 고객/기본메뉴 정보 추출
   }, []);
 
   // 매출 등록 버튼 클릭
   const handleAddSales = () => {
+    console.log('매출 등록 버튼 클릭');
     setEditingItem(null);
     setIsModalOpen(true);
+    console.log('모달 상태 변경:', { isModalOpen: true, editingItem: null });
   };
 
   // 매출 수정 버튼 클릭
   const handleEditSales = (item) => {
+    console.log('매출 수정 버튼 클릭:', item);
     setEditingItem(item);
     setIsModalOpen(true);
+    console.log('모달 상태 변경:', { isModalOpen: true, editingItem: item });
   };
 
   // 매출 모달 닫기
@@ -433,6 +435,8 @@ export default function SalesManagement() {
     salesData: salesData.length,
     filteredData: filteredData.length,
     currentData: currentData.length,
+    customers: customers.length,
+    menus: menus.length,
     isLoading
   });
 

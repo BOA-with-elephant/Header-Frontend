@@ -1,5 +1,6 @@
 /* AddEditSalesModal.module.css */
 
+/* 모달 기본 구조 */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -15,12 +16,8 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal {
@@ -28,82 +25,55 @@
   border-radius: 12px;
   width: 90%;
   max-width: 800px;
-  max-height: 95vh;
+  max-height: 90vh;
   overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   animation: slideUp 0.3s ease-out;
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
+/* 헤더 - 프라이머리 컬러 적용 */
 .modalHeader {
-  padding: 24px 24px 16px 24px;
-  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: var(--text-light);
+  padding: 24px 24px 20px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.modalHeader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .modalHeader h2 {
-  margin: 0 0 16px 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
 }
 
-.modeToggle {
-  display: flex;
-  gap: 8px;
-  background-color: #f3f4f6;
-  padding: 4px;
-  border-radius: 8px;
-}
-
-.toggleBtn {
-  flex: 1;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  background-color: transparent;
-  color: #6b7280;
-}
-
-.toggleBtn.active {
-  background-color: white;
-  color: #3b82f6;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.toggleBtn:hover:not(.active) {
-  color: #374151;
-}
-
-.subtitle {
-  margin: 0 0 16px 0;
-  font-size: 14px;
-  color: #6b7280;
-  background-color: #f0f9ff;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border-left: 3px solid #3b82f6;
-}
-
+/* 바디 */
 .modalBody {
   padding: 24px;
-  max-height: calc(95vh - 200px);
+  max-height: calc(90vh - 200px);
   overflow-y: auto;
 }
 
+/* 예약 선택 섹션 (등록 모드용) */
 .reservationSection {
   background-color: #fefbf2;
   border: 1px solid #fbbf24;
@@ -112,21 +82,16 @@
   margin-bottom: 24px;
 }
 
-.reservationListSection {
-  margin-top: 16px;
-}
-
-.reservationListSection label {
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 8px;
-  display: block;
-  font-size: 14px;
-}
-
 .loadingText {
   text-align: center;
   color: #6b7280;
+  padding: 20px;
+  font-style: italic;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: #9ca3af;
   padding: 20px;
   font-style: italic;
 }
@@ -137,6 +102,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   background-color: white;
+  margin-top: 8px;
 }
 
 .reservationItem {
@@ -159,91 +125,7 @@
   border-bottom: none;
 }
 
-.reservationInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.reservationTime {
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 14px;
-}
-
-.reservationCustomer {
-  color: #374151;
-  font-size: 13px;
-}
-
-.reservationMenu {
-  color: #059669;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.reservationStatus {
-  color: #7c3aed;
-  font-size: 12px;
-}
-
-.reservationPrice {
-  color: #059669;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.selectedReservationInfo {
-  background-color: #f0f9ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 16px;
-}
-
-.selectedReservationInfo h4 {
-  margin: 0 0 12px 0;
-  color: #1e40af;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.infoGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.infoItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.infoLabel {
-  font-weight: 500;
-  color: #374151;
-  font-size: 14px;
-  min-width: 60px;
-}
-
-.infoValue {
-  color: #1f2937;
-  font-size: 14px;
-}
-
-/* 기존 스타일들... */
-
-.emptyReservation {
-  text-align: center;
-  color: #9ca3af;
-  padding: 40px 20px;
-  background-color: #f9fafb;
-  border: 1px dashed #d1d5db;
-  border-radius: 6px;
-  font-style: italic;
-}
-
+/* 폼 섹션 */
 .formSection {
   border-top: 1px solid #e5e7eb;
   padding-top: 20px;
@@ -268,13 +150,9 @@
   font-size: 14px;
 }
 
-.required {
-  color: #ef4444;
-}
-
+/* 폼 입력 요소 */
 .textInput,
-.selectInput,
-.textareaInput {
+.selectInput {
   padding: 12px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -284,52 +162,79 @@
 }
 
 .textInput:focus,
-.selectInput:focus,
-.textareaInput:focus {
+.selectInput:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .textInput:disabled,
-.selectInput:disabled,
-.textareaInput:disabled {
+.selectInput:disabled {
   background-color: #f9fafb;
   color: #6b7280;
   cursor: not-allowed;
 }
 
-.selectWrapper {
-  position: relative;
-}
-
-.selectWrapper::after {
-  content: '';
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid #6b7280;
-  pointer-events: none;
-}
-
 .selectInput {
   appearance: none;
-  background-color: white;
-  padding-right: 40px;
   cursor: pointer;
 }
 
-.textareaInput {
-  resize: vertical;
-  min-height: 80px;
-  font-family: inherit;
+.helpText {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 4px;
+  font-style: italic;
 }
 
+/* 수정 모드용 정보 표시 */
+.displayInfo {
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.displayValue {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.displaySubValue {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.displayInfo small {
+  font-size: 11px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* 최종 금액 섹션 */
+.finalAmountSection {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #f0f9ff;
+  border: 1px solid #0ea5e9;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.finalAmountSection strong {
+  color: #0369a1;
+  font-size: 18px;
+}
+
+/* 에러 메시지 */
 .error {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
@@ -347,36 +252,7 @@
   margin-right: 8px;
 }
 
-.helperText {
-  color: #3b82f6;
-  font-size: 12px;
-  margin-top: 4px;
-  font-style: italic;
-}
-
-.finalAmountSection {
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.finalAmountLabel {
-  font-weight: 600;
-  color: #166534;
-  font-size: 16px;
-}
-
-.finalAmountValue {
-  font-weight: 700;
-  color: #059669;
-  font-size: 20px;
-}
-
+/* 푸터 */
 .modalFooter {
   display: flex;
   gap: 12px;
@@ -386,7 +262,6 @@
 }
 
 .cancelBtn,
-.deleteBtn,
 .submitBtn {
   padding: 12px 24px;
   border-radius: 8px;
@@ -395,7 +270,7 @@
   cursor: pointer;
   transition: all 0.2s;
   border: none;
-  min-width: 80px;
+  min-width: 100px;
 }
 
 .cancelBtn {
@@ -406,15 +281,6 @@
 
 .cancelBtn:hover {
   background-color: #f3f4f6;
-}
-
-.deleteBtn {
-  background-color: #ef4444;
-  color: white;
-}
-
-.deleteBtn:hover {
-  background-color: #dc2626;
 }
 
 .submitBtn {
@@ -432,16 +298,9 @@
 }
 
 .cancelBtn:disabled,
-.deleteBtn:disabled,
 .submitBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.cancelBtn:disabled:hover,
-.deleteBtn:disabled:hover,
-.submitBtn:disabled:hover {
-  background-color: inherit;
 }
 
 /* 반응형 디자인 */
@@ -449,7 +308,6 @@
   .modal {
     width: 95%;
     margin: 20px;
-    max-height: 90vh;
   }
   
   .formRow {
@@ -468,18 +326,8 @@
   }
   
   .cancelBtn,
-  .deleteBtn,
   .submitBtn {
     width: 100%;
-  }
-  
-  .modeToggle {
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .toggleBtn {
-    text-align: center;
   }
   
   .reservationList {
@@ -488,738 +336,5 @@
   
   .reservationSection {
     padding: 12px;
-  }
-}
-
-/* 다크 모드 지원 */
-@media (prefers-color-scheme: dark) {
-  .modal {
-    background: #1f2937;
-    color: #f9fafb;
-  }
-  
-  .modalHeader {
-    border-bottom-color: #374151;
-  }
-  
-  .modalHeader h2 {
-    color: #f9fafb;
-  }
-  
-  .modeToggle {
-    background-color: #374151;
-  }
-  
-  .toggleBtn {
-    color: #d1d5db;
-  }
-  
-  .toggleBtn.active {
-    background-color: #1f2937;
-    color: #60a5fa;
-  }
-  
-  .reservationSection {
-    background-color: #451a03;
-    border-color: #92400e;
-  }
-  
-  .reservationList {
-    background-color: #374151;
-    border-color: #4b5563;
-  }
-  
-  .reservationItem {
-    border-bottom-color: #4b5563;
-  }
-  
-  .reservationItem:hover {
-    background-color: #4b5563;
-  }
-  
-  .reservationItem.selected {
-    background-color: #1e3a8a;
-    border-color: #60a5fa;
-  }
-  
-  .emptyReservation {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #9ca3af;
-  }
-  
-  .formSection {
-    border-top-color: #374151;
-  }
-  
-  .formGroup label {
-    color: #d1d5db;
-  }
-  
-  .textInput,
-  .selectInput,
-  .textareaInput {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-  
-  .textInput:focus,
-  .selectInput:focus,
-  .textareaInput:focus {
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-  }
-  
-  .textInput:disabled,
-  .selectInput:disabled,
-  .textareaInput:disabled {
-    background-color: #1f2937;
-    color: #6b7280;
-  }
-  
-  .error {
-    background-color: #7f1d1d;
-    border-color: #dc2626;
-    color: #fca5a5;
-  }
-  
-  .helperText {
-    color: #93c5fd;
-  }
-  
-  .finalAmountSection {
-    background-color: #064e3b;
-    border-color: #047857;
-  }
-  
-  .finalAmountLabel {
-    color: #6ee7b7;
-  }
-  
-  .finalAmountValue {
-    color: #10b981;
-  }
-  
-  .modalFooter {
-    border-top-color: #374151;
-  }
-  
-  .cancelBtn {
-    background-color: #374151;
-    color: #d1d5db;
-    border-color: #4b5563;
-  }
-  
-  .cancelBtn:hover {
-    background-color: #4b5563;
-  }
-}
-
-.finalAmountLabel {
-  font-weight: 600;
-  color: #374151;
-  font-size: 16px;
-}
-
-.finalAmountValue {
-  font-weight: 700;
-  color: #059669;
-  font-size: 20px;
-}
-
-.modalFooter {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  padding: 16px 24px 24px 24px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.cancelBtn,
-.deleteBtn,
-.submitBtn {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  min-width: 80px;
-}
-
-.cancelBtn {
-  background-color: #f9fafb;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.cancelBtn:hover {
-  background-color: #f3f4f6;
-}
-
-.deleteBtn {
-  background-color: #ef4444;
-  color: white;
-}
-
-.deleteBtn:hover {
-  background-color: #dc2626;
-}
-
-.submitBtn {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.submitBtn:hover {
-  background-color: #2563eb;
-}
-
-.cancelBtn:disabled,
-.deleteBtn:disabled,
-.submitBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.cancelBtn:disabled:hover,
-.deleteBtn:disabled:hover,
-.submitBtn:disabled:hover {
-  background-color: inherit;
-}
-
-/* 예약 기반 매출 등록 전용 스타일 */
-.reservationInfo {
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 16px;
-}
-
-.reservationInfo h4 {
-  margin: 0 0 8px 0;
-  color: #1e40af;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.reservationInfo p {
-  margin: 0;
-  color: #3730a3;
-  font-size: 13px;
-}
-
-.disabledFieldNote {
-  background-color: #fef3c7;
-  border: 1px solid #fbbf24;
-  color: #92400e;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  margin-bottom: 16px;
-  text-align: center;
-}
-
-.autoSetField {
-  position: relative;
-}
-
-.autoSetField::after {
-  content: '🔒';
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  color: #6b7280;
-  pointer-events: none;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .modal {
-    width: 95%;
-    margin: 20px;
-  }
-  
-  .formRow {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .modalHeader,
-  .modalBody {
-    padding: 16px;
-  }
-  
-  .modalFooter {
-    padding: 12px 16px 16px 16px;
-    flex-direction: column-reverse;
-  }
-  
-  .cancelBtn,
-  .deleteBtn,
-  .submitBtn {
-    width: 100%;
-  }
-  
-  .subtitle {
-    font-size: 13px;
-    padding: 6px 10px;
-  }
-}
-
-/* 다크 모드 지원 */
-@media (prefers-color-scheme: dark) {
-  .modal {
-    background: #1f2937;
-    color: #f9fafb;
-  }
-  
-  .modalHeader {
-    border-bottom-color: #374151;
-  }
-  
-  .modalHeader h2 {
-    color: #f9fafb;
-  }
-  
-  .subtitle {
-    background-color: #1e3a8a;
-    color: #bfdbfe;
-    border-left-color: #60a5fa;
-  }
-  
-  .formGroup label {
-    color: #d1d5db;
-  }
-  
-  .textInput,
-  .selectInput,
-  .textareaInput {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-  
-  .textInput:focus,
-  .selectInput:focus,
-  .textareaInput:focus {
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-  }
-  
-  .textInput:disabled,
-  .selectInput:disabled,
-  .textareaInput:disabled {
-    background-color: #1f2937;
-    color: #6b7280;
-  }
-  
-  .error {
-    background-color: #7f1d1d;
-    border-color: #dc2626;
-    color: #fca5a5;
-  }
-  
-  .helperText {
-    color: #93c5fd;
-  }
-  
-  .finalAmountSection {
-    background-color: #374151;
-    border-color: #4b5563;
-  }
-  
-  .finalAmountLabel {
-    color: #d1d5db;
-  }
-  
-  .modalFooter {
-    border-top-color: #374151;
-  }
-  
-  .cancelBtn {
-    background-color: #374151;
-    color: #d1d5db;
-    border-color: #4b5563;
-  }
-  
-  .cancelBtn:hover {
-    background-color: #4b5563;
-  }
-  
-  .reservationInfo {
-    background-color: #1e3a8a;
-    border-color: #3730a3;
-  }
-  
-  .reservationInfo h4 {
-    color: #93c5fd;
-  }
-  
-  .reservationInfo p {
-    color: #bfdbfe;
-  }
-  
-  .disabledFieldNote {
-    background-color: #78350f;
-    border-color: #92400e;
-    color: #fbbf24;
-  }
-}/* AddEditSalesModal.module.css */
-
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.modal {
-  background: white;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.modalHeader {
-  padding: 24px 24px 0 24px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.modalHeader h2 {
-  margin: 0 0 16px 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.modalBody {
-  padding: 24px;
-  max-height: calc(90vh - 140px);
-  overflow-y: auto;
-}
-
-.formRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-}
-
-.formGroup label {
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
-.required {
-  color: #ef4444;
-}
-
-.textInput,
-.selectInput,
-.textareaInput {
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.2s;
-  background-color: white;
-}
-
-.textInput:focus,
-.selectInput:focus,
-.textareaInput:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.textInput:disabled,
-.selectInput:disabled,
-.textareaInput:disabled {
-  background-color: #f9fafb;
-  color: #6b7280;
-  cursor: not-allowed;
-}
-
-.selectWrapper {
-  position: relative;
-}
-
-.selectWrapper::after {
-  content: '';
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid #6b7280;
-  pointer-events: none;
-}
-
-.selectInput {
-  appearance: none;
-  background-color: white;
-  padding-right: 40px;
-  cursor: pointer;
-}
-
-.textareaInput {
-  resize: vertical;
-  min-height: 80px;
-  font-family: inherit;
-}
-
-.error {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-}
-
-.error::before {
-  content: '⚠️';
-  margin-right: 8px;
-}
-
-.helperText {
-  color: #6b7280;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.finalAmountSection {
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.finalAmountLabel {
-  font-weight: 600;
-  color: #374151;
-  font-size: 16px;
-}
-
-.finalAmountValue {
-  font-weight: 700;
-  color: #059669;
-  font-size: 20px;
-}
-
-.modalFooter {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  padding: 16px 24px 24px 24px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.cancelBtn,
-.deleteBtn,
-.submitBtn {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  min-width: 80px;
-}
-
-.cancelBtn {
-  background-color: #f9fafb;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.cancelBtn:hover {
-  background-color: #f3f4f6;
-}
-
-.deleteBtn {
-  background-color: #ef4444;
-  color: white;
-}
-
-.deleteBtn:hover {
-  background-color: #dc2626;
-}
-
-.submitBtn {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.submitBtn:hover {
-  background-color: #2563eb;
-}
-
-.cancelBtn:disabled,
-.deleteBtn:disabled,
-.submitBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.cancelBtn:disabled:hover,
-.deleteBtn:disabled:hover,
-.submitBtn:disabled:hover {
-  background-color: inherit;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .modal {
-    width: 95%;
-    margin: 20px;
-  }
-  
-  .formRow {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .modalHeader,
-  .modalBody {
-    padding: 16px;
-  }
-  
-  .modalFooter {
-    padding: 12px 16px 16px 16px;
-    flex-direction: column-reverse;
-  }
-  
-  .cancelBtn,
-  .deleteBtn,
-  .submitBtn {
-    width: 100%;
-  }
-}
-
-/* 다크 모드 지원 */
-@media (prefers-color-scheme: dark) {
-  .modal {
-    background: #1f2937;
-    color: #f9fafb;
-  }
-  
-  .modalHeader {
-    border-bottom-color: #374151;
-  }
-  
-  .modalHeader h2 {
-    color: #f9fafb;
-  }
-  
-  .formGroup label {
-    color: #d1d5db;
-  }
-  
-  .textInput,
-  .selectInput,
-  .textareaInput {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-  
-  .textInput:focus,
-  .selectInput:focus,
-  .textareaInput:focus {
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-  }
-  
-  .textInput:disabled,
-  .selectInput:disabled,
-  .textareaInput:disabled {
-    background-color: #1f2937;
-    color: #6b7280;
-  }
-  
-  .error {
-    background-color: #7f1d1d;
-    border-color: #dc2626;
-    color: #fca5a5;
-  }
-  
-  .finalAmountSection {
-    background-color: #374151;
-    border-color: #4b5563;
-  }
-  
-  .finalAmountLabel {
-    color: #d1d5db;
-  }
-  
-  .modalFooter {
-    border-top-color: #374151;
-  }
-  
-  .cancelBtn {
-    background-color: #374151;
-    color: #d1d5db;
-    border-color: #4b5563;
-  }
-  
-  .cancelBtn:hover {
-    background-color: #4b5563;
   }
 }
