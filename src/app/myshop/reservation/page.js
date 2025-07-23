@@ -12,6 +12,7 @@ import UpdateReservationInfoModal from "./components/UpdateReservaionInfoModal";
 import NewReservationModal from "./components/NewReservationModal";
 import DeleteAlertModal from "./components/DeleteAlertModal";
 import RealDeleteAlertModal from "./components/RealDeleteAlertModal";
+import ResultCustomMessageModal from "./components/ResultCustomMessageModal";
 
 export default function Reservation() {
     const [searchResultList, setSearchResultList] = useState([]);
@@ -28,6 +29,14 @@ export default function Reservation() {
     const [isShowUpdateModal, setIsShowUpdateModal] = useState(false);
     const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
     const [isShowRealDeleteModal, setIsShowRealDeleteModal] = useState(false);
+    const [isShowMessageModal, setIsShowMessageModal] = useState(false);
+    const [resultMessage, setResultMessage] = useState('');
+    const [resultTitle, setResultTitle] = useState('');
+    const [resultType, setResultType] = useState('');
+    // const [onMessageClose, setOnMessageClose] = useState(null);
+    const [isCloseComplete, setIsCloseComplete] = useState(false);
+    const [messageContext, setMessageContext] = useState('');
+    
 
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
@@ -57,6 +66,13 @@ export default function Reservation() {
     useEffect(() => {
         fetchReservationData();
     }, []);
+
+    useEffect(() => {
+        if(isCloseComplete){
+            setIsShowDetailReservation(true);
+            setIsCloseComplete(false);
+        }
+    },[isCloseComplete]);
 
     return (
         <>
@@ -115,6 +131,12 @@ export default function Reservation() {
                             selectedDate={selectedDate}
                             resvDateList={resvDateList}
                             fetchReservationData={fetchReservationData}
+                            setIsShowMessageModal={setIsShowMessageModal}
+                            setResultTitle={setResultTitle}
+                            setResultMessage={setResultMessage}
+                            setResultType={setResultType}
+                            setIsCloseComplete={setIsCloseComplete}
+                            setMessageContext={setMessageContext}
                         />
                     )}
                     {/* 예약 수정 모달 */}
@@ -126,6 +148,14 @@ export default function Reservation() {
                             resvDateList={resvDateList}
                             setIsShowDetailReservation={setIsShowDetailReservation}
                             fetchReservationData={fetchReservationData}
+                            setIsShowMessageModal={setIsShowMessageModal}
+                            setResultTitle={setResultTitle}
+                            setResultMessage={setResultMessage}
+                            setResultType={setResultType}
+                            // setOnMessageClose={setOnMessageClose}
+                            isCloseComplete={setIsCloseComplete}
+                            setIsCloseComplete={setIsCloseComplete}
+                            setMessageContext={setMessageContext}
                         />
                     )}
                     {/* 예약 삭제 알림 모달 */}
@@ -136,6 +166,7 @@ export default function Reservation() {
                             setIsShowModal={setIsShowModal}
                             selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
+                            
                         />
                     )}
                     {/* 예약 물리적 삭제 알림 모달 */}
@@ -147,8 +178,19 @@ export default function Reservation() {
                             selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
                         />
-
                     )}
+                    {/* 성공 메시지 모달 */}
+                    <ResultCustomMessageModal
+                        isShowMessageModal={isShowMessageModal}
+                        setIsShowMessageModal={setIsShowMessageModal}
+                        resultMessage={resultMessage}
+                        resultTitle={resultTitle}
+                        resultType={resultType}
+                        isCloseComplete={isCloseComplete}
+                        setIsCloseComplete={setIsCloseComplete}
+                        messageContext={messageContext}
+                    />
+                    {/*  */}
             </div>
         </>
     )
