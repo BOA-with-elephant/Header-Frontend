@@ -77,7 +77,7 @@ export default function MessageDetail() {
                 historyCode: receiver.historyCode,
                 sendTime: receiver.sentAt === "-" ? receiver.sentAt : receiver.sentAt.split(' ')[1].substring(0, 8),
                 recipient: receiver.name,
-                status: receiver.sentStatus === 'SUCCESS' ? '성공' : '실패',
+                status: receiver.sentStatus === 'PENDING' ? '처리중' : receiver.sentStatus === 'SUCCESS' ? '성공' : '실패',
                 statusCode: receiver.sentStatus,
                 failureReason: receiver.sentStatus === 'FAIL' ? (receiver.etc || '알 수 없는 오류') : null,
             }));
