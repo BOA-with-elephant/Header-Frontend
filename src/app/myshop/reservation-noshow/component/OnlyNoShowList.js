@@ -4,9 +4,17 @@ import styles from '../../../../styles/admin/reservation-noshow/OnlyNoShowList.m
 export default function OnlyNoShowList({
     onlyNoShowList,
     setIsShowDetailReservation,
-    setSelectedResvCode
+    setSelectedResvCode,
+    setIsShowMessageModal,
+    setResultTitle,
+    setResultMessage,
+    setResultType,
+    onDeleteSuccess,
+    setMessageContext
 }){
-    
+    const SHOP_CODE = 1;
+    const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
+ 
     const formatTime = (resvTime) => {
         const [hours, minutes, seconds] = resvTime.split(':');
         const date = new Date();
@@ -27,11 +35,58 @@ export default function OnlyNoShowList({
         setSelectedResvCode(resvCode);
     }
 
+    const bulkNoShowHandler = async() => {
+        const resvCodes = onlyNoShowList.map(item => item.resvCode);
+
+        try{
+            const response = await fetch(`${API_BASE_URL}/noshow-bulk`,{
+                method : "PUT",
+                headers : {
+                    "Content-Type" : "application/json"
+                },
+                body : JSON.stringify({resvCodes})
+            });
+
+            const contentType = response.headers.get("Content-Type");
+
+            if(contentType && contentType.includes("application/json")){
+                const data = await response.json();
+                console.log('일괄 노쇼 처리 성공 : ', data);
+                
+                if (onDeleteSuccess) {
+                    onDeleteSuccess();
+                }
+
+                setResultType('success');
+                setResultTitle('노쇼 처리 성공');
+                setResultMessage('노쇼 처리가 성공적으로 처리되었습니다.')
+                setMessageContext('noshow');
+                setIsShowMessageModal(true);
+
+            } else {
+                const text = await response.text();
+                console.warn("받은 응답이 JSON이 아님 : ", text);
+            }
+        } catch(error) {
+            console.error('노쇼 처리 실패 :', error);
+            setResultType('error');
+            setResultTitle('노쇼 처리 실패');
+            setResultMessage('노쇼 처리를 실패하였습니다.')
+            setTimeout(() => {
+                setIsShowMessageModal(true);
+            }, 100);
+        }
+        
+    }
+
     return(
         <>
             <div className={styles.tableContainer}>
                 <div style={{ paddingBottom : '20px'}}>
-                    <h3 className={styles.heading}>노쇼 내역</h3>
+                    <div className={styles.headerRow}>
+                        <h3 className={styles.heading}>노쇼 내역</h3>
+                        <button className={styles.button} onClick={bulkNoShowHandler}>일괄 노쇼 처리</button>
+                    </div>
                 </div>
                 <table className={styles.customTable}>
                     <thead>

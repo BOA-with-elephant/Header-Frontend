@@ -3,7 +3,18 @@ import styles from '../../../../styles/admin/reservation-noshow/DetailResvModal.
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
 
-export default function DetailResvModal({selectedResvCode, setIsShowDetailReservation, setIsShowRealDeleteModal, onlyNoShowList}){
+export default function DetailResvModal({
+    selectedResvCode, 
+    setIsShowDetailReservation, 
+    setIsShowRealDeleteModal, 
+    onlyNoShowList,
+    setIsShowMessageModal,
+    setResultTitle,
+    setResultMessage,
+    setResultType,
+    onDeleteSuccess,
+    setMessageContext
+}){
     const [detailResvInfo, sestDetailresvInfo] = useState({});
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
@@ -60,6 +71,47 @@ export default function DetailResvModal({selectedResvCode, setIsShowDetailReserv
 
     // '노쇼 처리' 버튼을 표시할지 여부를 결정하는 로직
     const isNoShow = onlyNoShowList.some((item) => item.resvCode === selectedResvCode);
+
+    const noShowHandler = async() => {
+
+        try{
+            const response = await fetch(`${API_BASE_URL}/noshow/${selectedResvCode}`, {
+                method : "PUT",
+                headers : {
+                    "Content-Type" : "application/json"
+                },
+                body : JSON.stringify({})
+            });
+
+            const contentType = response.headers.get("Content-Type");
+
+            if(contentType && contentType.includes("application/json")){
+                const data = await response.json();
+                console.log('노쇼 처리 성공 : ', data);
+                
+                if (onDeleteSuccess) {
+                    onDeleteSuccess();
+                }
+                setIsShowDetailReservation(false);
+                setResultType('success');
+                setResultTitle('노쇼 처리 성공');
+                setResultMessage('노쇼 처리가 성공적으로 처리되었습니다.')
+                setMessageContext('noshow');
+                setIsShowMessageModal(true);
+            } else {
+                const text = await response.text();
+                console.warn("받은 응답이 JSON이 아님 : ", text);
+            }
+        } catch(error) {
+            console.error('노쇼 처리 실패 :', error);
+            setResultType('error');
+            setResultTitle('노쇼 처리 실패');
+            setResultMessage('노쇼 처리를 실패하였습니다.')
+            setTimeout(() => {
+                setIsShowMessageModal(true);
+            }, 100);
+        }
+    }
 
     return(
         <>  
@@ -118,7 +170,7 @@ export default function DetailResvModal({selectedResvCode, setIsShowDetailReserv
                     </div>
                     <div className={styles.buttonsWrapper}>
                         {isNoShow && (
-                            <button className={styles.buttons}>노쇼 처리</button>
+                            <button className={styles.buttons} onClick={noShowHandler}>노쇼 처리</button>
                         )}
                         <button className={styles.buttons} onClick={showRealDeleteModalHandler}>예약 삭제</button>
                     </div>

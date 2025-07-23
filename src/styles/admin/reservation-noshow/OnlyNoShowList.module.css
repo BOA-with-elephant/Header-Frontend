@@ -12,6 +12,7 @@
     margin-top: 0;
     color: var(--color-primary);
     display: inline;
+    text-align: center;
 }
 
 .customTable {
@@ -20,6 +21,7 @@
     border-spacing: 0;
     border-radius: 12px;
     overflow: hidden;
+    margin-top: 0px;
 }
 
 .customTable thead {
@@ -52,4 +54,30 @@
 
 .noResult:hover{
     background-color: #FFFFFF;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: -10px;
+}
+
+.button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height : 35px;
+    border: 3px solid #353957;
+    border-radius: var(--radius-lg);
+    background-color: var(--bg-primary);
+    font-family: 'GmarketSansMedium';
+    
+}
+
+.button:hover{
+    background-color: #353957;
+    color: #FFFFFF;
+    cursor: pointer;
 }

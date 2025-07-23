@@ -4,6 +4,7 @@ import CanceledAndNoShowList from "./component/CanceledAndNoShowList";
 import OnlyNoShowList from "./component/OnlyNoShowList";
 import DetailResvModal from "./component/DetailResvModal";
 import HardDeleteAlertModal from "./component/HardDeleteAlertModal";
+import ResultCustomMessageModal from "../reservation/components/ResultCustomMessageModal";
 // import MessageModal from '@/components/ui/MessageModal';  // 성공, 실패, 경고, 확인 등의 메시지를 사용자에게 표시하는 공통 모달 컴포넌트
 // import { useMessageModal } from '@/hooks/useMessageModal'; // 메시지 모달 상태를 관리하고 제어하는 커스텀 훅
 // showError, showSuccess, showConfirm, showWarning 등을 통해 상황별 메시지를 간편하게 호출 가능
@@ -16,6 +17,12 @@ export default function NoShow(){
     const [selectedResvCode, setSelectedResvCode] = useState();
     const [isShowRealDeleteModal, setIsShowRealDeleteModal] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [isShowMessageModal, setIsShowMessageModal] = useState(false);
+    const [resultMessage, setResultMessage] = useState('');
+    const [resultTitle, setResultTitle] = useState('');
+    const [resultType, setResultType] = useState('');
+    const [messageContext, setMessageContext] = useState('');
+
     const SHOP_CODE = 1;
     const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
 
@@ -59,6 +66,12 @@ export default function NoShow(){
                     onlyNoShowList={onlyNoShowList}
                     setIsShowDetailReservation={setIsShowDetailReservation}
                     setSelectedResvCode={setSelectedResvCode}
+                    onDeleteSuccess={() => setRefreshKey(prev => prev + 1)}
+                    setIsShowMessageModal={setIsShowMessageModal}
+                    setResultTitle={setResultTitle}
+                    setResultMessage={setResultMessage}
+                    setResultType={setResultType}
+                    setMessageContext={setMessageContext}
                 />
             </div>
             {isShowDetailReservation && (
@@ -67,6 +80,12 @@ export default function NoShow(){
                     setIsShowDetailReservation={setIsShowDetailReservation}
                     setIsShowRealDeleteModal={setIsShowRealDeleteModal}
                     onlyNoShowList={onlyNoShowList}
+                    onDeleteSuccess={() => setRefreshKey(prev => prev + 1)}
+                    setIsShowMessageModal={setIsShowMessageModal}
+                    setResultTitle={setResultTitle}
+                    setResultMessage={setResultMessage}
+                    setResultType={setResultType}
+                    setMessageContext={setMessageContext}
                 />
             )}
             {isShowRealDeleteModal && (
@@ -77,6 +96,17 @@ export default function NoShow(){
                     onDeleteSuccess={() => setRefreshKey(prev => prev + 1)}
                 />
             )}
+            {/* 성공 메시지 모달 */}
+            <ResultCustomMessageModal
+                isShowMessageModal={isShowMessageModal}
+                setIsShowMessageModal={setIsShowMessageModal}
+                resultMessage={resultMessage}
+                resultTitle={resultTitle}
+                resultType={resultType}
+                // isCloseComplete={isCloseComplete}
+                // setIsCloseComplete={setIsCloseComplete}
+                messageContext={messageContext}
+            />
         </>
     )
 }
