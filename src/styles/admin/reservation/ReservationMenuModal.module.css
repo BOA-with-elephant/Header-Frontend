@@ -88,3 +88,15 @@
     color: #8588A2;
     cursor: not-allowed;
 }
+
+.preventRegist{
+    background-color: #F9F9F9;
+    color: #8588A2;
+    cursor: not-allowed;
+}
+
+.preventRegist:hover{
+    background-color: #F9F9F9;
+    color: #8588A2;
+    cursor: not-allowed;
+}
