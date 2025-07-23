@@ -33,7 +33,6 @@ export default function Reservation() {
     const [resultMessage, setResultMessage] = useState('');
     const [resultTitle, setResultTitle] = useState('');
     const [resultType, setResultType] = useState('');
-    // const [onMessageClose, setOnMessageClose] = useState(null);
     const [isCloseComplete, setIsCloseComplete] = useState(false);
     const [messageContext, setMessageContext] = useState('');
     const [isPreventRegist, setIsPreventRegist] = useState(false);

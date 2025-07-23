@@ -12,7 +12,7 @@ const MENU_CONFIG = {
       firstPath: "/myshop/reservation",
       items: [
         { path: "/myshop/reservation", text: "예약조회/등록" },
-        // { path: "/myshop/reservation-list", text: "예약 조회" }
+        { path: "/myshop/reservation-noshow", text: "노쇼/예약취소" }
       ]
     },
     {
