@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { MessagesAPI } from '@/lib/api';
+import { useApi } from '@/hooks/useApi';
 import styles from '@/styles/admin/message/TemplateSelection.module.css';
 
 export default function TemplateSelection({ selectedTemplate, onTemplateSelect }) {
@@ -13,10 +15,11 @@ export default function TemplateSelection({ selectedTemplate, onTemplateSelect }
         informational: []
     });
     
-    const [loading, setLoading] = useState(true);
+    // API 호출용 훅
+    const { execute: executeApi, loading } = useApi();
 
-    // TODO: shop_id를 어디서 가져올지 결정되면 수정
-    const SHOP_ID = 2; // 임시값
+    // TODO: shop_id를 context나 store에서 가져오도록 수정
+    const SHOP_ID = 2;
 
     // API 데이터를 내부 형식으로 변환
     const transformApiData = (apiData) => {
@@ -25,41 +28,30 @@ export default function TemplateSelection({ selectedTemplate, onTemplateSelect }
             informational: []
         };
 
-        apiData.forEach(categoryData => {
-            const categoryType = categoryData.type;
-            
-            if (transformedTemplates[categoryType]) {
-                transformedTemplates[categoryType] = categoryData.templates.map((template, index) => ({
-                    id: `${categoryType}_${index + 1}`,
-                    name: template.title,
-                    content: template.content,
-                    category: categoryType === 'promotional' ? '프로모션' : '알림',
-                    usageCount: Math.floor(Math.random() * 200) + 50 // 임시 사용 횟수
-                }));
-            }
-        });
+        if (Array.isArray(apiData)) {
+            apiData.forEach(categoryData => {
+                const categoryType = categoryData.type;
+                
+                if (transformedTemplates[categoryType]) {
+                    transformedTemplates[categoryType] = categoryData.templates.map((template, index) => ({
+                        id: `${categoryType}_${index + 1}`,
+                        name: template.title,
+                        content: template.content,
+                        category: categoryType === 'promotional' ? '프로모션' : '알림',
+                    }));
+                }
+            });
+        }
 
         return transformedTemplates;
     };
 
-    // 템플릿 목록 API 호출
+    // 템플릿 목록 조회 (새로운 API 패턴 사용)
     const fetchTemplates = async () => {
         try {
-            setLoading(true);
-            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages/template`);
-            
-            if (!response.ok) {
-                throw new Error('템플릿 목록 조회에 실패했습니다.');
-            }
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                const transformedData = transformApiData(result.data);
-                setTemplates(transformedData);
-            } else {
-                throw new Error(result.message || '템플릿 목록 조회에 실패했습니다.');
-            }
+            const response = await executeApi(MessagesAPI.getTemplates, SHOP_ID);
+            const transformedData = transformApiData(response.data || []);
+            setTemplates(transformedData);
         } catch (error) {
             console.error('템플릿 목록 조회 오류:', error);
             // 에러 발생 시 빈 데이터로 설정
@@ -67,8 +59,6 @@ export default function TemplateSelection({ selectedTemplate, onTemplateSelect }
                 promotional: [],
                 informational: []
             });
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -99,6 +89,7 @@ export default function TemplateSelection({ selectedTemplate, onTemplateSelect }
                             selectedCategory === category.id ? styles.active : ''
                         }`}
                         onClick={() => setSelectedCategory(category.id)}
+                        disabled={loading}
                     >
                         <span className={styles.categoryIcon}>{category.icon}</span>
                         <span className={styles.categoryName}>{category.name}</span>

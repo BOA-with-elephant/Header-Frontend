@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { CustomersAPI } from '@/lib/api';
+import { useApi } from '@/hooks/useApi';
 import styles from '@/styles/admin/message/RecipientSelection.module.css';
 
 export default function RecipientSelection({ 
@@ -12,13 +14,20 @@ export default function RecipientSelection({
 }) {
     const [customers, setCustomers] = useState([]);
     const [filteredCustomers, setFilteredCustomers] = useState([]);
-    const [loading, setLoading] = useState(true);
+    
+    // API 호출용 훅
+    const { execute: executeApi, loading } = useApi();
 
-    // TODO: shop_id를 어디서 가져올지 결정되면 수정
-    const SHOP_ID = 2; // 임시값
+    // TODO: shop_id를 context나 store에서 가져오도록 수정
+    const SHOP_ID = 2;
 
     // API 데이터를 내부 형식으로 변환
     const transformApiData = (apiData) => {
+        if (!Array.isArray(apiData)) {
+            console.warn('API response is not an array:', apiData);
+            return [];
+        }
+
         return apiData.map(customer => {
             // 생년월일로 나이 계산
             const calculateAge = (birthday) => {
@@ -36,14 +45,14 @@ export default function RecipientSelection({
             return {
                 id: customer.clientCode, // API의 clientCode를 id로 사용
                 clientCode: customer.clientCode, // 발송시 사용할 식별자
-                name: customer.userName,
-                phone: customer.phone,
-                birthday: customer.birthday,
-                memo: customer.memo,
-                sendable: customer.sendable,
-                visitCount: customer.visitCount,
-                totalAmount: customer.totalPaymentAmount,
-                lastVisit: customer.lastVisited,
+                name: customer.userName || customer.name,
+                phone: customer.phone || '',
+                birthday: customer.birthday || '',
+                memo: customer.memo || '',
+                sendable: customer.sendable || false,
+                visitCount: customer.visitCount || 0,
+                totalAmount: customer.totalPaymentAmount || 0,
+                lastVisit: customer.lastVisited || '',
                 preferredService: customer.favoriteMenuName || '없음',
                 grade: customer.memo?.includes('VIP') ? 'VIP' : '일반', // 메모에 VIP가 있으면 VIP
                 age: calculateAge(customer.birthday)
@@ -51,32 +60,18 @@ export default function RecipientSelection({
         });
     };
 
-    // 고객 목록 API 호출
+    // 고객 목록 조회 (새로운 API 패턴 사용)
     const fetchCustomers = async () => {
         try {
-            setLoading(true);
-            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/customers`);
-            
-            if (!response.ok) {
-                throw new Error('고객 목록 조회에 실패했습니다.');
-            }
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                const transformedData = transformApiData(result.data);
-                setCustomers(transformedData);
-                setFilteredCustomers(transformedData.filter(c => c.sendable));
-            } else {
-                throw new Error(result.message || '고객 목록 조회에 실패했습니다.');
-            }
+            const response = await executeApi(CustomersAPI.getCustomers, SHOP_ID);
+            const transformedData = transformApiData(response.data || []);
+            setCustomers(transformedData);
+            setFilteredCustomers(transformedData.filter(c => c.sendable));
         } catch (error) {
             console.error('고객 목록 조회 오류:', error);
             // 에러 발생 시 빈 배열로 설정
             setCustomers([]);
             setFilteredCustomers([]);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -134,7 +129,10 @@ export default function RecipientSelection({
                     break;
             }
             
-            filtered = filtered.filter(c => new Date(c.lastVisit) >= filterDate);
+            filtered = filtered.filter(c => {
+                if (!c.lastVisit || c.lastVisit === '방문 기록 없음') return false;
+                return new Date(c.lastVisit) >= filterDate;
+            });
         }
 
         // 연령대 필터
@@ -171,7 +169,7 @@ export default function RecipientSelection({
         onRecipientsChange(newSelection);
     };
 
-     const handleComplete = () => {
+    const handleComplete = () => {
         if (selectedRecipients.length > 0 && onComplete) {
             onComplete();
         }
@@ -209,7 +207,11 @@ export default function RecipientSelection({
             <div className={styles.filtersSection}>
                 <div className={styles.filtersHeader}>
                     <h3 className={styles.filtersTitle}>필터</h3>
-                    <button className={styles.resetButton} onClick={resetFilters}>
+                    <button 
+                        className={styles.resetButton} 
+                        onClick={resetFilters}
+                        disabled={loading}
+                    >
                         초기화
                     </button>
                 </div>
@@ -221,6 +223,7 @@ export default function RecipientSelection({
                             className={styles.filterSelect}
                             value={filters.preferredService}
                             onChange={(e) => handleFilterChange('preferredService', e.target.value)}
+                            disabled={loading}
                         >
                             {filterOptions.preferredService.map(option => (
                                 <option key={option} value={option === '전체' ? '' : option}>
@@ -236,6 +239,7 @@ export default function RecipientSelection({
                             className={styles.filterSelect}
                             value={filters.customerGrade}
                             onChange={(e) => handleFilterChange('customerGrade', e.target.value)}
+                            disabled={loading}
                         >
                             {filterOptions.customerGrade.map(option => (
                                 <option key={option} value={option === '전체' ? '' : option}>
@@ -251,6 +255,7 @@ export default function RecipientSelection({
                             className={styles.filterSelect}
                             value={filters.visitPeriod}
                             onChange={(e) => handleFilterChange('visitPeriod', e.target.value)}
+                            disabled={loading}
                         >
                             {filterOptions.visitPeriod.map(option => (
                                 <option key={option} value={option === '전체' ? '' : option}>
@@ -266,6 +271,7 @@ export default function RecipientSelection({
                             className={styles.filterSelect}
                             value={filters.ageGroup}
                             onChange={(e) => handleFilterChange('ageGroup', e.target.value)}
+                            disabled={loading}
                         >
                             {filterOptions.ageGroup.map(option => (
                                 <option key={option} value={option === '전체' ? '' : option}>
@@ -291,7 +297,7 @@ export default function RecipientSelection({
                     <button 
                         className={styles.selectAllButton}
                         onClick={handleSelectAll}
-                        disabled={filteredCustomers.length === 0}
+                        disabled={filteredCustomers.length === 0 || loading}
                     >
                         {selectedRecipients.length === filteredCustomers.length ? '전체 해제' : '전체 선택'}
                     </button>
@@ -341,7 +347,10 @@ export default function RecipientSelection({
                                                     선호: {customer.preferredService}
                                                 </span>
                                                 <span className={styles.customerVisit}>
-                                                    최근 방문: {new Date(customer.lastVisit).toLocaleDateString('ko-KR')}
+                                                    최근 방문: {customer.lastVisit && customer.lastVisit !== '방문 기록 없음' 
+                                                        ? new Date(customer.lastVisit).toLocaleDateString('ko-KR')
+                                                        : '방문 기록 없음'
+                                                    }
                                                 </span>
                                             </div>
                                         </div>
@@ -371,7 +380,7 @@ export default function RecipientSelection({
                 <button
                     className={styles.completeButton}
                     onClick={handleComplete}
-                    disabled={selectedRecipients.length === 0}
+                    disabled={selectedRecipients.length === 0 || loading}
                 >
                     수신자 선택 완료
                 </button>
