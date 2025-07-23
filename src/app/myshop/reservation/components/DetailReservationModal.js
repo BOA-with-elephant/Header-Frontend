@@ -2,15 +2,26 @@ import React, { useState, useEffect } from 'react';
 import styles from '../../../../styles/admin/reservation/DetailReservationModal.module.css';
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
+import AddEditMenuModal from '../../menu/components/AddEditMenuModal';
 
-export default function DetailReservationModal({selectedResvCode, setIsShowDetailReservation, setIsShowModal, setIsShowUpdateModal, setIsShowDeleteModal, setIsShowRealDeleteModal, selectedDate}){
+export default function DetailReservationModal({
+    selectedResvCode, 
+    setIsShowDetailReservation, 
+    setIsShowModal, 
+    setIsShowUpdateModal, 
+    setIsShowDeleteModal, 
+    setIsShowRealDeleteModal, 
+    selectedDate,
+    setIsOpenSalesModal,
+    setDetailReservation
+}){
     const [detailResvInfo, sestDetailresvInfo] = useState({});
     const today = new Date();
     const todayOnlyDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const targetDate = new Date(selectedDate);
     const isBeforeToday = targetDate < todayOnlyDate;
     const SHOP_CODE = 1;
-    const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
+    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     useEffect(() => {
         const detailReservation = async() => {
@@ -18,6 +29,7 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
                 const res = await fetch(`${API_BASE_URL}/${selectedResvCode}`);
                 const data = await res.json();
                 sestDetailresvInfo(data);
+                setDetailReservation(data);
             } catch (error) {
                 console.error('예약 상세 정보 불러오기 실패 :', error);
             }
@@ -86,12 +98,9 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
     }
 
     const completeProcedureHandler = async() => {
-        sestDetailresvInfo(prev => ({
-            ...prev,
-            resvState : 'FINISH'
-        }));
+        setIsOpenSalesModal(true);
+        setIsShowDetailReservation(false);
     }
-
     return(
         <>  
             <div className={styles.modalOverlay}/>
@@ -109,7 +118,7 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
                     <div className={styles.valueRow}>
                         <p className={styles.bigTitle}>📅 예약 정보</p>
                         {
-                            detailResvInfo.resvState === 'APPROVE' && (
+                            detailResvInfo.resvState === 'APPROVE' && isBeforeToday && (
                             <button className={styles.buttons} onClick={completeProcedureHandler}>시술 완료</button>
                             )
                         }
