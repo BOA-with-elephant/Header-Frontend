@@ -65,7 +65,6 @@ export default function BookingFormPanel ({shopCode, shopName, menus, onBack, on
         setLoading(true);
 
         const bookingData = {
-            userCode: 1, // TODO. 사용자 ID 처리
             menuCode: selectedMenuCode,
             resvDate: selectedDate.toISOString().split('T')[0], // yyyy-MM-dd 포맷
             resvTime: selectedTime,
@@ -76,6 +75,7 @@ export default function BookingFormPanel ({shopCode, shopName, menus, onBack, on
             const res = await fetch(`http://localhost:8080/api/v1/shops/${shopCode}`, {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(bookingData)
