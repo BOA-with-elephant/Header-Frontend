@@ -9,7 +9,11 @@ export default function AddEditSalesModal({
     onSuccess, 
     initialData = null,
     customers = [], 
-    menus = []
+    menus = [],
+    detailReservation,
+    setIsShowDetailReservation,
+    setIsOpen,
+    fetchSearchResult
 }) {
     // 상태 관리
     const [formData, setFormData] = useState({
@@ -42,17 +46,27 @@ export default function AddEditSalesModal({
         if (!date) return;
         setReservationLoading(true);
         
-        try {
-            const response = await fetch(`${RESERVATION_API_URL}?resvDate=${date}`);
-            if (response.ok) {
-                const data = await response.json();
-                setReservations(data.filter(r => r.resvState === 'APPROVE'));
+        if(detailReservation === null){
+            try {
+                const response = await fetch(`${RESERVATION_API_URL}?resvDate=${date}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setReservations(data.filter(r => r.resvState === 'APPROVE'));
+                }
+            } catch (error) {
+                console.error('예약 조회 실패:', error);
+                setReservations([]);
+            } finally {
+                setReservationLoading(false);
             }
-        } catch (error) {
-            console.error('예약 조회 실패:', error);
-            setReservations([]);
-        } finally {
-            setReservationLoading(false);
+        } else if(detailReservation !== null){
+            setFormData(prev => ({
+                ...prev,
+                payMethod: '신용카드',
+                customerName: detailReservation.userName,
+                customerPhone: detailReservation.userPhone,
+                serviceName: detailReservation.menuName
+            }));
         }
     };
 
@@ -176,7 +190,7 @@ export default function AddEditSalesModal({
 
         const submitData = {
             salesCode: isEdit ? (initialData.salesCode || initialData.id) : null,
-            resvCode: isEdit ? (initialData.resvCode || null) : (selectedReservation?.resvCode || null),
+            resvCode: isEdit ? (initialData.resvCode || null) : (formData.resvCode || detailReservation?.resvCode || selectedReservation?.resvCode || null),
             payAmount: payAmount,
             payMethod: formData.payMethod,
             payDatetime: isEdit ? initialData.payDatetime : null,
@@ -213,74 +227,104 @@ export default function AddEditSalesModal({
 
         setLoading(true);
         setError('');
-
-        try {
-            const url = isEdit 
-                ? `${API_BASE_URL}/sales/${initialData.salesCode}`
-                : `${API_BASE_URL}/sales`;
-            
-            const submitData = buildSubmitData();
-            
-            console.log('=== API 요청 정보 ===');
-            console.log('요청 URL:', url);
-            console.log('요청 방법:', isEdit ? 'PUT' : 'POST');
-            console.log('요청 데이터:', JSON.stringify(submitData, null, 2));
-            
-            const response = await fetch(url, {
-                method: isEdit ? 'PUT' : 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(submitData)
-            });
-
-            console.log('=== API 응답 정보 ===');
-            console.log('응답 상태:', response.status);
-            console.log('응답 상태 텍스트:', response.statusText);
-
-            if (!response.ok) {
-                let errorMessage = '서버 오류가 발생했습니다.';
+        if(detailReservation === null){
+            try {
+                const url = isEdit 
+                    ? `${API_BASE_URL}/sales/${initialData.salesCode}`
+                    : `${API_BASE_URL}/sales`;
                 
-                try {
-                    const errorData = await response.json();
-                    console.error('에러 응답 데이터:', errorData);
-                    if (errorData.details && Array.isArray(errorData.details)) {
-                        errorMessage = errorData.details.join(', ');
-                    } else if (errorData.message) {
-                        errorMessage = errorData.message;
+                const submitData = buildSubmitData();
+                
+                console.log('=== API 요청 정보 ===');
+                console.log('요청 URL:', url);
+                console.log('요청 방법:', isEdit ? 'PUT' : 'POST');
+                console.log('요청 데이터:', JSON.stringify(submitData, null, 2));
+                
+                const response = await fetch(url, {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(submitData)
+                });
+
+                console.log('=== API 응답 정보 ===');
+                console.log('응답 상태:', response.status);
+                console.log('응답 상태 텍스트:', response.statusText);
+
+                if (!response.ok) {
+                    let errorMessage = '서버 오류가 발생했습니다.';
+                    
+                    try {
+                        const errorData = await response.json();
+                        console.error('에러 응답 데이터:', errorData);
+                        if (errorData.details && Array.isArray(errorData.details)) {
+                            errorMessage = errorData.details.join(', ');
+                        } else if (errorData.message) {
+                            errorMessage = errorData.message;
+                        }
+                    } catch (e) {
+                        const errorText = await response.text();
+                        console.error('에러 응답 텍스트:', errorText);
+                        if (errorText) errorMessage = errorText;
                     }
-                } catch (e) {
-                    const errorText = await response.text();
-                    console.error('에러 응답 텍스트:', errorText);
-                    if (errorText) errorMessage = errorText;
+                    
+                    throw new Error(`${isEdit ? '수정' : '등록'}에 실패했습니다. ${errorMessage}`);
                 }
+
+                const result = await response.json();
+                console.log('=== API 성공 응답 ===');
+                console.log('응답 데이터:', result);
                 
-                throw new Error(`${isEdit ? '수정' : '등록'}에 실패했습니다. ${errorMessage}`);
-            }
+                if (isEdit) {
+                    console.log('매출 수정 완료 - 수정된 데이터:', result);
+                    console.log('수정 성공: 데이터 새로고침을 위해 onSuccess 호출');
+                } else if (selectedReservation?.resvCode) {
+                    console.log('예약 기반 매출 등록 완료 - 예약 상태는 백엔드에서 자동 업데이트됨');
+                }
 
-            const result = await response.json();
-            console.log('=== API 성공 응답 ===');
-            console.log('응답 데이터:', result);
-            
-            if (isEdit) {
-                console.log('매출 수정 완료 - 수정된 데이터:', result);
-                console.log('수정 성공: 데이터 새로고침을 위해 onSuccess 호출');
-            } else if (selectedReservation?.resvCode) {
-                console.log('예약 기반 매출 등록 완료 - 예약 상태는 백엔드에서 자동 업데이트됨');
+                // 성공 시 부모 컴포넌트에 알려서 데이터 새로고침
+                if (typeof onSuccess === 'function') {
+                    onSuccess(result); // 수정된 데이터를 함께 전달
+                }
+                onClose();
+                
+            } catch (err) {
+                console.error('매출 등록/수정 오류:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
             }
+        } else if(detailReservation !== null){
+            const fetchCompleteProcedure = async() => {
+                try{
+                    const submitData = buildSubmitData();
+                    const response = await fetch(`${RESERVATION_API_URL}/complete-procedure`, {
+                        method : 'PUT',
+                        headers : {
+                            "Content-Type" : 'application/json'
+                        },
+                        body : JSON.stringify(submitData)   
+                    });
 
-            // 성공 시 부모 컴포넌트에 알려서 데이터 새로고침
-            if (typeof onSuccess === 'function') {
-                onSuccess(result); // 수정된 데이터를 함께 전달
-            }
-            onClose();
-            
-        } catch (err) {
-            console.error('매출 등록/수정 오류:', err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
+                    const contentType = response.headers.get("Content-Type");
+
+                    if(contentType && contentType.includes("application/json")){
+                        const data = await response.json();
+                        console.log('시술 완료 처리 성공(?) :', data);
+                        setIsOpen(false);
+                        setIsShowDetailReservation(true);
+                        await fetchSearchResult();
+                    }else {
+                        const text = await response.text();
+                        console.log('📄 텍스트 응답:', text);
+                    }
+                } catch(error){
+                    console.error('시술 완료 처리 실패 : ', error)
+                }
+            };
+            fetchCompleteProcedure();
         }
     };
 
@@ -348,7 +392,7 @@ export default function AddEditSalesModal({
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}>
                                 <label>고객 정보 *</label>
-                                {isEdit || selectedReservation ? (
+                                {isEdit || selectedReservation || detailReservation ? (
                                     <div className={styles.displayInfo}>
                                         <div className={styles.displayValue}>
                                             {formData.customerName} ({formData.customerPhone})
@@ -377,7 +421,7 @@ export default function AddEditSalesModal({
 
                             <div className={styles.formGroup}>
                                 <label>시술 정보 *</label>
-                                {isEdit || selectedReservation ? (
+                                {isEdit || selectedReservation || detailReservation ? (
                                     <div className={styles.displayInfo}>
                                         <div className={styles.displayValue}>{formData.serviceName}</div>
                                         <small>
