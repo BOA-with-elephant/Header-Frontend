@@ -42,6 +42,8 @@ export default function Reservation() {
     const [isOpenSalesModal, setIsOpenSalesModal] = useState(false);
     // const [onCloseSalesModal, setOnCloseSalesModal] = useState(false);
     const [detailReservation, setDetailReservation] = useState({});
+    const [isModalOpen, setIsModalOpen] = useState(false); // 매출 모달 상태
+    const [editingItem, setEditingItem] = useState(null);
     
 
     const SHOP_CODE = 1;
@@ -98,6 +100,11 @@ export default function Reservation() {
             setIsCloseComplete(false);
         }
     },[isCloseComplete]);
+
+    const handleModalClose = () => {
+        setIsOpenSalesModal(false);
+        setEditingItem(null);
+    };
 
     return (
         <>
@@ -224,10 +231,11 @@ export default function Reservation() {
                     <AddEditSalesModal
                         detailReservation={detailReservation}
                         isOpen={isOpenSalesModal}
-                        selectedDate={selectedDate}
+                        chosedDate={selectedDate}
                         setIsShowDetailReservation={setIsShowDetailReservation}
                         setIsOpen={setIsOpenSalesModal}
                         fetchSearchResult={fetchSearchResult}
+                        onClose={handleModalClose}
                     />
             </div>
         </>

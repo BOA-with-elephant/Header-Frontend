@@ -13,7 +13,8 @@ export default function AddEditSalesModal({
     detailReservation,
     setIsShowDetailReservation,
     setIsOpen,
-    fetchSearchResult
+    fetchSearchResult,
+    chosedDate
 }) {
     // 상태 관리
     const [formData, setFormData] = useState({
@@ -46,7 +47,7 @@ export default function AddEditSalesModal({
         if (!date) return;
         setReservationLoading(true);
         
-        if(detailReservation === null){
+        if(detailReservation === null || detailReservation === undefined){
             try {
                 const response = await fetch(`${RESERVATION_API_URL}?resvDate=${date}`);
                 if (response.ok) {
@@ -59,7 +60,7 @@ export default function AddEditSalesModal({
             } finally {
                 setReservationLoading(false);
             }
-        } else if(detailReservation !== null){
+        } else if (detailReservation !== null){
             setFormData(prev => ({
                 ...prev,
                 payMethod: '신용카드',
@@ -227,7 +228,7 @@ export default function AddEditSalesModal({
 
         setLoading(true);
         setError('');
-        if(detailReservation === null){
+        if(detailReservation === null || detailReservation === undefined){
             try {
                 const url = isEdit 
                     ? `${API_BASE_URL}/sales/${initialData.salesCode}`
@@ -313,7 +314,6 @@ export default function AddEditSalesModal({
                     if(contentType && contentType.includes("application/json")){
                         const data = await response.json();
                         console.log('시술 완료 처리 성공(?) :', data);
-                        setIsOpen(false);
                         setIsShowDetailReservation(true);
                         await fetchSearchResult();
                     }else {
@@ -354,36 +354,38 @@ export default function AddEditSalesModal({
                                 <input
                                     type="date"
                                     id="selectedDate"
-                                    value={selectedDate}
+                                    value={detailReservation === null || detailReservation === undefined? selectedDate : chosedDate}
                                     onChange={(e) => handleDateChange(e.target.value)}
                                     className={styles.textInput}
                                 />
                             </div>
 
-                            <div className={styles.formGroup}>
-                                <label>예약 목록 (예약확정만)</label>
-                                {reservationLoading ? (
-                                    <div className={styles.loadingText}>예약 목록 로딩 중...</div>
-                                ) : reservations.length > 0 ? (
-                                    <div className={styles.reservationList}>
-                                        {reservations.map((reservation) => (
-                                            <div
-                                                key={reservation.resvCode}
-                                                className={`${styles.reservationItem} ${
-                                                    selectedReservation?.resvCode === reservation.resvCode ? styles.selected : ''
-                                                }`}
-                                                onClick={() => selectReservation(reservation)}
-                                            >
-                                                <div><strong>{reservation.resvTime}</strong></div>
-                                                <div>{reservation.userName} ({reservation.userPhone})</div>
-                                                <div style={{ color: reservation.menuColor }}>{reservation.menuName}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className={styles.emptyMessage}>해당 날짜에 예약확정된 예약이 없습니다.</div>
-                                )}
-                            </div>
+                            {detailReservation === null || detailReservation === undefined && (
+                                <div className={styles.formGroup}>
+                                    <label>예약 목록 (예약확정만)</label>
+                                    {reservationLoading ? (
+                                        <div className={styles.loadingText}>예약 목록 로딩 중...</div>
+                                    ) : reservations.length > 0 ? (
+                                        <div className={styles.reservationList}>
+                                            {reservations.map((reservation) => (
+                                                <div
+                                                    key={reservation.resvCode}
+                                                    className={`${styles.reservationItem} ${
+                                                        selectedReservation?.resvCode === reservation.resvCode ? styles.selected : ''
+                                                    }`}
+                                                    onClick={() => selectReservation(reservation)}
+                                                >
+                                                    <div><strong>{reservation.resvTime}</strong></div>
+                                                    <div>{reservation.userName} ({reservation.userPhone})</div>
+                                                    <div style={{ color: reservation.menuColor }}>{reservation.menuName}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className={styles.emptyMessage}>해당 날짜에 예약확정된 예약이 없습니다.</div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
 
