@@ -49,7 +49,7 @@ export default function Layout({ children }) {
           const userData = responseData.data;
 
           console.log('Layout: 사용자 정보 로드 성공:', userData);
-          setUserRole(userData.isAdmin ? 2 : 1);
+          setUserRole(userData.admin ? 2 : 1);
         } else if (response.status === 401 || response.status === 403) {
           console.error('Layout: 사용자 정보를 가져올 수 없습니다. 토큰 만료 또는 권한 없음.', response.status);
           localStorage.removeItem('token');
