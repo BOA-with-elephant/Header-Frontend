@@ -4,7 +4,7 @@ import {useState, useEffect} from "react";
 import {formatTime} from 'src/app/shops/reservation/util/dateUtils';
 import 'src/styles/user/shops/ReservationPage.css'
 
-export default function ReservationDetail ({resvCode, userCode, onClose}) {
+export default function ReservationDetail ({resvCode, onClose}) {
     const [detail, setDetail] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
@@ -16,15 +16,19 @@ export default function ReservationDetail ({resvCode, userCode, onClose}) {
             setLoading(true); //로딩 시작
             setError(''); // 에러 메시지 초기화
 
-            const userCode = 1;
-
             try {
                 const res = await fetch(
-                    `http://localhost:8080/api/v1/shops/reservation/${resvCode}?userCode=${userCode}`
+                    `http://localhost:8080/api/v1/shops/reservation/${resvCode}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
                 );
 
                 if(!res.ok) {
-                    throw new Error('상세 내역을 불러오는데 실패했습니다.');
+                    window.alert('상세 내역을 불러오는데 실패했습니다.')
                 }
                 const json = await res.json();
                 setDetail(json.results['resv-detail']);
@@ -43,10 +47,11 @@ export default function ReservationDetail ({resvCode, userCode, onClose}) {
 
         try {
             const res = await fetch(
-                `http://localhost:8080/api/v1/shops/reservation/${resvCode}?userCode=${userCode}`,
+                `http://localhost:8080/api/v1/shops/reservation/${resvCode}`,
                 {
                     method: 'DELETE',
                     headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
                     }
                 }

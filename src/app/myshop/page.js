@@ -13,17 +13,29 @@ export default function MyShopPage() {
     const [selectedShop, setSelectedShop] = useState(null); // shopCode 또는 shopDetail 객체
     const [alert, setAlert] = useState({ show: false, message: '', linkUrl: '', linkText: '' });
 
-    const adminCode = 1; // TODO. 실제 유저 코드로 교체 필요
 
     const fetchMyShops = async () => {
-        const res = await fetch(`http://localhost:8080/api/v1/my-shops?adminCode=${adminCode}`);
-        const data = await res.json();
-        if (res.ok) setMyShops(data.results['shop-list']);
+
+        const testRes = await fetch('http://localhost:8080/api/v1/my-shops', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        const testData = await testRes.json();
+        console.log(testData);
+        if (testRes.ok) setMyShops(testData.results['shop-list']);
     };
 
     useEffect(() => {
         fetchMyShops();
     }, []);
+
+    useEffect(() => {
+        console.log('myShops updated:', myShops);
+    }, [myShops]);
 
     // 상세 정보 패널을 닫고 목록만 보이는 뷰로 전환
     const handleCloseDetail = () => {
@@ -70,13 +82,12 @@ export default function MyShopPage() {
         const isCreating = view === 'create';
         const url = isCreating
             ? 'http://localhost:8080/api/v1/my-shops'
-            : `http://localhost:8080/api/v1/my-shops/${selectedShop.shopCode}?adminCode=${adminCode}`;
+            : `http://localhost:8080/api/v1/my-shops/${selectedShop.shopCode}`;
 
         const method = isCreating ? 'POST' : 'PUT';
 
         const body = {
             ...formData,
-            adminCode,
             shopPhone: formData.shopPhone,
         };
         delete body.mainAddress;
@@ -84,7 +95,10 @@ export default function MyShopPage() {
 
         const res = await fetch(url, {
             method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(body)
         });
 
@@ -97,8 +111,11 @@ export default function MyShopPage() {
 
     const handleDeleteShop = async (shopCode) => {
         if (window.confirm('정말로 해당 샵을 삭제하시겠습니까?')) {
-            const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}?adminCode=${adminCode}`, {
-                method: 'DELETE'
+            const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                }
             });
             if(res.ok) {
                 window.alert('샵이 삭제되었습니다.')

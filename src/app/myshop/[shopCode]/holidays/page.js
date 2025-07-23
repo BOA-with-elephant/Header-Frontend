@@ -24,7 +24,13 @@ export default function MyShopHoliday() {
         if (!shopCode) return;
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}/holidays`);
+            const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}/holidays`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                }
+            });
             const data = await res.json();
             if (res.ok) {
                 setHolidays(data.results['holiday-list'] || []);
@@ -108,7 +114,10 @@ export default function MyShopHoliday() {
         try {
             const res = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify(formData),
             });
             if (!res.ok) {
@@ -126,7 +135,11 @@ export default function MyShopHoliday() {
         if (window.confirm('해당 휴일 정보를 정말로 삭제하시겠습니까?')) {
             try {
                 const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}/holidays/${shopHolCode}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    }
                 });
                 if (!res.ok) {
                     console.log('삭제 요청 패치 실패')
