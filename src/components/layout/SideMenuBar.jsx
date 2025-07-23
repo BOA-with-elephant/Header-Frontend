@@ -76,7 +76,7 @@ const UserProfile = ({ userRole, isAdmin, getProfilePath, userInfo }) => {
       // 권한 1: 일반고객 - 고객이름과 아이디
       return {
         displayName: userInfo?.userName || "홍길동",
-        displayId: userInfo?.customerId || "customer123",
+        displayId: userInfo?.userId || "customer123",
         circleText: userInfo?.userName?.charAt(0) || "홍",
         isCustomer: true
       };
