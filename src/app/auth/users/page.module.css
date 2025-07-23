@@ -18,7 +18,6 @@
   margin: 0 auto; 
 
   padding: var(--spacing-2xl);
-  background-color: var(--background=#000); /* 이 변수가 올바른 색상 값을 주는지 확인 */
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
