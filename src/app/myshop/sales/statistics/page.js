@@ -121,7 +121,7 @@ const SalesStatistics = () => {
       {monthlyTrend.data.length > 0 && (
         <DetailedAnalysisTable
           data={monthlyTrend}
-          title="금년 월별 매출 분석"
+          title="월별 매출 분석 (월별매출추이 필터 적용)"
         />
       )}
     </div>
