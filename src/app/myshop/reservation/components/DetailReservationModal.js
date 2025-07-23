@@ -130,6 +130,7 @@ export default function DetailReservationModal({selectedResvCode, setIsShowDetai
                                 <div className={styles.valueSection}>
                                 <p className={styles.titles}>상태 :</p>&nbsp;
                                 <p className={styles.values}>{changeResvState(detailResvInfo.resvState)}</p>
+                                <button style={{display : detailResvInfo.State === '예약 확정' ? 'flex' : 'none'}}>시술 완료</button>
                                 </div>
                             </div>
                         </div>
