@@ -20,7 +20,7 @@ export default function ShopForm({ mode = 'create', initialData, onSubmit, onCan
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // 샵 목록 가져오기
+    // 카테고리 목록 가져오기
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -30,7 +30,7 @@ export default function ShopForm({ mode = 'create', initialData, onSubmit, onCan
                     setCategories(data.results['shop-categories']);
                 }
             } catch (error) {
-                console.error('샵 목록을 불러오지 못했습니다:', error);
+                console.error('카테고리 목록을 불러오지 못했습니다:', error);
             }
         };
 
