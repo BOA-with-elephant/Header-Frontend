@@ -34,7 +34,7 @@ class ApiClient {
 
         try {
             const response = await fetch(url, config);
-            
+
             // 401 에러 시 토큰 만료 처리
             if (response.status === 401) {
                 this.handleUnauthorized();
@@ -46,7 +46,7 @@ class ApiClient {
             }
 
             const data = await response.json();
-            
+
             if (!data.success) {
                 throw new Error(data.message || '요청 처리 중 오류가 발생했습니다.');
             }
@@ -95,8 +95,15 @@ class ApiClient {
         });
     }
 
-    async delete(endpoint) {
-        return this.request(endpoint, { method: 'DELETE' });
+    async delete(endpoint, data = null) {
+        const options = { method: 'DELETE' };
+
+        // body가 있는 경우에만 추가
+        if (data !== null && data !== undefined) {
+            options.body = JSON.stringify(data);
+        }
+
+        return this.request(endpoint, options);
     }
 }
 
