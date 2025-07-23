@@ -1,0 +1,83 @@
+.tableContainer {
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 20px;
+}
+
+.heading{
+    margin-top: 0;
+    color: var(--color-primary);
+    display: inline;
+    text-align: center;
+}
+
+.customTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 0px;
+}
+
+.customTable thead {
+    background-color: #424664;
+    color: white;
+}
+
+.customTable th,
+.customTable td {
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.customTable tbody tr {
+    background-color: white;
+    transition: background-color 0.2s ease;
+}
+
+.customTable tbody tr:hover {
+    background-color: #f5f7fa;
+    cursor: pointer;
+}
+
+.noResult{
+    text-align: center;
+    padding: 20px;
+    cursor: default;
+}
+
+.noResult:hover{
+    background-color: #FFFFFF;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: -10px;
+}
+
+.button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height : 35px;
+    border: 3px solid #353957;
+    border-radius: var(--radius-lg);
+    background-color: var(--bg-primary);
+    font-family: 'GmarketSansMedium';
+    
+}
+
+.button:hover{
+    background-color: #353957;
+    color: #FFFFFF;
+    cursor: pointer;
+}

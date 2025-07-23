@@ -23,6 +23,7 @@ export default function Layout({ children }) {
   // 사용자 권한 상태 관리
   const [userRole, setUserRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState(null);
 
   // 사용자 정보 로드
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Layout({ children }) {
           const userData = responseData.data;
 
           console.log('Layout: 사용자 정보 로드 성공:', userData);
+          setUserInfo(userData);
           setUserRole(userData.admin ? 2 : 1);
         } else if (response.status === 401 || response.status === 403) {
           console.error('Layout: 사용자 정보를 가져올 수 없습니다. 토큰 만료 또는 권한 없음.', response.status);
@@ -155,6 +157,7 @@ export default function Layout({ children }) {
         userRole={userRole} // Layout에서 관리하는 권한 전달
         viewMode={viewMode}
         onViewModeChange={handleViewModeChange}
+        userInfo={userInfo}
       />
 
       {/* 메인 콘텐츠 */}
