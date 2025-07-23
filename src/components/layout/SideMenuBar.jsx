@@ -51,6 +51,12 @@ const MENU_CONFIG = {
         { path: "/myshop/message/auto-setting", text: "자동 발송 설정" },
         { path: "/myshop/message/list", text: "메시지 조회" }
       ]
+    },
+    {
+      key: "admin-shop",
+      title: "샵 등록 및 관리",
+      type: "direct", // 바로 이동하는 메뉴
+      path: "/myshop"
     }
   ],
   customer: [
