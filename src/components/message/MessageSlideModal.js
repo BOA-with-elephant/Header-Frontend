@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { MessagesAPI } from '@/lib/api';
+import { useApi } from '@/hooks/useApi';
+import { useMessageModal } from '@/hooks/useMessageModal';
 import MessageTypeSelection from '@/components/message/MessageTypeSelection';
 import TemplateSelection from '@/components/message/TemplateSelection';
 import MessageCompose from '@/components/message/MessageCompose';
@@ -8,10 +11,11 @@ import SendOptions from '@/components/message/SendOptions';
 import MessageModal from '@/components/ui/MessageModal';
 import styles from '@/styles/admin/message/MessageSlideModal.module.css';
 
-import { useMessageModal } from '@/hooks/useMessageModal';
-
 export default function MessageSlideModal({ isOpen, onClose, recipientSelection}) {
     const { modal, closeModal, showError, showSuccess, showConfirm } = useMessageModal();
+    
+    // API 호출용 훅
+    const { execute: executeApi, loading: apiLoading } = useApi();
     
     // 임시 shopId
     const SHOP_ID = 2;
@@ -38,7 +42,7 @@ export default function MessageSlideModal({ isOpen, onClose, recipientSelection}
 
     // 전체 단계 수 계산
     const getTotalSteps = () => {
-        return 3; // 고정 4단계
+        return 3; // 고정 3단계
     };
 
     // 메세지 유형 선택 처리
@@ -75,9 +79,14 @@ export default function MessageSlideModal({ isOpen, onClose, recipientSelection}
         }
     };
 
-    // 즉시 발송 처리
+    // 즉시 발송 처리 (새로운 API 패턴 사용)
     const handleImmediateSend = () => {
-        const clientCode = recipientSelection.clientCode;
+        const clientCode = recipientSelection?.clientCode;
+
+        if (!clientCode) {
+            showError('발송 실패', '수신자 정보가 올바르지 않습니다.');
+            return;
+        }
 
         showConfirm(
             '메세지 발송',
@@ -94,49 +103,21 @@ export default function MessageSlideModal({ isOpen, onClose, recipientSelection}
 
                     console.log('발송 데이터:', messageData);
 
-                    const result = await sendMessage(messageData);
+                    // 새로운 API 패턴 사용
+                    await executeApi(MessagesAPI.sendMessage, SHOP_ID, messageData);
 
-             //       showSuccess('발송 접수 완료', '메세지가 성공적으로 접수되었습니다.\n발송은 순차적으로 처리됩니다.');
+                    // 성공 모달에 콜백 함수 전달 (showSuccess 함수 업데이트 필요)
                     showSuccess(
-                    '발송 접수 완료', 
-                    '메세지가 성공적으로 접수되었습니다.\n발송은 순차적으로 처리됩니다.',
-                    resetAndClose  // 성공 모달의 확인 버튼 클릭 시 실행될 콜백
-                );
-
-                  //  resetAndClose();
+                        '발송 접수 완료', 
+                        '메세지가 성공적으로 접수되었습니다.\n발송은 순차적으로 처리됩니다.',
+                        resetAndClose  // 성공 모달의 확인 버튼 클릭 시 실행될 콜백
+                    );
 
                 } catch (error) {
                     showError('발송 실패', '메세지 발송 중 오류가 발생했습니다.\n다시 시도해주세요.');
                 }
             }
         );
-    };
-
-    const sendMessage = async (messageData) => {
-        try {
-            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(messageData)
-            });
-
-            if (!response.ok) {
-                throw new Error('메세지 발송에 실패했습니다.');
-            }
-
-            const result = await response.json();
-
-            if (!result.success) {
-                throw new Error(result.message || '메세지 발송에 실패했습니다.');
-            }
-
-            return result.data;
-        } catch (error) {
-            console.error('메세지 발송 오류:', error);
-            throw error;
-        }
     };
 
     // 예약 발송 처리
@@ -243,6 +224,7 @@ export default function MessageSlideModal({ isOpen, onClose, recipientSelection}
                         recipientCount={1}
                         onImmediateSend={handleImmediateSend}
                         onScheduledSend={handleScheduledSend}
+                        loading={apiLoading}
                     />
                 );
             default:
@@ -260,7 +242,11 @@ export default function MessageSlideModal({ isOpen, onClose, recipientSelection}
                     <div className={styles.modalHeader}>
                         <div className={styles.headerContent}>
                             <h2 className={styles.modalTitle}>새 메세지 작성</h2>
-                            <button className={styles.closeButton} onClick={resetAndClose}>
+                            <button 
+                                className={styles.closeButton} 
+                                onClick={resetAndClose}
+                                disabled={apiLoading}
+                            >
                                 ✕
                             </button>
                         </div>
@@ -289,18 +275,18 @@ export default function MessageSlideModal({ isOpen, onClose, recipientSelection}
                     {/* 네비게이션 버튼 */}
                     <div className={styles.modalFooter}>
                         <button 
-                            className={`${styles.navButton} ${styles.prev}`} // 🔧 CSS 클래스 수정
+                            className={`${styles.navButton} ${styles.prev}`}
                             onClick={prevStep}
-                            disabled={currentStep === 1}
+                            disabled={currentStep === 1 || apiLoading}
                         >
                             이전
                         </button>
                         
                         {currentStep < getTotalSteps() && (
                             <button 
-                                className={`${styles.navButton} ${styles.next}`} // 🔧 CSS 클래스 수정
+                                className={`${styles.navButton} ${styles.next}`}
                                 onClick={nextStep}
-                                disabled={!canProceed()}
+                                disabled={!canProceed() || apiLoading}
                             >
                                 다음
                             </button>
