@@ -9,7 +9,7 @@ class ApiClient {
     // 토큰 가져오기
     getAuthToken() {
         if (typeof window !== 'undefined') {
-            return localStorage.getItem('accessToken');
+            return localStorage.getItem('token');
         }
         return null;
     }

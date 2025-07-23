@@ -42,5 +42,11 @@ export const MessagesAPI = {
     // 수신자별 메시지 내용 조회
     getRecipientMessage: (shopId, messageId, historyCode) => {
         return apiClient.get(API_CONFIG.ENDPOINTS.MESSAGES.RECIPIENT_MESSAGE(shopId, messageId, historyCode));
+    },
+
+    // 메시지 발송 이력 조회
+    getMessageHistory: (shopId) => {
+        return apiClient.get(API_CONFIG.ENDPOINTS.MESSAGES.HISTORY(shopId));
     }
+
 };
