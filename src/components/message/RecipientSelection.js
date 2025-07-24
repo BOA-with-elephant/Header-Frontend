@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { CustomersAPI } from '@/lib/api';
-import { useApi } from '@/hooks/useApi';
+import { useState, useEffect, useMemo } from 'react';
+import { useCustomers } from '@/hooks/useCustomers'; // 기존 useCustomers 훅 사용
 import styles from '@/styles/admin/message/RecipientSelection.module.css';
 
 export default function RecipientSelection({ 
@@ -12,23 +11,17 @@ export default function RecipientSelection({
     onRecipientsChange,
     onComplete
 }) {
-    const [customers, setCustomers] = useState([]);
     const [filteredCustomers, setFilteredCustomers] = useState([]);
     
-    // API 호출용 훅
-    const { execute: executeApi, loading } = useApi();
-
     // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 2;
+    const SHOP_ID = 1;
 
-    // API 데이터를 내부 형식으로 변환
-    const transformApiData = (apiData) => {
-        if (!Array.isArray(apiData)) {
-            console.warn('API response is not an array:', apiData);
-            return [];
-        }
+    // useCustomers 훅 사용
+    const { customers, loading, error } = useCustomers(SHOP_ID);
 
-        return apiData.map(customer => {
+    // useCustomers 데이터를 RecipientSelection에서 사용하는 형태로 변환
+    const transformCustomersForRecipient = (customers) => {
+        return customers.map(customer => {
             // 생년월일로 나이 계산
             const calculateAge = (birthday) => {
                 if (!birthday) return 0;
@@ -43,61 +36,43 @@ export default function RecipientSelection({
             };
 
             return {
-                id: customer.clientCode, // API의 clientCode를 id로 사용
-                clientCode: customer.clientCode, // 발송시 사용할 식별자
-                name: customer.userName || customer.name,
+                id: customer.clientCode,
+                clientCode: customer.clientCode,
+                name: customer.name,
                 phone: customer.phone || '',
                 birthday: customer.birthday || '',
                 memo: customer.memo || '',
                 sendable: customer.sendable || false,
                 visitCount: customer.visitCount || 0,
-                totalAmount: customer.totalPaymentAmount || 0,
-                lastVisit: customer.lastVisited || '',
-                preferredService: customer.favoriteMenuName || '없음',
-                grade: customer.memo?.includes('VIP') ? 'VIP' : '일반', // 메모에 VIP가 있으면 VIP
+                totalAmount: customer.totalAmount || 0,
+                lastVisit: customer.lastVisit || '', // useCustomers에서 이미 변환된 데이터 사용
+                preferredService: customer.preferredServices?.[0] || '없음', // 배열의 첫 번째 요소 사용
+                grade: customer.isVip ? 'VIP' : '일반', // isVip 필드 사용
                 age: calculateAge(customer.birthday)
             };
         });
     };
 
-    // 고객 목록 조회 (새로운 API 패턴 사용)
-    const fetchCustomers = async () => {
-        try {
-            const response = await executeApi(CustomersAPI.getCustomers, SHOP_ID);
-            const transformedData = transformApiData(response.data || []);
-            setCustomers(transformedData);
-            setFilteredCustomers(transformedData.filter(c => c.sendable));
-        } catch (error) {
-            console.error('고객 목록 조회 오류:', error);
-            // 에러 발생 시 빈 배열로 설정
-            setCustomers([]);
-            setFilteredCustomers([]);
-        }
-    };
+    // 변환된 고객 데이터 (useMemo로 메모이제이션)
+    const transformedCustomers = useMemo(() => {
+        return transformCustomersForRecipient(customers);
+    }, [customers]);
 
-    // 컴포넌트 마운트 시 고객 데이터 로드
-    useEffect(() => {
-        fetchCustomers();
-    }, []);
-
-    // 필터 옵션들 (동적으로 생성)
-    const getFilterOptions = () => {
-        const uniqueServices = [...new Set(customers.map(c => c.preferredService).filter(s => s && s !== '없음'))];
-        const uniqueGrades = [...new Set(customers.map(c => c.grade))];
+    // 필터 옵션들 (동적으로 생성) - useMemo로 메모이제이션
+    const filterOptions = useMemo(() => {
+        const uniqueServices = [...new Set(transformedCustomers.map(c => c.preferredService).filter(s => s && s !== '없음'))];
+        const uniqueGrades = [...new Set(transformedCustomers.map(c => c.grade))];
         
         return {
             preferredService: ['전체', ...uniqueServices],
             customerGrade: ['전체', ...uniqueGrades],
-            visitPeriod: ['전체', '1개월 이내', '3개월 이내', '6개월 이내', '1년 이내'],
             ageGroup: ['전체', '20대', '30대', '40대', '50대 이상']
         };
-    };
-
-    const filterOptions = getFilterOptions();
+    }, [transformedCustomers]);
 
     // 필터 적용
     useEffect(() => {
-        let filtered = customers.filter(customer => customer.sendable);
+        let filtered = transformedCustomers.filter(customer => customer.sendable);
 
         // 선호 서비스 필터
         if (filters.preferredService && filters.preferredService !== '전체') {
@@ -107,32 +82,6 @@ export default function RecipientSelection({
         // 고객 등급 필터
         if (filters.customerGrade && filters.customerGrade !== '전체') {
             filtered = filtered.filter(c => c.grade === filters.customerGrade);
-        }
-
-        // 방문 기간 필터
-        if (filters.visitPeriod && filters.visitPeriod !== '전체') {
-            const now = new Date();
-            const filterDate = new Date();
-            
-            switch (filters.visitPeriod) {
-                case '1개월 이내':
-                    filterDate.setMonth(now.getMonth() - 1);
-                    break;
-                case '3개월 이내':
-                    filterDate.setMonth(now.getMonth() - 3);
-                    break;
-                case '6개월 이내':
-                    filterDate.setMonth(now.getMonth() - 6);
-                    break;
-                case '1년 이내':
-                    filterDate.setFullYear(now.getFullYear() - 1);
-                    break;
-            }
-            
-            filtered = filtered.filter(c => {
-                if (!c.lastVisit || c.lastVisit === '방문 기록 없음') return false;
-                return new Date(c.lastVisit) >= filterDate;
-            });
         }
 
         // 연령대 필터
@@ -145,7 +94,7 @@ export default function RecipientSelection({
         }
 
         setFilteredCustomers(filtered);
-    }, [filters, customers]);
+    }, [filters, transformedCustomers]);
 
     // 필터 변경 처리
     const handleFilterChange = (filterType, value) => {
@@ -189,10 +138,24 @@ export default function RecipientSelection({
         onFiltersChange({
             preferredService: '',
             customerGrade: '',
-            visitPeriod: '',
             ageGroup: ''
         });
     };
+
+    // 에러 처리
+    if (error) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <h2 className={styles.title}>3. 수신자 선택</h2>
+                    <p className={styles.description}>고객 목록을 불러오는데 실패했습니다.</p>
+                </div>
+                <div className={styles.errorMessage}>
+                    <p>{error}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
@@ -242,22 +205,6 @@ export default function RecipientSelection({
                             disabled={loading}
                         >
                             {filterOptions.customerGrade.map(option => (
-                                <option key={option} value={option === '전체' ? '' : option}>
-                                    {option}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className={styles.filterGroup}>
-                        <label className={styles.filterLabel}>방문 기간</label>
-                        <select
-                            className={styles.filterSelect}
-                            value={filters.visitPeriod}
-                            onChange={(e) => handleFilterChange('visitPeriod', e.target.value)}
-                            disabled={loading}
-                        >
-                            {filterOptions.visitPeriod.map(option => (
                                 <option key={option} value={option === '전체' ? '' : option}>
                                     {option}
                                 </option>
@@ -347,10 +294,7 @@ export default function RecipientSelection({
                                                     선호: {customer.preferredService}
                                                 </span>
                                                 <span className={styles.customerVisit}>
-                                                    최근 방문: {customer.lastVisit && customer.lastVisit !== '방문 기록 없음' 
-                                                        ? new Date(customer.lastVisit).toLocaleDateString('ko-KR')
-                                                        : '방문 기록 없음'
-                                                    }
+                                                    최근 방문: {customer.lastVisit || '방문 기록 없음' }
                                                 </span>
                                             </div>
                                         </div>

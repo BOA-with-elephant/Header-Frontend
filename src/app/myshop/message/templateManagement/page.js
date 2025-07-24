@@ -36,7 +36,7 @@ export default function TemplateManagement() {
     });
 
     // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 2;
+    const SHOP_ID = 1;
 
     // API 데이터를 내부 형식으로 변환
     const transformApiData = (apiData) => {

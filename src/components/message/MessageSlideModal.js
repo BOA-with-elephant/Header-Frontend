@@ -18,7 +18,7 @@ export default function MessageSlideModal({ isOpen, onClose, recipientSelection}
     const { execute: executeApi, loading: apiLoading } = useApi();
     
     // 임시 shopId
-    const SHOP_ID = 2;
+    const SHOP_ID = 1;
 
     // 현재 단계 상태
     const [currentStep, setCurrentStep] = useState(1);
