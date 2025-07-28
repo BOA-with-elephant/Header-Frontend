@@ -20,7 +20,7 @@ export default function Message() {
     const { execute: executeApi, loading: apiLoading } = useApi();
 
     // 임시 shopId (실제로는 context나 store에서 가져와야 함)
-    const SHOP_ID = 2;
+    const SHOP_ID = 1;
 
     // 현재 단계 상태
     const [currentStep, setCurrentStep] = useState(1);

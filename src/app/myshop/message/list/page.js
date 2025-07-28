@@ -29,7 +29,7 @@ export default function MessageList() {
     const [totalCount, setTotalCount] = useState(0);
 
     // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 2;
+    const SHOP_ID = 1;
 
     // 컴포넌트 마운트 시 메시지 목록 불러오기
     useEffect(() => {

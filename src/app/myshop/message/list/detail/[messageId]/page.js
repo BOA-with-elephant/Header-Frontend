@@ -36,7 +36,7 @@ export default function MessageDetail() {
     const [totalPages, setTotalPages] = useState(1);
 
     // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 2;
+    const SHOP_ID = 1;
 
     // 수신자별 메시지 내용 조회 (새로운 API 패턴 사용)
     const fetchRecipientMessage = async (historyCode) => {
