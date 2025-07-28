@@ -5,23 +5,29 @@
   text-underline-offset: 2px;
 }
 
-.content-card {
-  width: 200px;
-  max-width: 250px;
+.mainContent {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+.contentCard {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto; 
+
   padding: var(--spacing-2xl);
-  background-color: var(--background=#000);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
 
 .form-group {
-    justify-content: center; /* 수평 정렬 */
-    align-items: center;     /* 수직 정렬 */
     gap: 5px;
 }
 
 .loginButton {
-    width: 25%;
+    width: 300px;
     padding: 15px;
     background-color: #13183d;
     color: white;

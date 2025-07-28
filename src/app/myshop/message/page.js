@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { MessagesAPI } from '@/lib/api';
+import { useApi } from '@/hooks/useApi';
+import { useMessageModal } from '@/hooks/useMessageModal';
 import MessageSteps from '@/components/message/MessageSteps';
 import MessageTypeSelection from '@/components/message/MessageTypeSelection';
 import TemplateSelection from '@/components/message/TemplateSelection';
@@ -8,14 +11,16 @@ import MessageCompose from '@/components/message/MessageCompose';
 import RecipientSelection from '@/components/message/RecipientSelection';
 import SendOptions from '@/components/message/SendOptions';
 import MessageModal from '@/components/ui/MessageModal';
-import { useMessageModal } from '@/hooks/useMessageModal';
 import styles from '@/styles/admin/message/Message.module.css';
 
 export default function Message() {
     const { modal, closeModal, showError, showSuccess, showConfirm } = useMessageModal();
+    
+    // API 호출용 훅
+    const { execute: executeApi, loading: apiLoading } = useApi();
 
-    // 임시 shopId
-    const SHOP_ID = 2;
+    // 임시 shopId (실제로는 context나 store에서 가져와야 함)
+    const SHOP_ID = 1;
 
     // 현재 단계 상태
     const [currentStep, setCurrentStep] = useState(1);
@@ -92,7 +97,7 @@ export default function Message() {
         }
     };
 
-    // 즉시 발송 처리
+    // 즉시 발송 처리 (새로운 API 패턴 사용)
     const handleImmediateSend = () => {
         const clientCodes = selectedRecipients.map(recipient => recipient.clientCode);
 
@@ -111,7 +116,8 @@ export default function Message() {
 
                     console.log('발송 데이터:', messageData);
 
-                    const result = await sendMessage(messageData);
+                    // 새로운 API 패턴 사용
+                    await executeApi(MessagesAPI.sendMessage, SHOP_ID, messageData);
 
                     showSuccess('발송 접수 완료', '메세지가 성공적으로 접수되었습니다.\n발송은 순차적으로 처리됩니다.');
 
@@ -122,33 +128,6 @@ export default function Message() {
                 }
             }
         );
-    };
-
-    const sendMessage = async (messageData) => {
-        try {
-            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(messageData)
-            });
-
-            if (!response.ok) {
-                throw new Error('메세지 발송에 실패했습니다.');
-            }
-
-            const result = await response.json();
-
-            if (!result.success) {
-                throw new Error(result.message || '메세지 발송에 실패했습니다.');
-            }
-
-            return result.data;
-        } catch (error) {
-            console.error('메세지 발송 오류:', error);
-            throw error;
-        }
     };
 
     // 예약 발송 처리
@@ -235,8 +214,8 @@ export default function Message() {
                             selectedRecipients={selectedRecipients}
                             filters={filters}
                             onFiltersChange={setFilters}
-                            onRecipientsChange={handleRecipientSelect} // 자동 이동 없음
-                            onComplete={handleRecipientComplete} // 완료 버튼용
+                            onRecipientsChange={handleRecipientSelect}
+                            onComplete={handleRecipientComplete}
                         />
                     )}
 
@@ -245,6 +224,7 @@ export default function Message() {
                             recipientCount={selectedRecipients.length}
                             onImmediateSend={handleImmediateSend}
                             onScheduledSend={handleScheduledSend}
+                            loading={apiLoading}
                         />
                     )}
                 </div>

@@ -13,22 +13,26 @@ export default function NewReservationModal({
     setResultTitle,
     setResultMessage,
     setResultType,
-    setMessageContext
+    setMessageContext,
+    prefilledCustomer = null // 고객 관리에서 전달받는 고객 정보
 }) {
   
     const SHOP_CODE = 1;
-    const API_BASE_URL = `http://localhost:8080/my-shops/${SHOP_CODE}/reservation`;
+    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
     
     const [reservationData, setReservationData] = useState({
-        userName : '',
-        userPhone : '',
+        userName : prefilledCustomer?.name || '',
+        userPhone : prefilledCustomer?.phone || '',
         menuName : '',
-        resvDate : selectedDate,
+        resvDate : selectedDate || new Date().toISOString().split('T')[0],
         resvTime : '',
         userComment : ''
     });  
     const [menuNameList, setMenuNameList] = useState([]);
     const [today, setToday] = useState();
+
+    // 고객이 미리 선택된 경우인지 확인
+    const isCustomerPreselected = !!prefilledCustomer;
 
     useEffect(() => {
         const fetchMenuList = async () => {
@@ -44,6 +48,16 @@ export default function NewReservationModal({
         fetchMenuList();
     }, []);
 
+    useEffect(() => {
+        // 고객 정보가 미리 선택된 경우 예약 데이터에 반영
+        if (prefilledCustomer) {
+            setReservationData(prev => ({
+                ...prev,
+                userName: prefilledCustomer.name || '',
+                userPhone: prefilledCustomer.phone || ''
+            }));
+        }
+    }, [prefilledCustomer]);
 
     useEffect(() => {
         const today = new Date();
@@ -74,7 +88,7 @@ export default function NewReservationModal({
     // 숫자만 받아서 자동 포맷
     const phoneFormatHandler = (e) => {
         const {name, value} = e.target;
-        // \D는 숫자가 아니 모든 문자를 지운다는 뜻으로 입력값에서 숫자만 남기고, 하이픈같은 건 제거한다.
+        // \D는 숫자가 아닌 모든 문자를 지운다는 뜻으로 입력값에서 숫자만 남기고, 하이픈같은 건 제거한다.
         let numbersOnly = value.replace(/\D/g, ""); // 숫자만 추출
         let formatted = '';
 
@@ -98,6 +112,15 @@ export default function NewReservationModal({
             ...prev,
             [name] : value
         }));
+
+        // 날짜가 변경되면 시간 초기화
+        if (name === 'resvDate') {
+            setReservationData(prev => ({
+                ...prev,
+                [name]: value,
+                resvTime: '' // 시간 초기화
+            }));
+        }
     };
 
     const clickCancleHandler = () => {
@@ -149,7 +172,6 @@ export default function NewReservationModal({
         } else {
             console.warn('모든 필드를 입력해주세요');
         }
-            
     }
 
     return (
@@ -157,7 +179,9 @@ export default function NewReservationModal({
         <div className={styles.modalOverlay} />
         <div className={styles.modalWrapper}>
             <div className={styles.modalHeaderWrapper}>
-            <p className={styles.menuTitle}>예약 정보 등록</p>
+            <p className={styles.menuTitle}>
+                {isCustomerPreselected ? `${prefilledCustomer.name}님 예약 등록` : '예약 정보 등록'}
+            </p>
             <Image
                 src={closeBtn}
                 alt='닫기 버튼'
@@ -172,10 +196,13 @@ export default function NewReservationModal({
                 <label>예약 날짜</label>
                 <input 
                     className={styles.inputTag} 
-                    name = "resvDate"
+                    name="resvDate"
                     type="date"
-                    disabled 
+                    min={today} // 오늘 이전 날짜 선택 불가
                     value={reservationData.resvDate} 
+                    onChange={inputChangeHandler}
+                    // 고객 관리에서 온 경우 날짜 선택 가능, 예약 캘린더에서 온 경우 비활성화
+                    disabled={!isCustomerPreselected}
                 />
                 </div>
 
@@ -183,33 +210,50 @@ export default function NewReservationModal({
                 <label>예약 시간</label>
                 <select className={styles.selector} name="resvTime" value={reservationData.resvTime} onChange={inputChangeHandler}>
                     <option value="">시간 선택</option>
-                    {resvDateList?.results?.schedule
-                    .filter(item => item.targetDate === selectedDate)  // selectedDate와 일치하는 날짜 찾기
-                    .flatMap(item => {
-                        // 오늘인 경우 현재 시간 이후로만 예약 가능
-                        const isToday = new Date(item.targetDate).toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10);
-                        const currentTime = new Date();
-                        const currentHours = currentTime.getHours();
-                        const currentMinutes = currentTime.getMinutes();
+                    {/* 예약 가능 시간 표시 로직 개선 */}
+                    {resvDateList?.results?.schedule ? (
+                        resvDateList.results.schedule
+                        .filter(item => item.targetDate === reservationData.resvDate)
+                        .flatMap(item => {
+                            const isToday = new Date(item.targetDate).toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10);
+                            const currentTime = new Date();
+                            const currentHours = currentTime.getHours();
+                            const currentMinutes = currentTime.getMinutes();
 
-                        // console.log('😈😈',item)
+                            return (item.availableTimes || []).filter(time => {
+                                if(!isToday) return true;
 
-                        return item.availableTimes.filter(time => {
-                            if(!isToday) return true;
+                                const [hourStr, minuteStr] = time.split(':');
+                                const hour = parseInt(hourStr);
+                                const minute = parseInt(minuteStr);
 
-                            const [hourStr, minuteStr] = time.split(':');
-                            const hour = parseInt(hourStr);
-                            const minute = parseInt(minuteStr);
-
-                            return hour > currentHours || (hour === currentHours && minute > currentMinutes);
-                        });
-                    })
-                    .map((time, index) => (
-                        <option key={index} value={time}>
-                            {time.substring(0, 5)}
-                        </option>
-                    ))}
+                                return hour > currentHours || (hour === currentHours && minute > currentMinutes);
+                            });
+                        })
+                        .map((time, index) => (
+                            <option key={index} value={time}>
+                                {time.substring(0, 5)}
+                            </option>
+                        ))
+                    ) : (
+                        // 임시 시간 옵션 (데이터가 없을 때)
+                        Array.from({length: 10}, (_, i) => {
+                            const hour = 9 + i;
+                            const timeStr = `${hour.toString().padStart(2, '0')}:00`;
+                            return (
+                                <option key={i} value={timeStr}>
+                                    {timeStr}
+                                </option>
+                            );
+                        })
+                    )}
                 </select>
+                {/* 디버깅용 - 나중에 제거 */}
+                {process.env.NODE_ENV === 'development' && (
+                    <small style={{color: '#666', fontSize: '12px'}}>
+                        예약 데이터 상태: {resvDateList?.results ? '로드됨' : '로드 중...'}
+                    </small>
+                )}
                 </div>
             </div>
 
@@ -222,7 +266,10 @@ export default function NewReservationModal({
                     name="userName"
                     placeholder="고객명"
                     value={reservationData.userName} 
-                    onChange={inputChangeHandler} 
+                    onChange={inputChangeHandler}
+                    // 고객이 미리 선택된 경우 비활성화
+                    disabled={isCustomerPreselected}
+                    style={isCustomerPreselected ? { backgroundColor: '#f5f5f5', color: '#666' } : {}}
                 />
                 </div>
 
@@ -235,7 +282,10 @@ export default function NewReservationModal({
                     maxLength={13}
                     placeholder="휴대폰 번호"
                     value={reservationData.userPhone} 
-                    onChange={phoneFormatHandler} 
+                    onChange={phoneFormatHandler}
+                    // 고객이 미리 선택된 경우 비활성화
+                    disabled={isCustomerPreselected}
+                    style={isCustomerPreselected ? { backgroundColor: '#f5f5f5', color: '#666' } : {}}
                 />
                 </div>
             </div>
@@ -244,7 +294,7 @@ export default function NewReservationModal({
                 <div className={styles.formGroup}>
                 <label>예약 시술</label>
                 <select className={styles.selector} name="menuName" value={reservationData.menuName} onChange={inputChangeHandler}>
-                    <option value="none">메뉴 선택</option>
+                    <option value="">메뉴 선택</option>
                     {menuNameList.map(menu => (
                         <option key={menu.menuCode} value={menu.menuName}>{menu.menuName}</option>
                     ))}
@@ -262,6 +312,17 @@ export default function NewReservationModal({
                 />
                 </div>
             </div>
+
+            {/* 고객 정보가 미리 선택된 경우 안내 메시지 */}
+            {isCustomerPreselected && (
+                <div className={styles.customerInfoNotice}>
+                    <span className={styles.noticeIcon}>ℹ️</span>
+                    <span className={styles.noticeText}>
+                        고객 정보가 자동으로 입력되었습니다. 날짜와 시간을 선택해주세요.
+                    </span>
+                </div>
+            )}
+
             <div className={styles.buttonRow}>
                 <button onClick={clickCancleHandler} className={styles.cancelBtn}>취소</button>
                 <button onClick={clickSubmitHandler} className={styles.submitBtn}>등록</button>

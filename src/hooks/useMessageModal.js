@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 
 export function useMessageModal() {
@@ -13,7 +11,14 @@ export function useMessageModal() {
     });
 
     const closeModal = () => {
-        setModal({ isOpen: false });
+        setModal({
+            isOpen: false,
+            type: 'info',
+            title: '',
+            message: '',
+            onConfirm: null,
+            showCancel: false
+        });
     };
 
     const showError = (title, message) => {
@@ -27,6 +32,7 @@ export function useMessageModal() {
         });
     };
 
+    // ✅ showSuccess에 콜백 매개변수 추가
     const showSuccess = (title, message, onClose = null) => {
         setModal({
             isOpen: true,
@@ -40,6 +46,7 @@ export function useMessageModal() {
             showCancel: false
         });
     };
+
     const showWarning = (title, message) => {
         setModal({
             isOpen: true,
@@ -57,7 +64,10 @@ export function useMessageModal() {
             type: 'confirm',
             title,
             message,
-            onConfirm,
+            onConfirm: () => {
+                closeModal();
+                if (onConfirm) onConfirm();
+            },
             showCancel: true
         });
     };

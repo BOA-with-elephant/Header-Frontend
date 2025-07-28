@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { MessagesAPI } from '@/lib/api';
+import { useApi } from '@/hooks/useApi';
 import styles from '@/styles/admin/message/MessageDetail.module.css';
 
 export default function MessageDetail() {
@@ -9,6 +11,9 @@ export default function MessageDetail() {
     const params = useParams();
     const messageId = params?.messageId;
     const searchParams = useSearchParams();
+    
+    // API 호출용 훅
+    const { execute: executeApi, loading: apiLoading, error: apiError } = useApi();
 
     // URL 파라미터에서 배치 정보 가져오기
     const batchParams = {
@@ -26,114 +31,76 @@ export default function MessageDetail() {
     const [recipients, setRecipients] = useState([]);
     const [selectedRecipient, setSelectedRecipient] = useState(null);
 
-    // 로딩 및 에러 상태
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    // 현재 페이지 상태 (수신자 리스트 페이지네이션)
+    // 현재 페이지 상태
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
-    // 임시 shopId
-    const SHOP_ID = 2;
+    // TODO: shop_id를 context나 store에서 가져오도록 수정
+    const SHOP_ID = 1;
 
-    // 컴포넌트 마운트 시 데이터 불러오기
-    useEffect(() => {
-        console.log('useEffect 실행됨, messageId:', messageId);
-        if (messageId) {
-            console.log('fetchBatchDetails 호출 시작');
-            fetchBatchDetails();
-        } else {
-            console.log('messageId가 없음');
-        }
-    }, [messageId, currentPage]);
-
-    // 수신자별 메시지 내용 API 호출
+    // 수신자별 메시지 내용 조회 (새로운 API 패턴 사용)
     const fetchRecipientMessage = async (historyCode) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages/history/${messageId}/${historyCode}`);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-
-            if (!result.success) {
-                throw new Error(result.message || '메시지 내용을 불러오는데 실패했습니다.');
-            }
-
-            return result.data; // 메시지 내용 반환
-
+            const response = await executeApi(MessagesAPI.getRecipientMessage, SHOP_ID, messageId, historyCode);
+            return response.data || '메시지 내용을 불러오는데 실패했습니다.';
         } catch (error) {
             console.error('메시지 내용 불러오기 실패:', error);
             return '메시지 내용을 불러오는데 실패했습니다.';
         }
     };
 
-    // 배치 상세 정보 API 호출 (배치 정보 + 수신자 리스트)
+    // 배치 상세 정보 조회 (새로운 API 패턴 사용)
     const fetchBatchDetails = async () => {
         try {
-            setLoading(true);
-            console.log('fetchBatchDetails 함수 실행됨');
+            const response = await executeApi(MessagesAPI.getBatchDetails, SHOP_ID, messageId);
 
-            // 실제 API 요청
-            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_ID}/messages/history/${messageId}`);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-
-            if (!result.success) {
-                throw new Error(result.message || '배치 상세 정보를 불러오는데 실패했습니다.');
-            }
-
-            // 배치 정보 설정 (파라미터로 받은 기본 정보 + API에서 가져온 통계)
+            // 배치 정보 설정
             const batchInfo = {
                 date: batchParams.date || '-',
                 time: batchParams.time || '-',
                 type: batchParams.type || '-',
                 title: batchParams.title || '-',
                 totalCount: batchParams.totalCount || '-',
-                successCount: result.data.successCount !== null
-                    ? result.data.successCount
-                    : result.data.receivers.filter(r => r.sentStatus === 'SUCCESS').length,
-                failureCount: result.data.failCount !== null
-                    ? result.data.failCount
-                    : result.data.receivers.filter(r => r.sentStatus === 'FAIL').length
+                successCount: response.data.successCount !== null
+                    ? response.data.successCount
+                    : response.data.receivers.filter(r => r.sentStatus === 'SUCCESS').length,
+                failureCount: response.data.failCount !== null
+                    ? response.data.failCount
+                    : response.data.receivers.filter(r => r.sentStatus === 'FAIL').length
             };
 
             setBatchInfo(batchInfo);
-            console.log('setBatchInfo 호출됨:', batchInfo);
 
             // API 응답 데이터를 컴포넌트에서 사용하는 형태로 변환
-            const formattedRecipients = result.data.receivers.map((receiver, index) => ({
+            const formattedRecipients = response.data.receivers.map((receiver, index) => ({
                 no: index + 1,
                 historyCode: receiver.historyCode,
-                sendTime: receiver.sentAt === "-" ? receiver.sentAt : receiver.sentAt.split(' ')[1].substring(0, 8), // "2025-07-15 14:00:10.0" -> "14:00:10"
+                sendTime: receiver.sentAt === "-" ? receiver.sentAt : receiver.sentAt.split(' ')[1].substring(0, 8),
                 recipient: receiver.name,
-                status: receiver.sentStatus === 'SUCCESS' ? '성공' : '실패',
+                status: receiver.sentStatus === 'PENDING' ? '처리중' : receiver.sentStatus === 'SUCCESS' ? '성공' : '실패',
                 statusCode: receiver.sentStatus,
                 failureReason: receiver.sentStatus === 'FAIL' ? (receiver.etc || '알 수 없는 오류') : null,
             }));
 
             setRecipients(formattedRecipients);
-            setTotalPages(1); // 페이지네이션이 필요한 경우 수정
+            setTotalPages(1);
 
             // 첫 번째 수신자를 기본 선택
             if (formattedRecipients.length > 0 && !selectedRecipient) {
-                handleRecipientSelect(formattedRecipients[0]); // 함수 호출로 변경
+                handleRecipientSelect(formattedRecipients[0]);
             }
 
         } catch (error) {
             console.error('배치 상세 정보 불러오기 실패:', error);
-            setError('배치 상세 정보를 불러오는데 실패했습니다.');
-        } finally {
-            setLoading(false);
         }
     };
+
+    // 컴포넌트 마운트 시 데이터 불러오기
+    useEffect(() => {
+        if (messageId) {
+            fetchBatchDetails();
+        }
+    }, [messageId, currentPage]);
 
     // 목록으로 돌아가기
     const handleBackToList = () => {
@@ -220,10 +187,12 @@ export default function MessageDetail() {
         return pages;
     };
 
-    if (error) {
+    if (apiError) {
         return (
             <div className={styles.container}>
-                <div className={styles.error}>{error}</div>
+                <div className={styles.error}>
+                    데이터를 불러오는데 실패했습니다: {apiError}
+                </div>
             </div>
         );
     }
@@ -261,8 +230,7 @@ export default function MessageDetail() {
                                 <div className={styles.infoItem}>
                                     <span className={styles.infoLabel}>타입</span>
                                     <span className={styles.infoValue}>
-                                        <span className={`${styles.typeTag} ${batchInfo.type === 'GROUP' ? styles.groupType : styles.individualType
-                                            }`}>
+                                        <span className={`${styles.typeTag} ${batchInfo.type === 'GROUP' ? styles.groupType : styles.individualType}`}>
                                             {batchInfo.type === 'GROUP' ? '그룹' : '개별'}
                                         </span>
                                     </span>
@@ -296,7 +264,9 @@ export default function MessageDetail() {
                         </div>
                     ) : (
                         <div className={styles.batchInfo}>
-                            <div className={styles.loading}>배치 정보 로딩 중... (batchInfo: {JSON.stringify(batchInfo)})</div>
+                            <div className={styles.loading}>
+                                {apiLoading ? '배치 정보 로딩 중...' : '배치 정보를 불러올 수 없습니다.'}
+                            </div>
                         </div>
                     )}
 
@@ -324,7 +294,7 @@ export default function MessageDetail() {
                 <div className={styles.rightSection}>
                     <h2 className={styles.sectionTitle}>수신자 목록</h2>
 
-                    {loading ? (
+                    {apiLoading ? (
                         <div className={styles.loading}>로딩 중...</div>
                     ) : (
                         <>
@@ -341,8 +311,7 @@ export default function MessageDetail() {
                                     {recipients.map((recipient) => (
                                         <div
                                             key={recipient.no}
-                                            className={`${styles.listRow} ${selectedRecipient?.no === recipient.no ? styles.selected : ''
-                                                }`}
+                                            className={`${styles.listRow} ${selectedRecipient?.no === recipient.no ? styles.selected : ''}`}
                                             onClick={() => {
                                                 console.log('리스트 행 클릭됨:', recipient);
                                                 handleRecipientSelect(recipient);
