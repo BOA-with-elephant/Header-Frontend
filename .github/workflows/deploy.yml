@@ -2,7 +2,7 @@ name: Header Frontend DEPLOY
 
 on:
     push:
-        branches: ["main"]
+        branches: ["main", "develope"]
 
 jobs:
     header_frontend:
@@ -14,7 +14,6 @@ jobs:
             - name: access to secretes / create .env file
               run: |
                 echo "EXT_PUBLIC_KAKAO_MAP_API_KEY=${EXT_PUBLIC_KAKAO_MAP_API_KEY}" >> .env
-              
               env:
                 EXT_PUBLIC_KAKAO_MAP_API_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_MAP_API_KEY }}
             
@@ -30,13 +29,14 @@ jobs:
 
             - name: Docker build & push to prod
               run: |
+                BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
                 docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-                docker build -t ${{ secrets.DOCKER_USERNAME }}/header-front-img:main .
-                docker push ${{ secrets.DOCKER_USERNAME }}/header-front-img:main
+                docker build -t ${{ secrets.DOCKER_USERNAME }}/header-front-img:${BRANCH_NAME} .
+                docker push ${{ secrets.DOCKER_USERNAME }}/header-front-img:${BRANCH_NAME}
             
             - name: Deploy to prod
+              if: github.ref == 'refs/heads/main'
               uses: appleboy/ssh-action@v1.0.3
-            #   id: deploy-prod
               with:
                 host: ${{ secrets.EC2_HOST }}
                 username: ${{ secrets.EC2_USERNAME }}
