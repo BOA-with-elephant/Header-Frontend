@@ -47,8 +47,8 @@ export default function Signup() {
         alert('서비스 이용약관에 동의해야 회원가입을 할 수 있습니다.');
         return; // 전송 중단
     }
-    //백엔드로 전송되는 데이터 확인
-     console.log('Sign-up form submitted with data');
+    //백엔드로 데이터 전송됐는지 확인
+     console.log('회원가입 입력 데이터 전송됨');
 
         try {
             const response = await fetch('http://localhost:8080/auth/users', {
