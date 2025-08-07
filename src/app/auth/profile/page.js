@@ -41,8 +41,8 @@ export default function Signup() {
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-    //백엔드로 전송되는 데이터 확인
-     console.log('Form submitted with data:', formData);
+    //백엔드로 데이터 정상 전송되는지 확인
+     console.log('프로필 수정사항 정상 전송');
 
         try {
             const response = await fetch('http://localhost:8080/profile', {
