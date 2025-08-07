@@ -17,6 +17,7 @@
     min-height: calc(100vh - 120px); /* 헤더+푸터 높이 고려 */
     display: flex;
     justify-content: center; /* 수평 정렬 */
+    min-height: 100vh; /* 삭제해야할 수도 있음 */
     padding: var(--spacing-2xl);
 }
 
@@ -35,7 +36,8 @@
     width: 100%;
     max-width: 400px;
     padding: var(--spacing-2xl);
-    background-color: var(--background); /* 여기에 변수를 사용합니다 */
+    background-color: var(--background);
+    /*background-color: var(--background=#000); */
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
 }
