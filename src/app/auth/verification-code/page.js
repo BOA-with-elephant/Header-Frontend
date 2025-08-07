@@ -1,12 +1,14 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Signup from "@/app/auth/users/page.js";
 
 export default function Verification() {
+    const { userName, userPhone } = Signup();
     const [formData, setFormData] = useState({
-            userName: '',
-            userPhone: '',
-        });
+        userName: {userName},
+        userPhone: {userPhone}
+    });
     
         // Handle input changes
         const handleChange = (e) => {

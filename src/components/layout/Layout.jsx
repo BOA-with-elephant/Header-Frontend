@@ -27,8 +27,7 @@ export default function Layout({ children }) {
 
   // 사용자 정보 로드
   useEffect(() => {
-    // 여기에 loadUserInfo 함수 정의가 정확히 들어가야 합니다.
-    const loadUserInfo = async () => { // <-- 여기에 async 키워드가 있어야 합니다.
+    const loadUserInfo = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -49,7 +48,6 @@ export default function Layout({ children }) {
           const responseData = await response.json();
           const userData = responseData.data;
 
-          console.log('Layout: 사용자 정보 로드 성공:', userData);
           setUserInfo(userData);
           setUserRole(userData.admin ? 2 : 1);
         } else if (response.status === 401 || response.status === 403) {
@@ -124,10 +122,37 @@ export default function Layout({ children }) {
 
   // 권한 정보가 없을 때 (로그인 필요)
   if (userRole === null) {
+    // UI/UX 통일, 그러나 CSS 파일 추가 않기 위해 inline 스타일 사용
     return (
-      <div className="auth-required">
-        <div>로그인이 필요합니다.</div>
+     <>
+      <div className="auth-required" style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        width: '100vw'
+      }}>
+        {/* UI 통일을 위한 헤더 추가 */}
+        <Header
+            isSideMenuOpen={isSideMenuOpen}
+            toggleSideMenu={toggleSideMenu}
+            userRole={userRole}
+        />
+        <div style={{
+          width: '100%',
+          maxWidth: '400px',
+          padding: '32px',
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}>
+          <h2 align={'center'}>🚨 <br/> 로그인이 필요한 페이지 입니다.</h2>
+        </div>
+
       </div>
+        {/* 푸터 */}
+        <Footer />
+     </>
     );
   }
 

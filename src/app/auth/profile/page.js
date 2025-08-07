@@ -1,7 +1,7 @@
 "use client";
+import Link from 'next/link';
 import React, { useState } from 'react';
-import styles from "../users/page.module.css";
-import Link from "next/link";
+import styles from "../users/page.module.css"; 
 
 function Checkbox({ children, disabled, checked, onChange }) {
   return (
@@ -41,17 +41,11 @@ export default function Signup() {
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-    // 서비스 이용약관 필수 체크 (추가)
-    if (!service) {
-        alert('서비스 이용약관에 동의해야 회원가입을 할 수 있습니다.');
-        return; // 전송 중단
-    }
     //백엔드로 전송되는 데이터 확인
-     console.log('Sign-up form submitted with data');
+     console.log('Form submitted with data:', formData);
 
         try {
-            const response = await fetch('http://localhost:8080/auth/users', {
+            const response = await fetch('http://localhost:8080/profile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -79,7 +73,7 @@ export default function Signup() {
     return (
         <div className={styles.mainContent}>
             <div className={styles.contentCard}>
-                <h2>회원가입 페이지</h2>
+                <h2>회원 정보 수정</h2>
                 <form onSubmit={handleSubmit}>
                     <div className={styles.formGroup}>
                         <label htmlFor="userName">이름:</label>
@@ -89,7 +83,7 @@ export default function Signup() {
                             name="userName"
                             value={formData.userName}
                             onChange={handleChange}
-                            required // Add HTML5 validation
+                            required 
                         />
                     </div>
 
@@ -103,22 +97,6 @@ export default function Signup() {
                             onChange={handleChange}
                             placeholder="예: 010-1234-5678"
                             pattern="[0-9]{3}-?[0-9]{4}-?[0-9]{4}"
-                            required
-                        />
-                        <button type="submit">
-                            <Link href="/auth/verification-code">전화번호 인증</Link>
-                        </button>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label htmlFor="userId">아이디:</label>
-                        <input
-                            type="text"
-                            id="userId"
-                            name="userId"
-                            value={formData.userId}
-                            onChange={handleChange}                        
-                            minLength="6" // 아이디 최소 길이
                             required
                         />
                     </div>
@@ -136,36 +114,19 @@ export default function Signup() {
                         />
                     </div>
 
-                    <div className={styles.formGroup}>
-                        <label htmlFor="birthday">생년월일:</label>
-                        <input
-                            type="date"
-                            id="birthday"
-                            name="birthday"
-                            value={formData.birthday}
-                            onChange={handleChange}
-                        />
-                    </div>
-
-                    {/*회원가입 약관 체크*/}
-                    <Checkbox checked={service} onChange={setService}>
-                            (필수) 서비스 이용약관
-                    </Checkbox>
-                    <a className={styles.linkStyle} href="/auth/terms-of-use">
-                        이용약관 보기
-                    </a>
-                    <br/>
-                    <Checkbox checked={marketing} onChange={setMarketing}>
-                        (선택) 마케팅 수신
-                    </Checkbox>
                     <br/>
                     <button
                         type="submit"
                         className={styles.loginButton}
                     >
-                        회원가입
-                    </button>    
+                        정보 수정
+                    </button>                        
                 </form>
+                <button>
+                        <Link href="/auth/{user_id}/leave">
+                        회원탈퇴
+                        </Link>    
+                    </button> 
             </div>
         </div>
     );

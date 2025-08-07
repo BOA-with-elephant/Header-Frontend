@@ -29,19 +29,19 @@ export default function Login() {
 
       if (response.ok) {
             const responseData = await response.json();
-                        console.log(" 서버로부터 받은 전체 응답 데이터: ", responseData);
-            console.log(" responseData.data 객체: ", responseData.data);
+            console.log(" 서버로부터 받은 전체 응답 데이터 "); // accessToken 노출됨 250806 삭제 완료
+            console.log(" responseData.data 객체 반환"); //⭐여기서 토큰 노출됨 삭제할 것-> 250730 삭제완료
             if (responseData.data) {
-                console.log(" responseData.data.accessToken 필드: ", responseData.data.accessToken);
+                console.log(" responseData.data.accessToken 필드 응답 "); //Toekn 노출 부분 삭제
             }
         if (responseData.data && responseData.data.accessToken) { // TokenDTO의 accessToken 필드 확인
           const token = responseData.data.accessToken;
           localStorage.setItem('token', token);
-          console.log('로그인 성공! 토큰 저장됨:', token);
+          console.log('로그인 성공! 토큰 저장됨'); //⭐여기서 토큰 노출됨 삭제할 것-> 250731 삭제완료
 
           if (responseData.data.userId) { // TokenDTO에 userId 필드가 있다면
           localStorage.setItem('userId', responseData.data.userId); // userId를 localStorage에 저장
-          console.log('로그인된 사용자 ID 저장됨:', responseData.data.userId);
+          console.log('로그인된 사용자 ID 저장됨'); // 토큰 노출 가능성 있음 responseData.data.userId-> 삭제
         }
           router.push('/shops'); // 로그인 성공 후 이동할 페이지
         } else {
@@ -109,7 +109,7 @@ export default function Login() {
                 <span className={styles.separator}>|</span>
                 <a href="/auth/id-retrieval" className={styles.link}>아이디 찾기</a>
                 <span className={styles.separator}>|</span>
-                <a href="/auth/password-reset" className={styles.link}>비밀번호 찾기</a>
+                <a href="/auth/password-reset" className={styles.link}>비밀번호 재설정</a>
               </div>
             </form>
           </div>

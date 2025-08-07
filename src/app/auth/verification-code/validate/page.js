@@ -5,7 +5,7 @@ export default function validateOX() {
     // State to manage form input values
     const [formData, setFormData] = useState({
         userName: '',
-        userPhone: '',
+        userPhone: ''
     });
 
     // Handle input changes
