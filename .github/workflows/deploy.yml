@@ -1,0 +1,70 @@
+name: Header Frontend DEPLOY
+
+on:
+    push:
+        branches: ["main", "develope"]
+
+jobs:
+    header_frontend:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: access to secretes / create .env file
+              run: 
+                echo "NEXT_PUBLIC_KAKAO_MAP_API_KEY=${NEXT_PUBLIC_KAKAO_MAP_API_KEY}" >> .env
+              env:
+                NEXT_PUBLIC_KAKAO_MAP_API_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_MAP_API_KEY }}
+            
+            - name: Install dependencies and build
+              run : |
+                npm install
+                npm run build
+            
+            - name: Deploy to Vercel (Preview)
+              if: github.ref == 'refs/heads/develope'
+              run: npx vercel --token=${{ secrets.VERCEL_TOKEN }} --yes
+            
+            - name: Deploy to Vercel (Production)
+              if: github.ref == 'refs/heads/main'
+              # npx vercel : Vercel CLI를 실행해서 현재 디렉토리를 배포
+              # --prod : 프리뷰 배포가 아니라 프로덕션 배포 선택
+              # --token= : Vercel 계정에 인증하기 위한 토큰
+              run : npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+                
+            # - name: Use Node.js
+            #   uses: actions/setup-node@v4
+            #   with:
+            #     node-version: 20.x
+            #     cache: 'npm'
+
+            # - run: npm ci
+            # - run: npm run build --if-present
+            # - run: npm test
+
+            # - name: Docker build & push to prod
+            #   run: |
+            #     BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
+            #     docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            #     docker build -t ${{ secrets.DOCKER_USERNAME }}/header-front-img:${BRANCH_NAME} .
+            #     docker push ${{ secrets.DOCKER_USERNAME }}/header-front-img:${BRANCH_NAME}
+            
+            # - name: Deploy to prod
+            #   if: github.ref == 'refs/heads/main'
+            #   uses: appleboy/ssh-action@v1.0.3
+            #   with:
+            #     host: ${{ secrets.EC2_HOST }}
+            #     username: ${{ secrets.EC2_USERNAME }}
+            #     key: ${{ secrets.EC2_PRIVATE_KEY }}
+            #     envs: APPLICATION_PROPERTIES
+            #     script: |
+            #         sudo docker stop header-front-container || true
+            #         sudo docker rm header-front-container || true
+            #         sudo docker pull ${{ secrets.DOCKER_USERNAME }}/header-front-img:main
+            #         sudo docker run -d \
+            #             --name header-front-container \
+            #             -p 3000:3000 \
+            #             ${{ secrets.DOCKER_USERNAME }}/header-front-img:main
+            #         sudo docker image prune -f
+
