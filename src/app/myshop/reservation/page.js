@@ -46,8 +46,8 @@ export default function Reservation() {
     
 
     const SHOP_CODE = 1;
-    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
-      
+    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
+    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     const fetchReservationData = async() => {
         try{
@@ -61,7 +61,8 @@ export default function Reservation() {
             console.log('data', data);
             setReservationInfo(data);
 
-            const response2 = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
+            const response2 = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
+            // const response2 = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
             const data2 = await response2.json();
             setResvDateList(data2);
             console.log('예약 가능 시간', data2);
