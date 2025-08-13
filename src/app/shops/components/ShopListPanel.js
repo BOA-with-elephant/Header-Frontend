@@ -41,9 +41,11 @@ export default function ShopListPanel({shops, setShops, onShopSelect, userLocati
             if (res.ok && data.results) {
                 const newShops = data.results.shops || []; // results 내부-shops 구조의 json
 
+                // 키워드 검색 필터링
                 if (keyword && newShops.length > 0) {
                     let maxRevCount = -1;
 
+                    // 키워드가 메뉴 이름일 때 처리
                     newShops.forEach(shop => {
                         shop.menus?.forEach(menu => {
                             if (menu.menuName.includes(keyword) && menu.menuRevCount > maxRevCount) {
@@ -52,6 +54,7 @@ export default function ShopListPanel({shops, setShops, onShopSelect, userLocati
                         });
                     });
 
+                    // 메뉴의 예약 횟수가 1회 이상일 때만 메시지 출력
                     if (maxRevCount > 0){
                         newShops.forEach(shop => {
                             const bestMenu = shop.menus?.find(menu => menu.menuName.includes(keyword) && menu.menuRevCount == maxRevCount);
