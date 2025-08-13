@@ -68,9 +68,6 @@ const MENU_CONFIG = {
 // 사용자 프로필 컴포넌트 분리
 const UserProfile = ({ userRole, isAdmin, getProfilePath, userInfo }) => {
   // 권한별 프로필 정보 설정
-
-  console.log( '유저인포 확인',userInfo)
-
   const getProfileInfo = () => {
     if (userRole === 1) {
       // 권한 1: 일반고객 - 고객이름과 아이디
