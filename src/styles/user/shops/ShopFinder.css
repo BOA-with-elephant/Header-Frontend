@@ -258,3 +258,16 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* --- 메뉴 홍보용 메시지 --- */
+.shop-item .adMessage {
+    display: inline-block;
+    color: #F6A800;
+    font-weight: bold;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #F6A800; /* 박스 테두리 */
+    /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* 박스 그림자 */
+}
