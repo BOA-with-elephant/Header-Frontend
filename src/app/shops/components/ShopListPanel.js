@@ -37,10 +37,33 @@ export default function ShopListPanel({shops, setShops, onShopSelect, userLocati
         try {
             const res = await fetch(`http://localhost:8080/api/v1/shops?${params.toString()}`);
             const data = await res.json();
-
+            console.log(data) // 샵 데이터 형태 확인
             if (res.ok && data.results) {
                 const newShops = data.results.shops || []; // results 내부-shops 구조의 json
 
+                // 키워드 검색 필터링
+                if (keyword && newShops.length > 0) {
+                    let maxRevCount = -1;
+
+                    // 키워드가 메뉴 이름일 때 처리
+                    newShops.forEach(shop => {
+                        shop.menus?.forEach(menu => {
+                            if (menu.menuName.includes(keyword) && menu.menuRevCount > maxRevCount) {
+                                maxRevCount = menu.menuRevCount;
+                            }
+                        });
+                    });
+
+                    // 메뉴의 예약 횟수가 1회 이상일 때만 메시지 출력
+                    if (maxRevCount > 0){
+                        newShops.forEach(shop => {
+                            const bestMenu = shop.menus?.find(menu => menu.menuName.includes(keyword) && menu.menuRevCount == maxRevCount);
+                            if(bestMenu) {
+                                shop.adMessage = `최근 ${bestMenu.menuName} ${bestMenu.menuRevCount}회 예약`;
+                            }
+                        })
+                    }
+                }
                 // 새로운 검색이면 기존 데이터 교체, 아니면 추가
                 setShops(prev => {
                     if (isNewSearch) return newShops;
@@ -48,6 +71,7 @@ export default function ShopListPanel({shops, setShops, onShopSelect, userLocati
                     const uniqueNewShops = newShops.filter(s => !existingShopCodes.has(s.shopCode));
                     return [...prev, ...uniqueNewShops];
                 })
+
                 setPage(currentPage + 1);
                 setHasMore(newShops.length > 0) // 더 불러올 데이터 있으면 true
             } else {
@@ -138,6 +162,7 @@ export default function ShopListPanel({shops, setShops, onShopSelect, userLocati
                         key={shop.shopCode}
                         onClick={() => onShopSelect(shop.shopCode)}
                     >
+                        {shop.adMessage && <p className={'adMessage'}>{shop.adMessage}</p>}
                         <h4>{shop.shopName}</h4>
                         <p>{shop.categoryName}</p>
                         <p>{shop.shopLocation}</p>
