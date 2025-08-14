@@ -13,7 +13,8 @@ import {
 } from '@/constants/sales/chartConfig';
 
 const SHOP_CODE = 1;
-const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
+// const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}`;
 
 export const useChartData = (allSalesData) => {
   const [monthlyTrend, setMonthlyTrend] = useState({

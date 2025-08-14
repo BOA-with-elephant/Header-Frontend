@@ -45,7 +45,8 @@ export default function Signup() {
      console.log('프로필 수정사항 정상 전송');
 
         try {
-            const response = await fetch('http://localhost:8080/profile', {
+            // const response = await fetch('http://localhost:8080/profile', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/profile`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
