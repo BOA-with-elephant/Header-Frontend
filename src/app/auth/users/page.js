@@ -89,7 +89,7 @@ export default function Signup() {
                             name="userName"
                             value={formData.userName}
                             onChange={handleChange}
-                            required // Add HTML5 validation
+                            required // 필수 입력
                         />
                     </div>
 
@@ -106,7 +106,7 @@ export default function Signup() {
                             required
                         />
                         <button type="submit">
-                            <Link href="/auth/verification-code">전화번호 인증</Link>
+                            <Link href="/auth/verification-code">본인인증</Link>
                         </button>
                     </div>
 
