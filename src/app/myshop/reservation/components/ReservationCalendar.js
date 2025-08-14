@@ -40,7 +40,8 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
     // const [reservationInfo, setReservationInfo] = useState([]);
 
     const SHOP_CODE = 1;
-    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
+    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
+    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
       
     useEffect(() => {
         switch(day){
@@ -141,7 +142,8 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
     useEffect(() => {
         const availableResvDateList = async() => {
             try{
-                const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
+                // const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
                 const data = await response.json();
                 setResvDateList(data);
             } catch(error){

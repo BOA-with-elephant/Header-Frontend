@@ -51,7 +51,8 @@ export default function Signup() {
      console.log('회원가입 입력 데이터 전송됨');
 
         try {
-            const response = await fetch('http://localhost:8080/auth/users', {
+            // const response = await fetch('http://localhost:8080/auth/users', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/users`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -106,7 +107,7 @@ export default function Signup() {
                             required
                         />
                         <button type="submit">
-                            <Link href="/auth/verification-code">본인인증</Link>
+                            <Link href="/auth/verification-code">전화번호 인증</Link>
                         </button>
                     </div>
 

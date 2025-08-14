@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 
-export default function validateOX() {
+export default function ValidateOX() {
     // State to manage form input values
     const [formData, setFormData] = useState({
         userName: '',

@@ -459,7 +459,7 @@ export default function Customer() {
                 {/* 검색 결과 정보 */}
                 {filters.search && (
                     <div className={styles.searchInfo}>
-                        <span className={styles.searchTerm}>"{filters.search}"</span>에 대한 검색 결과
+                        <span className={styles.searchTerm}>{`"${filters.search}"`}</span>에 대한 검색 결과
                         <span className={styles.resultCount}>{filteredCustomers.length}명</span>
                     </div>
                 )}

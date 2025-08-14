@@ -36,12 +36,14 @@ export default function UpdateReservationInfoModal({
     const [pickedDate, setPickedDate] = useState(new Date());
 
     const SHOP_CODE = 1;
-    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
+    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
+    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     useEffect(() => {
         const fetchMenuList = async () => {
             try {
-            const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/menu`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/menu`);
+            // const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/menu`);
             const data = await response.json();
             setMenuNameList(data);
             } catch (err) {
@@ -53,7 +55,8 @@ export default function UpdateReservationInfoModal({
 
         const fetchDateAndTime = async() => {
             try{
-                const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/resv-time-and-date`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${SHOP_CODE}/resv-time-and-date`);
+                // const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/resv-time-and-date`);
                 const data = await response.json();
                 setDateAndTimeList(data);
                 // console.log('💥날짜와 시간 : ', data);
