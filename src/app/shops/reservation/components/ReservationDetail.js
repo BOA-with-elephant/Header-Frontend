@@ -18,7 +18,8 @@ export default function ReservationDetail ({resvCode, onClose}) {
 
             try {
                 const res = await fetch(
-                    `http://localhost:8080/api/v1/shops/reservation/${resvCode}`, {
+                    // `http://localhost:8080/api/v1/shops/reservation/${resvCode}`, {
+                    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${resvCode}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -47,7 +48,8 @@ export default function ReservationDetail ({resvCode, onClose}) {
 
         try {
             const res = await fetch(
-                `http://localhost:8080/api/v1/shops/reservation/${resvCode}`,
+                // `http://localhost:8080/api/v1/shops/reservation/${resvCode}`,
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${resvCode}`,
                 {
                     method: 'DELETE',
                     headers: {
