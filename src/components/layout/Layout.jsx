@@ -38,7 +38,8 @@ export default function Layout({ children }) {
         }
 
         // 백엔드 사용자 정보 조회 API 엔드포인트
-        const response = await fetch('http://localhost:8080/auth/me', {
+        // const response = await fetch('http://localhost:8080/auth/me', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

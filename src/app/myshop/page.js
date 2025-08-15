@@ -16,7 +16,8 @@ export default function MyShopPage() {
 
     const fetchMyShops = async () => {
 
-        const testRes = await fetch('http://localhost:8080/api/v1/my-shops', {
+        // const testRes = await fetch('http://localhost:8080/api/v1/my-shops', {
+        const testRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -81,8 +82,10 @@ export default function MyShopPage() {
     const handleFormSubmit = async (formData) => {
         const isCreating = view === 'create';
         const url = isCreating
-            ? 'http://localhost:8080/api/v1/my-shops'
-            : `http://localhost:8080/api/v1/my-shops/${selectedShop.shopCode}`;
+            // ? 'http://localhost:8080/api/v1/my-shops'
+            ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops`
+            // : `http://localhost:8080/api/v1/my-shops/${selectedShop.shopCode}`;
+            : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${selectedShop.shopCode}`;
 
         const method = isCreating ? 'POST' : 'PUT';
 
@@ -111,7 +114,8 @@ export default function MyShopPage() {
 
     const handleDeleteShop = async (shopCode) => {
         if (window.confirm('정말로 해당 샵을 삭제하시겠습니까?')) {
-            const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}`, {
+            // const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopCode}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,

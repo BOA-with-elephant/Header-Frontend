@@ -81,7 +81,8 @@ export default function Customer() {
     // 예약 가능 시간 데이터 fetch 함수
     const fetchReservationSchedule = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_ID}/available-schedule`);
+            // const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_ID}/available-schedule`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${SHOP_ID}/available-schedule`);
             const data = await response.json();
             setResvDateList(data);
             console.log('예약 가능 시간 데이터:', data);

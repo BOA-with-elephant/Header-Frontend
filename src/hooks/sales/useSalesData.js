@@ -5,7 +5,8 @@ import { filterSalesByDateRange } from '@/utils/sales/dataProcessing';
 import { exportCSV } from '@/utils/sales/exportUtils';
 
 const SHOP_CODE = 1;
-const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
+// const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}`;
 
 /**
  * 매출 데이터 통합 관리를 위한 메인 커스텀 훅
