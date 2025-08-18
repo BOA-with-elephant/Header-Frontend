@@ -6,6 +6,25 @@ import AssistantSelector from './AssistantSelector';
 import ChatWindow from './ChatWindow';
 import styles from '@/styles/chat/FloatingChatSystem.module.css';
 
+/**
+ * Floating chat UI component: renders a draggable floating chat toggle and an optional chat panel.
+ *
+ * The component displays a floating button anchored to the bottom-right which can be dragged (position persisted to
+ * localStorage under the key "chatButtonPosition"). Clicking the button toggles the chat panel. When open, the panel
+ * shows either an assistant selector or a chat window depending on selection. The available assistants and welcome
+ * message adapt to the current user's effective role (guest, customer, admin) and the provided viewMode.
+ *
+ * Notable behaviors:
+ * - Dragging is disabled while the chat panel is open.
+ * - Final button position is clamped to the viewport and saved after drag completion.
+ * - Unread message count increments while the panel is closed and resets when opened.
+ *
+ * @param {Object} props
+ * @param {number|null|undefined} props.userRole - Numeric role of the current user (e.g., 0/1/2). A falsy value is treated as not logged in (guest).
+ * @param {Object} props.userInfo - User information object (e.g., { shopName, userName }) used for personalized messages.
+ * @param {string} props.viewMode - Current view mode (for example 'admin' or 'customer'); affects effective role and welcome text.
+ * @returns {JSX.Element} A React element rendering the floating chat system.
+ */
 export default function FloatingChatSystem({ userRole, userInfo, viewMode }) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedAssistant, setSelectedAssistant] = useState(null);

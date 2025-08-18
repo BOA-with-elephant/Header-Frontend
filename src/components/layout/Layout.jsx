@@ -12,6 +12,15 @@ const USER_ROLES = {
   SHOP_ADMIN: "ROLE_ADMIN"
 };
 
+/**
+ * App layout component that manages authentication state, responsive side-menu and view mode, and composes page chrome (Header, SideMenuBar, Footer) plus a FloatingChatSystem.
+ *
+ * Conditionally renders a loading screen while fetching user info, an auth-required UI for unauthenticated users (still exposing the chat in guest mode), or the full authenticated layout with side menu and persisted view-mode. Also closes the side menu on route changes and on large-screen resizes.
+ *
+ * @param {object} props
+ * @param {import('react').ReactNode} props.children - Main page content to be rendered inside the layout.
+ * @returns {JSX.Element} The composed layout element.
+ */
 export default function Layout({ children }) {
   const pathname = usePathname();
 

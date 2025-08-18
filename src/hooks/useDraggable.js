@@ -1,5 +1,31 @@
 import { useState, useCallback, useRef } from 'react';
 
+/**
+ * React hook that manages a draggable element's position, dragging state, and optional localStorage persistence.
+ *
+ * Provides utilities to restore/save position, constrain coordinates within the viewport, and handlers/ref for initiating drag.
+ *
+ * @param {{x:number,y:number}} [initialPosition={ x: 24, y: 24 }] - Initial x/y coordinates for the element.
+ * @param {string|null} [storageKey=null] - If provided, used to persist position in localStorage under this key.
+ * @return {{
+ *   position: {x:number,y:number},
+ *   setPosition: function,
+ *   isDragging: boolean,
+ *   elementRef: import('react').RefObject<HTMLElement|null>,
+ *   dragHandlers: { onPointerDown: function },
+ *   restorePosition: function,
+ *   savePosition: function,
+ *   constrainPosition: function
+ * }} An object with current position state and utilities:
+ *   - position: current {x,y} coordinates.
+ *   - setPosition: state setter for position.
+ *   - isDragging: true while a drag is active.
+ *   - elementRef: ref to attach to the draggable DOM element.
+ *   - dragHandlers.onPointerDown: pointer-down handler that begins dragging and computes pointer offset.
+ *   - restorePosition: reads and applies JSON-parsed position from localStorage (if storageKey); logs an error prefixed with "위치 복원 실패:" on parse failure.
+ *   - savePosition: saves given position to localStorage (if storageKey).
+ *   - constrainPosition: clamps (x,y) to the viewport with a default element size {width:60,height:60} and 10px padding.
+ */
 export function useDraggable(initialPosition = { x: 24, y: 24 }, storageKey = null) {
     const [position, setPosition] = useState(initialPosition);
     const [isDragging, setIsDragging] = useState(false);

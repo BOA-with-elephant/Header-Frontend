@@ -7,6 +7,22 @@ import MessageBubble from './MessageBubble';
 import QuickActions from './QuickActions';
 import styles from '@/styles/chat/ChatWindow.module.css';
 
+/**
+ * ChatWindow React component: a conversational UI between a user and a role-specific assistant.
+ *
+ * Renders a chat interface with message history, quick action buttons (based on userRole and assistant),
+ * a typing indicator, and an input area. Messages are sent to role/assistant-mapped API endpoints when available;
+ * otherwise a mock response is generated. Automatically scrolls to newest messages and invokes `onNewMessage`
+ * after each bot reply.
+ *
+ * @param {Object} props
+ * @param {Object} props.assistant - Assistant descriptor (must include `id`, `name`, `description`, `color`, `icon`).
+ * @param {() => void} props.onBack - Called when the header back button is pressed.
+ * @param {() => void} [props.onNewMessage] - Optional callback invoked after receiving a bot reply.
+ * @param {number} props.userRole - Numeric role: 2 (shop admin), 1 (member), 0 (guest). Determines quick actions and API mapping.
+ * @param {Object} props.userInfo - User context; `shopCode` or `userCode` is used to derive `shopId` (falls back to 1).
+ * @returns {JSX.Element} The chat window element.
+ */
 export default function ChatWindow({ 
     assistant, 
     onBack, 

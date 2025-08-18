@@ -2,6 +2,18 @@
 
 import styles from '@/styles/chat/AssistantSelector.module.css';
 
+/**
+ * Render an assistant selection UI with a role-aware header, optional user greeting, a grid of assistant cards, and a role-specific footer tip.
+ *
+ * Each assistant card shows an icon, name, and description, applies the assistant's color via a CSS custom property, and calls `onSelect(assistant)` when clicked.
+ *
+ * @param {Object[]} assistants - Array of assistant objects. Each object is expected to include { id, color, icon, name, description }.
+ * @param {Function} onSelect - Callback invoked with the selected assistant object when a card is clicked.
+ * @param {number} userRole - Role identifier that controls displayed copy: 2 = owner, 1 = regular user, otherwise guest.
+ * @param {Object} [userInfo] - Optional user information; used to render a greeting. Expected properties: { shopName?, userName? }.
+ * @param {*} [welcomeMessage] - Accepted but currently unused.
+ * @returns {JSX.Element} The rendered AssistantSelector component.
+ */
 export default function AssistantSelector({ 
     assistants, 
     onSelect, 

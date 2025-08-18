@@ -2,6 +2,21 @@
 
 import styles from '@/styles/chat/MessageBubble.module.css';
 
+/**
+ * Render a chat message bubble with optional suggested-action buttons.
+ *
+ * Renders message text (preserving line breaks), a localized timestamp (ko-KR, HH:MM),
+ * and — when present — suggested action buttons that invoke the provided callback.
+ *
+ * @param {Object} message - Message data.
+ * @param {'bot'|'user'} message.type - Message sender type; when 'bot' the assistantColor is applied.
+ * @param {string} message.text - Message text; newline characters are rendered as line breaks.
+ * @param {Date} message.timestamp - Timestamp displayed as a localized time string.
+ * @param {string[]} [message.suggestedActions] - Optional array of suggested action labels.
+ * @param {string} assistantColor - CSS color value applied to bot bubble and action buttons.
+ * @param {function(string): void} onActionClick - Called with the action label when a suggested-action button is clicked.
+ * @returns {JSX.Element} The message bubble element.
+ */
 export default function MessageBubble({ message, assistantColor, onActionClick }) {
     const formatTime = (timestamp) => {
         return timestamp.toLocaleTimeString('ko-KR', { 
