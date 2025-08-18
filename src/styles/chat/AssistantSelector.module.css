@@ -1,0 +1,169 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--spacing-xl);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.subtitle {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.assistantGrid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    flex: 1;
+}
+
+.assistantCard {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+}
+
+.assistantCard:hover {
+    border-color: var(--assistant-color, var(--color-primary));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.assistantIcon {
+    font-size: 32px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+}
+
+.assistantInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.assistantName {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.assistantDescription {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.selectArrow {
+    font-size: var(--text-lg);
+    color: var(--text-tertiary);
+    transition: transform 0.2s ease;
+}
+
+.assistantCard:hover .selectArrow {
+    transform: translateX(4px);
+    color: var(--assistant-color, var(--color-primary));
+}
+
+.footer {
+    margin-top: var(--spacing-lg);
+    text-align: center;
+}
+
+.footerText {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+.userInfo {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #667eea 100%);
+    color: white;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.userGreeting {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.userGreeting::before {
+    content: '👋';
+    font-size: var(--text-base);
+}
+
+/* 권한별 제목 스타일 조정 */
+.title.admin {
+    color: var(--color-primary);
+}
+
+.title.user {
+    color: #4facfe;
+}
+
+.title.guest {
+    color: #f093fb;
+}
+
+/* 권한별 카드 호버 효과 */
+.assistantCard.adminCard:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 20px rgba(19, 24, 61, 0.15);
+}
+
+.assistantCard.userCard:hover {
+    border-color: #4facfe;
+    box-shadow: 0 4px 20px rgba(79, 172, 254, 0.15);
+}
+
+.assistantCard.guestCard:hover {
+    border-color: #f093fb;
+    box-shadow: 0 4px 20px rgba(240, 147, 251, 0.15);
+}
+
+/* 권한별 푸터 메시지 스타일 */
+.footerText.admin {
+    color: var(--color-primary);
+}
+
+.footerText.user {
+    color: #4facfe;
+}
+
+.footerText.guest {
+    color: #f093fb;
+}

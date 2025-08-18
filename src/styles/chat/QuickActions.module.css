@@ -1,0 +1,37 @@
+.container {
+    background: white;
+    border-top: 1px solid var(--border-color);
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.label {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+    font-weight: var(--font-medium);
+}
+
+.actionsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.actionButton {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-sm);
+    font-size: var(--text-xs);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.actionButton:hover {
+    background: var(--assistant-color, var(--color-primary));
+    color: white;
+    border-color: var(--assistant-color, var(--color-primary));
+    transform: translateY(-1px);
+}
