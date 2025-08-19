@@ -14,8 +14,8 @@ export default function Login() {
     setErrorMessage('');
 
     try {
-      // const response = await fetch('http://localhost:8080/auth/session'
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/session`
+      const response = await fetch('http://localhost:8080/auth/session'
+      // const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/session`
         , {
         method: 'POST',
         headers: {
@@ -24,9 +24,6 @@ export default function Login() {
         // 백엔드 LoginUserDTO의 필드명에 맞게 'userId', 'userPwd' 사용
         body: JSON.stringify({ userId: id, userPwd: password }),
       });
-
-      // if (response.ok) {
-      //   const responseData = await response.json(); // 응답 본문 파싱
 
       if (response.ok) {
             const responseData = await response.json();

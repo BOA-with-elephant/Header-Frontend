@@ -25,6 +25,7 @@ export default function Layout({ children }) {
   const [userRole, setUserRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null);
+  const [shopCode, setShopCode] = useState(null);
 
   // 사용자 정보 로드
   useEffect(() => {
@@ -52,6 +53,7 @@ export default function Layout({ children }) {
 
           setUserInfo(userData);
           setUserRole(userData.admin ? 2 : 1);
+          setShopCode(userData.shopCode);
         } else if (response.status === 401 || response.status === 403) {
           console.error('Layout: 사용자 정보를 가져올 수 없습니다. 토큰 만료 또는 권한 없음.', response.status);
           localStorage.removeItem('token');
