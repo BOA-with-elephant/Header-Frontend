@@ -14,7 +14,8 @@ export default function ChatWindow({
     userRole, 
     userInfo 
 }) {
-    const shopId = userInfo?.shopCode || userInfo?.userCode || 1;
+    // const shopId = userInfo?.shopCode || userInfo?.userCode || 1;
+    const shopId = userInfo?.shopCode || 1;
     
     const [messages, setMessages] = useState([
         {
@@ -44,10 +45,10 @@ export default function ChatWindow({
                     ];
                 case 'reservation-helper':
                     return [
-                        { label: '오늘 예약', message: '오늘 예약 현황 알려줘' },
-                        { label: '내일 예약', message: '내일 예약 누가 있지' },
-                        { label: '빈 시간', message: '오늘 빈 시간 있나' },
-                        { label: '대기 고객', message: '대기 중인 고객 있어' }
+                        { label: '예약 요약 & 통계', message: '이번 주 예약 현황 요약해줘' },
+                        { label: '예약 취소/변경 내역', message: '이번 달 예약 취소된 내역 알려줘' },
+                        { label: '단골 손님', message: '가장 많이 예약해준 고객을 10명 추려줘' },
+                        { label: '빈 시간대 확인', message: '이번 달 예약 가능한 시간대 확인해줘' }
                     ];
                 case 'sales-helper':
                     return [
@@ -133,7 +134,7 @@ export default function ChatWindow({
         const apiMap = {
             2: { // 샵관리자
                 'customer-helper': ChatbotAPI.admin.customer,
-                'reservation-helper': ChatbotAPI.admin.reservation,
+                'reservation-helper': ChatbotAPI.admin.reservation.sendMessage,
                 'sales-helper': ChatbotAPI.admin.sales,
                 'message-helper': ChatbotAPI.admin.message,
                 'menu-helper': ChatbotAPI.admin.menu
@@ -188,10 +189,12 @@ export default function ChatWindow({
                 const botMessage = {
                     id: Date.now() + 1,
                     type: 'bot',
-                    text: response.data.botReply || response.data.message,
+                    // text: response.data.botReply || response.data.message,
+                    // text: response.data?.answer || "답변을 불러올 수 없습니다.",
+                    text: response?.answer || "답변을 불러올 수 없습니다.",
                     timestamp: new Date(),
                     assistant: assistant.id,
-                    suggestedActions: response.data.suggestedActions || []
+                    suggestedActions: response.data?.suggestedActions || []
                 };
 
                 setMessages(prev => [...prev, botMessage]);
