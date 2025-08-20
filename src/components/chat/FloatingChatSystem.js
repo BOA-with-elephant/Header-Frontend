@@ -258,7 +258,7 @@ export default function FloatingChatSystem({ userRole, userInfo, viewMode }) {
                     name: '예약 관리',
                     description: '예약 현황과 관리를 도와드려요',
                     icon: '📅',
-                    color: '#43e97b',
+                    color: '#54397F',
                     apiEndpoint: '/api/v1/chatbot/admin/reservation',
                     requiredRole: 2
                 }
