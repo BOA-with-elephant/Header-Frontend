@@ -25,6 +25,7 @@ export default function Layout({ children }) {
   const [userRole, setUserRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null);
+  const [shopCode, setShopCode] = useState(null);
 
   // 사용자 정보 로드
   useEffect(() => {
@@ -39,8 +40,8 @@ export default function Layout({ children }) {
         }
 
         // 백엔드 사용자 정보 조회 API 엔드포인트
-        // const response = await fetch('http://localhost:8080/auth/me', {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
+        const response = await fetch('http://localhost:8080/auth/me', {
+        //const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -52,6 +53,7 @@ export default function Layout({ children }) {
 
           setUserInfo(userData);
           setUserRole(userData.admin ? 2 : 1);
+          setShopCode(userData.shopCode);
         } else if (response.status === 401 || response.status === 403) {
           console.error('Layout: 사용자 정보를 가져올 수 없습니다. 토큰 만료 또는 권한 없음.', response.status);
           localStorage.removeItem('token');
@@ -78,6 +80,13 @@ export default function Layout({ children }) {
       setViewMode('customer');
     }
   }, []);
+
+  // shopCode 상태 변화를 감지하는 useEffect 훅 추가
+  useEffect(() => {
+    if (shopCode) {
+      console.log('현재 shopCode:', shopCode);
+    }
+  }, [shopCode]);
 
   // 라우트 변경 시 메뉴 자동 닫기
   useEffect(() => {
@@ -204,6 +213,7 @@ export default function Layout({ children }) {
       <FloatingChatSystem
         userRole={userRole}
         userInfo={userInfo}
+        shopCode={shopCode}
         viewMode={viewMode}
       />
     </div>
