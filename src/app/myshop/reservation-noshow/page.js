@@ -1,16 +1,14 @@
 'use client'; 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "@/context/UserContext";
 import CanceledAndNoShowList from "./component/CanceledAndNoShowList";
 import OnlyNoShowList from "./component/OnlyNoShowList";
 import DetailResvModal from "./component/DetailResvModal";
 import HardDeleteAlertModal from "./component/HardDeleteAlertModal";
 import ResultCustomMessageModal from "../reservation/components/ResultCustomMessageModal";
-// import MessageModal from '@/components/ui/MessageModal';  // 성공, 실패, 경고, 확인 등의 메시지를 사용자에게 표시하는 공통 모달 컴포넌트
-// import { useMessageModal } from '@/hooks/useMessageModal'; // 메시지 모달 상태를 관리하고 제어하는 커스텀 훅
-// showError, showSuccess, showConfirm, showWarning 등을 통해 상황별 메시지를 간편하게 호출 가능
-// import { MESSAGES } from '@/constants/messages'; // 애플리케이션 전반에서 사용하는 표준 메시지 텍스트 모음 (예: 에러 메시지, 안내 문구 등)
 
 export default function NoShow(){
+    const { userInfo } = useContext(UserContext)
     const [canceledAndNoShowList, setCanceledAndNoShowList] = useState([]);
     const [onlyNoShowList, setOnlyNoShowList] = useState([]);
     const [isShowDetailReservation, setIsShowDetailReservation] = useState(false);
@@ -23,14 +21,19 @@ export default function NoShow(){
     const [resultType, setResultType] = useState('');
     const [messageContext, setMessageContext] = useState('');
 
-    const SHOP_CODE = 1;
+    const SHOP_CODE = userInfo.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
-    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     useEffect(() => {
         const canceledAndNoShow = async() => {
             try{
-                const response = await fetch(`${API_BASE_URL}/canceledAndNoShow`);
+                const response = await fetch(`${API_BASE_URL}/canceledAndNoShow`,{
+                    method : 'GET',
+                    headers : {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        "Content-Type" : "application/json"
+                    },
+                });
                 const data = await response.json();
                 setCanceledAndNoShowList(data.results.result);
                 console.log('❌❌ noShowList : ', data.results.result);
@@ -42,7 +45,13 @@ export default function NoShow(){
 
         const onlyNoShow = async() => {
             try{
-                const response = await fetch(`${API_BASE_URL}/onlyNoShow`);
+                const response = await fetch(`${API_BASE_URL}/onlyNoShow`,{
+                    method : 'GET',
+                    headers : {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        "Content-Type" : "application/json"
+                    },
+                });
                 const data = await response.json();
                 setOnlyNoShowList(data.results.result);
                 console.log('❌😈 노쇼만 : ', data.results.result);
@@ -73,6 +82,7 @@ export default function NoShow(){
                     setResultMessage={setResultMessage}
                     setResultType={setResultType}
                     setMessageContext={setMessageContext}
+                    userInfo={userInfo}
                 />
             </div>
             {isShowDetailReservation && (
@@ -87,6 +97,7 @@ export default function NoShow(){
                     setResultMessage={setResultMessage}
                     setResultType={setResultType}
                     setMessageContext={setMessageContext}
+                    userInfo={userInfo}
                 />
             )}
             {isShowRealDeleteModal && (
@@ -95,6 +106,7 @@ export default function NoShow(){
                     setIsShowRealDeleteModal={setIsShowRealDeleteModal}
                     selectedResvCode={selectedResvCode}
                     onDeleteSuccess={() => setRefreshKey(prev => prev + 1)}
+                    userInfo={userInfo}
                 />
             )}
             {/* 성공 메시지 모달 */}
@@ -104,8 +116,6 @@ export default function NoShow(){
                 resultMessage={resultMessage}
                 resultTitle={resultTitle}
                 resultType={resultType}
-                // isCloseComplete={isCloseComplete}
-                // setIsCloseComplete={setIsCloseComplete}
                 messageContext={messageContext}
             />
         </>

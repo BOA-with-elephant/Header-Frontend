@@ -10,11 +10,12 @@ export default function OnlyNoShowList({
     setResultMessage,
     setResultType,
     onDeleteSuccess,
-    setMessageContext
+    setMessageContext,
+    userInfo
 }){
-    const SHOP_CODE = 1;
+    const SHOP_CODE = userInfo.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
-    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
+
  
     const formatTime = (resvTime) => {
         const [hours, minutes, seconds] = resvTime.split(':');
@@ -43,6 +44,7 @@ export default function OnlyNoShowList({
             const response = await fetch(`${API_BASE_URL}/noshow-bulk`,{
                 method : "PUT",
                 headers : {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     "Content-Type" : "application/json"
                 },
                 body : JSON.stringify({resvCodes})

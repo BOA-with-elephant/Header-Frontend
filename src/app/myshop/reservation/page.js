@@ -1,9 +1,6 @@
 'use client'; 
-import { useState, useEffect } from "react";
-// import MessageModal from '@/components/ui/MessageModal';  // 성공, 실패, 경고, 확인 등의 메시지를 사용자에게 표시하는 공통 모달 컴포넌트
-// import { useMessageModal } from '@/hooks/useMessageModal'; // 메시지 모달 상태를 관리하고 제어하는 커스텀 훅
-// showError, showSuccess, showConfirm, showWarning 등을 통해 상황별 메시지를 간편하게 호출 가능
-// import { MESSAGES } from '@/constants/messages'; // 애플리케이션 전반에서 사용하는 표준 메시지 텍스트 모음 (예: 에러 메시지, 안내 문구 등)
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "@/context/UserContext"; 
 import ReservationCalendar from "./components/ReservationCalendar";
 import SearchResultList from "./components/SearchResultList";
 import ReservationMenuModal from "./components/ReservationMenuModal";
@@ -16,6 +13,7 @@ import ResultCustomMessageModal from "./components/ResultCustomMessageModal";
 import AddEditSalesModal from "../sales/components/AddEditSalesModal";
 
 export default function Reservation() {
+    const {userInfo} = useContext(UserContext); // Context에서 userInfo 가져오기
     const [searchResultList, setSearchResultList] = useState([]);
     // 검색 결과
     const [isOpen, setIsOpen] = useState(false);
@@ -44,10 +42,8 @@ export default function Reservation() {
     const [isModalOpen, setIsModalOpen] = useState(false); // 매출 모달 상태
     const [editingItem, setEditingItem] = useState(null);
     
-
-    const SHOP_CODE = 1;
+    const SHOP_CODE = userInfo.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
-    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     const fetchReservationData = async() => {
         try{
@@ -62,7 +58,6 @@ export default function Reservation() {
             setReservationInfo(data);
 
             const response2 = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
-            // const response2 = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
             const data2 = await response2.json();
             setResvDateList(data2);
             console.log('예약 가능 시간', data2);
@@ -75,7 +70,13 @@ export default function Reservation() {
     const fetchSearchResult = async() => {
         try{
             // const formattedResvDate = `${selectedDate.slice(0, 4)}-${selectedDate.slice(4, 6)}-${selectedDate.slice(6, 8)}`;
-            const response3 = await fetch(`${API_BASE_URL}?resvDate=${selectedDate}`);
+            const response3 = await fetch(`${API_BASE_URL}?resvDate=${selectedDate}`,{
+                method : 'GET',
+                headers : {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    "Content-Type" : "application/json"
+                },
+            });
             const data3 = await response3.json();
             setSearchResultList(data3);
         }catch (error){
@@ -129,6 +130,7 @@ export default function Reservation() {
                         setResvDateList={setResvDateList}
                         reservationInfo={reservationInfo}
                         setReservationInfo={setReservationInfo}
+                        userInfo={userInfo}
                     />
                     {/* 메뉴 모달 */}
                     {isShowModal && (
@@ -144,6 +146,7 @@ export default function Reservation() {
                             setIsPreventRegist={setIsPreventRegist}
                             preventRegistDate={preventRegistDate}
                             setPreventRegistDate={setPreventRegistDate}
+                            userInfo={userInfo}
                         />
                     )}
                     {/* 상세 조회 모달 */}
@@ -158,6 +161,7 @@ export default function Reservation() {
                             selectedDate={selectedDate}
                             setIsOpenSalesModal={setIsOpenSalesModal}
                             setDetailReservation={setDetailReservation}
+                            userInfo={userInfo}
                         />
                     )}
                     {/* 예약 등록 모달 */}
@@ -174,6 +178,7 @@ export default function Reservation() {
                             setResultType={setResultType}
                             setIsCloseComplete={setIsCloseComplete}
                             setMessageContext={setMessageContext}
+                            userInfo={userInfo}
                         />
                     )}
                     {/* 예약 수정 모달 */}
@@ -193,6 +198,7 @@ export default function Reservation() {
                             isCloseComplete={setIsCloseComplete}
                             setIsCloseComplete={setIsCloseComplete}
                             setMessageContext={setMessageContext}
+                            userInfo={userInfo}
                         />
                     )}
                     {/* 예약 삭제 알림 모달 */}
@@ -204,6 +210,7 @@ export default function Reservation() {
                             selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
                             fetchSearchResult={fetchSearchResult}
+                            userInfo={userInfo}
                             
                         />
                     )}
@@ -216,6 +223,7 @@ export default function Reservation() {
                             selectedResvCode={selectedResvCode}
                             fetchReservationData={fetchReservationData}
                             fetchSearchResult={fetchSearchResult}
+                            userInfo={userInfo}
                         />
                     )}
                     {/* 성공 메시지 모달 */}
