@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Header from "./Header";
 import Footer from "./Footer";
 import SideMenuBar from "./SideMenuBar";
+import FloatingChatSystem from '@/components/chat/FloatingChatSystem';
 
 // 사용자 권한 상수
 const USER_ROLES = {
@@ -16,14 +17,15 @@ export default function Layout({ children }) {
 
   // 사이드 메뉴 열림/닫힘 상태 관리
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
-  
+
   // 뷰 모드 상태 관리
   const [viewMode, setViewMode] = useState('admin');
-  
+
   // 사용자 권한 상태 관리
   const [userRole, setUserRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null);
+  const [shopCode, setShopCode] = useState(null);
 
   // 사용자 정보 로드
   useEffect(() => {
@@ -38,19 +40,20 @@ export default function Layout({ children }) {
         }
 
         // 백엔드 사용자 정보 조회 API 엔드포인트
-        // const response = await fetch('http://localhost:8080/auth/me', {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
+        const response = await fetch('http://localhost:8080/auth/me', {
+        //const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         if (response.ok) {
           const responseData = await response.json();
           const userData = responseData.data;
 
           setUserInfo(userData);
           setUserRole(userData.admin ? 2 : 1);
+          setShopCode(userData.shopCode);
         } else if (response.status === 401 || response.status === 403) {
           console.error('Layout: 사용자 정보를 가져올 수 없습니다. 토큰 만료 또는 권한 없음.', response.status);
           localStorage.removeItem('token');
@@ -77,6 +80,13 @@ export default function Layout({ children }) {
       setViewMode('customer');
     }
   }, []);
+
+  // shopCode 상태 변화를 감지하는 useEffect 훅 추가
+  useEffect(() => {
+    if (shopCode) {
+      console.log('현재 shopCode:', shopCode);
+    }
+  }, [shopCode]);
 
   // 라우트 변경 시 메뉴 자동 닫기
   useEffect(() => {
@@ -125,35 +135,42 @@ export default function Layout({ children }) {
   if (userRole === null) {
     // UI/UX 통일, 그러나 CSS 파일 추가 않기 위해 inline 스타일 사용
     return (
-     <>
-      <div className="auth-required" style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        width: '100vw'
-      }}>
-        {/* UI 통일을 위한 헤더 추가 */}
-        <Header
+      <>
+        <div className="auth-required" style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          width: '100vw'
+        }}>
+          {/* UI 통일을 위한 헤더 추가 */}
+          <Header
             isSideMenuOpen={isSideMenuOpen}
             toggleSideMenu={toggleSideMenu}
             userRole={userRole}
-        />
-        <div style={{
-          width: '100%',
-          maxWidth: '400px',
-          padding: '32px',
-          backgroundColor: '#ffffff',
-          borderRadius: '12px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <h2 align={'center'}>🚨 <br/> 로그인이 필요한 페이지 입니다.</h2>
-        </div>
+          />
+          <div style={{
+            width: '100%',
+            maxWidth: '400px',
+            padding: '32px',
+            backgroundColor: '#ffffff',
+            borderRadius: '12px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h2 align={'center'}>🚨 <br /> 로그인이 필요한 페이지 입니다.</h2>
+          </div>
 
-      </div>
+        </div>
         {/* 푸터 */}
         <Footer />
-     </>
+
+        {/* 비로그인 사용자도 채팅 시스템 사용 가능 */}
+        <FloatingChatSystem
+          userRole={0} // 비로그인 사용자
+          userInfo={null}
+          viewMode="guest"
+        />
+      </>
     );
   }
 
@@ -191,6 +208,14 @@ export default function Layout({ children }) {
 
       {/* 푸터 */}
       <Footer />
+
+      {/* 플로팅 채팅 시스템 - viewMode 추가 전달 */}
+      <FloatingChatSystem
+        userRole={userRole}
+        userInfo={userInfo}
+        shopCode={shopCode}
+        viewMode={viewMode}
+      />
     </div>
   );
 }

@@ -1,0 +1,77 @@
+.messageWrapper {
+    display: flex;
+    margin-bottom: var(--spacing-sm);
+}
+
+.messageWrapper.user {
+    justify-content: flex-end;
+}
+
+.messageWrapper.bot {
+    justify-content: flex-start;
+}
+
+.messageBubble {
+    max-width: 80%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: 18px;
+    position: relative;
+}
+
+.user .messageBubble {
+    background: var(--color-primary);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.bot .messageBubble {
+    background: white;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-bottom-left-radius: 4px;
+}
+
+.messageText {
+    line-height: 1.4;
+    font-size: var(--text-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.messageTime {
+    font-size: var(--text-xs);
+    opacity: 0.7;
+    text-align: right;
+}
+
+.suggestedActions {
+    margin-top: var(--spacing-sm);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    max-width: 80%;
+}
+
+.user ~ .suggestedActions {
+    justify-content: flex-end;
+}
+
+.bot ~ .suggestedActions {
+    justify-content: flex-start;
+}
+
+.actionButton {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--text-xs);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+}
+
+.actionButton:hover {
+    background: var(--assistant-color, var(--color-primary));
+    color: white;
+    border-color: var(--assistant-color, var(--color-primary));
+}

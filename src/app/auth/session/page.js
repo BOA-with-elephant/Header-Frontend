@@ -14,7 +14,7 @@ export default function Login() {
     setErrorMessage('');
 
     try {
-      // const response = await fetch('http://localhost:8080/auth/session'
+      //const response = await fetch('http://localhost:8080/auth/session'
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/session`
         , {
         method: 'POST',
@@ -25,13 +25,10 @@ export default function Login() {
         body: JSON.stringify({ userId: id, userPwd: password }),
       });
 
-      // if (response.ok) {
-      //   const responseData = await response.json(); // 응답 본문 파싱
-
       if (response.ok) {
             const responseData = await response.json();
             console.log(" 서버로부터 받은 전체 응답 데이터 "); // accessToken 노출됨 250806 삭제 완료
-            console.log(" responseData.data 객체 반환"); //⭐여기서 토큰 노출됨 삭제할 것-> 250730 삭제완료
+            console.log(" responseData.data 객체 반환 "); //⭐여기서 토큰 노출됨 삭제할 것-> 250730 삭제완료
             if (responseData.data) {
                 console.log(" responseData.data.accessToken 필드 응답 "); //Toekn 노출 부분 삭제
             }
@@ -43,6 +40,12 @@ export default function Login() {
           if (responseData.data.userId) { // TokenDTO에 userId 필드가 있다면
           localStorage.setItem('userId', responseData.data.userId); // userId를 localStorage에 저장
           console.log('로그인된 사용자 ID 저장됨'); // 토큰 노출 가능성 있음 responseData.data.userId-> 삭제
+          
+          /*Insert to get a shopCode in localStorage */
+          if (responseData.data.shopCode) {
+            localStorage.setItem('shopCode', responseData.data.shopCode);
+            console.log('사용자의 shopCode 저장됨')
+          }
         }
           router.push('/shops'); // 로그인 성공 후 이동할 페이지
         } else {
