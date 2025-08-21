@@ -57,17 +57,17 @@ export default function Signup() {
             if (response.ok) {
                 // Handle successful signup (e.g., redirect, show success message)
                 console.log('Signup successful!');
-                alert('회원가입이 성공적으로 완료되었습니다!');
+                alert('정보 수정이 성공적으로 완료되었습니다!');
                 window.location.href = '/auth/session';
             } else {
                 // Handle errors (e.g., show error message)
                 const errorData = await response.json();
                 console.error('Signup failed:', errorData);
-                alert(`회원가입 실패: ${errorData.message || '알 수 없는 오류'}`);
+                alert(`정보수정 실패: ${errorData.message || '알 수 없는 오류'}`);
             }
         } catch (error) {
             console.error('Error during signup:', error);
-            alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+            alert('회원 정보수정 중 오류가 발생했습니다. 다시 시도해주세요.');
         }
     };
 
