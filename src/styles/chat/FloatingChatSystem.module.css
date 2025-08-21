@@ -1,0 +1,216 @@
+/* src/styles/chat/FloatingChatSystem.module.css - 수정된 버전 */
+
+.floatingToggle {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #667eea 100%);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* 드래그 관련 스타일 */
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    transition: all 0.2s ease;
+}
+
+.floatingToggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+}
+
+.floatingToggle:active {
+    cursor: grabbing;
+}
+
+.floatingToggle.active {
+    background: #dc3545;
+    cursor: pointer;
+}
+
+.floatingToggle.dragging {
+    cursor: grabbing;
+    transform: scale(1.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    transition: none; /* 드래그 중에는 transition 비활성화 */
+}
+
+.floatingToggle.dragging:hover {
+    transform: scale(1.1); /* 드래그 중에는 hover 효과 오버라이드 */
+}
+
+.chatIcon {
+    font-size: 24px;
+    color: white;
+}
+
+.closeIcon {
+    font-size: 20px;
+    color: white;
+    font-weight: bold;
+}
+
+.unreadBadge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
+/* 드래그 힌트 */
+.dragHint {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    animation: hintFadeIn 2s ease-in-out 1s forwards;
+    pointer-events: none;
+    z-index: 1002;
+}
+
+@keyframes hintFadeIn {
+    0%, 70% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(5px);
+    }
+    80%, 90% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+.chatContainer {
+    width: 380px;
+    height: 600px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    animation: slideUp 0.3s ease-out;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 998;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 접근성 개선 */
+.floatingToggle:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.floatingToggle:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .chatContainer {
+        position: fixed !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+    }
+    
+    .floatingToggle {
+        width: 56px;
+        height: 56px;
+        touch-action: manipulation;
+    }
+    
+    .floatingToggle.dragging {
+        transform: scale(1.15);
+    }
+    
+    .dragHint {
+        font-size: 9px;
+        padding: 3px 6px;
+        top: -30px;
+    }
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+    .floatingToggle {
+        border: 2px solid var(--text-primary);
+    }
+    
+    .dragHint {
+        background: var(--text-primary);
+        color: var(--bg-primary);
+        border: 1px solid var(--text-primary);
+    }
+}
+
+/* 애니메이션 감소 설정 지원 */
+@media (prefers-reduced-motion: reduce) {
+    .floatingToggle {
+        transition: none;
+    }
+    
+    .floatingToggle.dragging {
+        transform: none;
+    }
+    
+    .dragHint {
+        animation: none;
+        opacity: 1;
+    }
+    
+    .chatContainer {
+        animation: none;
+    }
+}

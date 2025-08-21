@@ -1,0 +1,159 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    background: linear-gradient(135deg, var(--assistant-color, var(--color-primary)) 0%, var(--assistant-color, var(--color-primary)) 100%);
+    color: white;
+    padding: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.backButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: var(--text-lg);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    transition: background 0.2s ease;
+}
+
+.backButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.assistantInfo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex: 1;
+}
+
+.assistantIcon {
+    font-size: 28px;
+}
+
+.assistantName {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    margin: 0;
+}
+
+.assistantStatus {
+    font-size: var(--text-xs);
+    margin: 0;
+    opacity: 0.9;
+}
+
+.messagesContainer {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-lg);
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.typingIndicator {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.typingBubble {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: var(--spacing-md);
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.typingBubble span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typingBubble span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typingBubble span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.inputContainer {
+    background: white;
+    border-top: 1px solid var(--border-color);
+    padding: var(--spacing-lg);
+}
+
+.inputWrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-sm);
+}
+
+.messageInput {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    max-height: 100px;
+    transition: border-color 0.2s ease;
+}
+
+.messageInput:focus {
+    border-color: var(--color-primary);
+}
+
+.sendButton {
+    background: var(--assistant-color, var(--color-primary));
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.sendButton:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+.sendButton:disabled {
+    background: var(--bg-tertiary);
+    cursor: not-allowed;
+    transform: none;
+}

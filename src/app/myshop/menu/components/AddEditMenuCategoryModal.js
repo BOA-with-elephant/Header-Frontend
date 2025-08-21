@@ -18,7 +18,8 @@ export default function AddMenuCategoryModal({ isOpen, onClose, onSuccess, initi
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const API_BASE_URL = 'http://localhost:8080/api/v1/my-shops/1';
+    // const API_BASE_URL = 'http://localhost:8080/api/v1/my-shops/1';
+    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/1`;
 
     const colorOptions = [
         '#A5B4FC', '#FCA5A5', '#86EFAC', '#FDE047', '#C4B5FD',

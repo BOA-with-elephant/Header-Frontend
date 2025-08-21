@@ -44,7 +44,8 @@ export default function MenuManagement() {
     const SHOP_CODE = 1; // TODO: 실제 샵 코드에 따라 동적으로 변경하기(추후 로그인한 사용자의 실제 샵 코드를 이곳에 적용해야 함)
     // --- 2. API 통신 기본 URL ---
     // 백엔드 서버와 통신할 때 사용할 기본 주소
-    const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
+    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
+    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}`;
 
     // --- 3. 메시지 모달 헬퍼 함수들 ---
     // 공통 메시지 모달을 쉽게 제어하기 위해 커스텀 훅을 사용(import)

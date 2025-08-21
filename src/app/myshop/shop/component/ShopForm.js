@@ -24,7 +24,8 @@ export default function ShopForm({ mode = 'create', initialData, onSubmit, onCan
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/v1/shops/categories');
+                // const res = await fetch('http://localhost:8080/api/v1/shops/categories');
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/categories`);
                 const data = await res.json();
                 if (res.ok) {
                     setCategories(data.results['shop-categories']);

@@ -166,7 +166,7 @@ export default function NewReservationModal({
                 setIsShowNewResvModal(false);
                 setResultType('error');
                 setResultTitle('예약 등록 실패');
-                setResultMessage('예약 등록에 실패했습니다.')
+                setResultMessage(data.message)
                 setTimeout(() => {
                     setIsShowMessageModal(true);
                 }, 100);

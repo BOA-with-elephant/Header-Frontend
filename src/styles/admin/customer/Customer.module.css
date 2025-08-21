@@ -252,3 +252,134 @@
         width: 100%;
     }
 }
+
+/* =============================
+   Additions to support auth forms
+   ============================= */
+
+/*
+    NEW: Ensures children (e.g., a form) are centered inside the contentCard.
+    This specifically addresses the requirement to keep the form centered
+    when it is located within .contentCard.
+*/
+.contentCardCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*
+    NEW: A constrained, column layout for forms placed inside a content card.
+    Keeps the form at a comfortable readable width and evenly spaced.
+*/
+.centeredForm {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/*
+    NEW (replaces overlapping styles from auth/session/page.module.css):
+    This replaces .input-group and its nested input styling with a more
+    CSS-Module-friendly naming. Prefer using this in auth pages going forward.
+*/
+.inputGroup {
+    width: 100%;
+}
+
+/*
+    Copied and adapted from auth/session/page.module.css `.input-group input`.
+    Centralized here so Customer.module.css takes precedence for auth forms.
+*/
+.textInput {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    background-color: #f2f2f2;
+}
+
+.textInput:focus {
+    outline: none;
+    border-color: #13183d;
+    background-color: white;
+}
+
+/*
+    Copied and adapted from auth/session/page.module.css `.error-message`.
+    Use this class for inline form validation feedback.
+*/
+.errorMessage {
+    color: #e74c3c;
+    font-size: 14px;
+    text-align: center;
+    margin-top: -6px;
+    margin-bottom: 10px;
+}
+
+/*
+    Copied and adapted from auth/session/page.module.css `.loginButton`.
+    Standard primary button for auth flows, centralized here.
+*/
+.primaryButton {
+    width: 100%;
+    padding: 16px;
+    background-color: #13183d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 4px;
+}
+
+.primaryButton:hover {
+    background-color: #000;
+}
+
+.primaryButton:active {
+    transform: translateY(1px);
+}
+
+/*
+    Derived from auth/session/page.module.css `.login-links` and children.
+    Use for ancillary navigation under auth forms (e.g., back to login).
+*/
+.formLinks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.link {
+    color: #000;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.link:hover {
+    color: #13183d;
+    text-decoration: underline;
+}
+
+.separator {
+    color: #ccc;
+}
+
+/* Optional title styling for auth forms */
+.formTitle {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}

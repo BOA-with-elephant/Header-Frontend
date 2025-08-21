@@ -19,7 +19,8 @@ export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialDa
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const API_BASE_URL = 'http://localhost:8080/api/v1/my-shops/1';
+    // const API_BASE_URL = 'http://localhost:8080/api/v1/my-shops/1';
+    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/1`;
     const isEdit = !!initialData;
 
     // 모달이 열릴 때 초기 데이터 설정
