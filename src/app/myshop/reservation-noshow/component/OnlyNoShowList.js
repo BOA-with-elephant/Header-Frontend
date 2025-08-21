@@ -13,7 +13,7 @@ export default function OnlyNoShowList({
     setMessageContext,
     userInfo
 }){
-    const SHOP_CODE = userInfo.shopCode;
+    const SHOP_CODE = userInfo?.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
  

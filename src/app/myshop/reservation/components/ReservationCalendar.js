@@ -37,9 +37,8 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
     const [day, setDay] = useState(currentDate.getDay());
     const [inputValue, setInputValue] = useState("");
     const [optionValue, setOptionValue] = useState("byDate");
-    // const [reservationInfo, setReservationInfo] = useState([]);
 
-    const SHOP_CODE = userInfo.shopCode;
+    const SHOP_CODE = userInfo?.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
       
     useEffect(() => {
@@ -93,7 +92,6 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                         method : 'GET',
                         headers : {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            "Content-Type" : "application/json"
                         },
                     });
                     const data = await response.json();
@@ -115,7 +113,6 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                         method : 'GET',
                         headers : {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            "Content-Type" : "application/json"
                         },
                     });
                     const data = await response.json();
@@ -137,7 +134,6 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                         method : 'GET',
                         headers : {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            "Content-Type" : "application/json"
                         },
                     });
                     const data = await response.json();
@@ -163,7 +159,6 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                     method : 'GET',
                     headers : {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        "Content-Type" : "application/json"
                     },
                 });
                 const data = await response.json();
@@ -182,7 +177,6 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                     method : 'GET',
                     headers : {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        "Content-Type" : "application/json"
                     },
                 });
                 const data = await res.json();

@@ -42,7 +42,7 @@ export default function Reservation() {
     const [isModalOpen, setIsModalOpen] = useState(false); // 매출 모달 상태
     const [editingItem, setEditingItem] = useState(null);
     
-    const SHOP_CODE = userInfo.shopCode;
+    const SHOP_CODE = userInfo?.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     const fetchReservationData = async() => {
@@ -74,7 +74,6 @@ export default function Reservation() {
                 method : 'GET',
                 headers : {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    "Content-Type" : "application/json"
                 },
             });
             const data3 = await response3.json();
@@ -195,7 +194,7 @@ export default function Reservation() {
                             setResultMessage={setResultMessage}
                             setResultType={setResultType}
                             // setOnMessageClose={setOnMessageClose}
-                            isCloseComplete={setIsCloseComplete}
+                            isCloseComplete={isCloseComplete}
                             setIsCloseComplete={setIsCloseComplete}
                             setMessageContext={setMessageContext}
                             userInfo={userInfo}

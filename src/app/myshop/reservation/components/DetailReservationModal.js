@@ -21,7 +21,7 @@ export default function DetailReservationModal({
     const todayOnlyDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const targetDate = new Date(selectedDate);
     const isBeforeToday = targetDate < todayOnlyDate;
-    const SHOP_CODE = userInfo.shopCode;
+    const SHOP_CODE = userInfo?.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     useEffect(() => {
@@ -31,7 +31,6 @@ export default function DetailReservationModal({
                     method : 'GET',
                     headers : {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json',
                     }
                 });
                 const data = await res.json();

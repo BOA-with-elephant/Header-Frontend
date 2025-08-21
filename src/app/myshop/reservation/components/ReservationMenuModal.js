@@ -17,7 +17,7 @@ export default function ReservationMenuModal({
     userInfo
 }){
     const [pastDay, setPastDay] = useState(false);
-    const SHOP_CODE = userInfo.shopCode;
+    const SHOP_CODE = userInfo?.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
     
     // 예약 상세 조회
@@ -29,7 +29,6 @@ export default function ReservationMenuModal({
                 method : 'GET',
                 headers : {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    "Content-Type" : "application/json"
                 },
             });
             const data = await response.json();

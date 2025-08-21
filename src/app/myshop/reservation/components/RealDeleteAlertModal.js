@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import MessageModal from "@/components/ui/MessageModal";
 
 export default function RealDeleteAlertModal({isShowRealDeleteModal, setIsShowRealDeleteModal, setIsShowModal, selectedResvCode, fetchReservationData, fetchSearchResult, userInfo}){
-     const SHOP_CODE = userInfo.shopCode;
+     const SHOP_CODE = userInfo?.shopCode;
         const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
         
         useEffect(() => {
