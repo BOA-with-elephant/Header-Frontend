@@ -13,17 +13,22 @@ export default function DetailResvModal({
     setResultMessage,
     setResultType,
     onDeleteSuccess,
-    setMessageContext
+    setMessageContext,
+    userInfo
 }){
     const [detailResvInfo, sestDetailresvInfo] = useState({});
-    const SHOP_CODE = 1;
+    const SHOP_CODE = userInfo?.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
-    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
     useEffect(() => {
         const detailReservation = async() => {
             try {
-                const res = await fetch(`${API_BASE_URL}/${selectedResvCode}`);
+                const res = await fetch(`${API_BASE_URL}/${selectedResvCode}`,{
+                    method : 'GET',
+                    headers : {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
                 const data = await res.json();
                 sestDetailresvInfo(data);
             } catch (error) {
@@ -79,6 +84,7 @@ export default function DetailResvModal({
             const response = await fetch(`${API_BASE_URL}/noshow/${selectedResvCode}`, {
                 method : "PUT",
                 headers : {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     "Content-Type" : "application/json"
                 },
                 body : JSON.stringify({})

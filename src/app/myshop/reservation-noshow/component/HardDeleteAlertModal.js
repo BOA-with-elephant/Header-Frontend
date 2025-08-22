@@ -1,16 +1,16 @@
 import React, {useState, useEffect} from "react";
 import MessageModal from "@/components/ui/MessageModal";
 
-export default function HardDeleteAlertModal({isShowRealDeleteModal, setIsShowRealDeleteModal, selectedResvCode, onDeleteSuccess}){
-     const SHOP_CODE = 1;
+export default function HardDeleteAlertModal({isShowRealDeleteModal, setIsShowRealDeleteModal, selectedResvCode, onDeleteSuccess, userInfo}){
+     const SHOP_CODE = userInfo?.shopCode;
         const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
-        // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
 
         const hardDeleteHandler = async() => {
         try{
             const response = await fetch(`${API_BASE_URL}/${selectedResvCode}`,{
                 method : "DELETE",
                 headers : {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     "Content-Type" : "application/json"
                 },
             });

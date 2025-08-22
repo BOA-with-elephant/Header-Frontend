@@ -26,7 +26,7 @@ const getCalendarDates = (year, month) => {
     return dates;  // 날짜 배열을 반환
 };
 
-export default function ReservationCalendar({setSearchResultList, setIsOpen, setIsShowModal, setSelectedDate, resvDateList, setResvDateList, reservationInfo, setReservationInfo}) {
+export default function ReservationCalendar({setSearchResultList, setIsOpen, setIsShowModal, setSelectedDate, resvDateList, setResvDateList, reservationInfo, setReservationInfo, userInfo}) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const dayList = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     const today = new Date();
@@ -37,11 +37,9 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
     const [day, setDay] = useState(currentDate.getDay());
     const [inputValue, setInputValue] = useState("");
     const [optionValue, setOptionValue] = useState("byDate");
-    // const [reservationInfo, setReservationInfo] = useState([]);
 
-    const SHOP_CODE = 1;
+    const SHOP_CODE = userInfo?.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
-    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
       
     useEffect(() => {
         switch(day){
@@ -90,7 +88,12 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
             case "byDate" : 
                 try{
                     const formattedResvDate = `${inputValue.slice(0, 4)}-${inputValue.slice(4, 6)}-${inputValue.slice(6, 8)}`;
-                    const response = await fetch(`${API_BASE_URL}?resvDate=${formattedResvDate}`);
+                    const response = await fetch(`${API_BASE_URL}?resvDate=${formattedResvDate}`,{
+                        method : 'GET',
+                        headers : {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        },
+                    });
                     const data = await response.json();
                     // console.log('listByDate', data);
                     setSearchResultList(data);
@@ -106,7 +109,12 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                 break;
             case "byUserName" : 
                 try{
-                    const response = await fetch(`${API_BASE_URL}?userName=${inputValue}`);
+                    const response = await fetch(`${API_BASE_URL}?userName=${inputValue}`,{
+                        method : 'GET',
+                        headers : {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        },
+                    });
                     const data = await response.json();
                     // console.log('listByUserName', data);
                     setSearchResultList(data);
@@ -122,7 +130,12 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                 break;
             case "byMenuName" : 
                 try{
-                    const response = await fetch(`${API_BASE_URL}?menuName=${inputValue}`);
+                    const response = await fetch(`${API_BASE_URL}?menuName=${inputValue}`,{
+                        method : 'GET',
+                        headers : {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        },
+                    });
                     const data = await response.json();
                     // console.log('listByMenuName', data);
                     setSearchResultList(data);
@@ -142,8 +155,12 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
     useEffect(() => {
         const availableResvDateList = async() => {
             try{
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
-                // const response = await fetch(`http://localhost:8080/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${SHOP_CODE}/available-schedule`,{
+                    method : 'GET',
+                    headers : {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
                 const data = await response.json();
                 setResvDateList(data);
             } catch(error){
@@ -156,7 +173,12 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
             try{
                 const formatMonth = String(month + 1).padStart(2, '0');
                 const thisMonth = `${year}-${formatMonth}`;
-                const res = await fetch(`${API_BASE_URL}?date=${thisMonth}`);
+                const res = await fetch(`${API_BASE_URL}?date=${thisMonth}`,{
+                    method : 'GET',
+                    headers : {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
                 const data = await res.json();
                 console.log('data', data);
                 setReservationInfo(data);

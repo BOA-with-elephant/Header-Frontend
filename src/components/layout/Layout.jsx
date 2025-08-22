@@ -5,6 +5,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import SideMenuBar from "./SideMenuBar";
 import FloatingChatSystem from '@/components/chat/FloatingChatSystem';
+import { UserContext } from '@/context/UserContext';
 
 // 사용자 권한 상수
 const USER_ROLES = {
@@ -175,47 +176,49 @@ export default function Layout({ children }) {
   }
 
   return (
-    <div className="app-container">
-      {/* 헤더 */}
-      <Header
-        isSideMenuOpen={isSideMenuOpen}
-        toggleSideMenu={toggleSideMenu}
-        userRole={userRole}
-      />
-
-      {/* 오버레이 */}
-      {isSideMenuOpen && (
-        <div
-          className="overlay"
-          onClick={closeSideMenu}
-          style={{ display: 'block' }}
+    <UserContext.Provider value={{ userInfo, userRole, shopCode }}>
+      <div className="app-container">
+        {/* 헤더 */}
+        <Header
+          isSideMenuOpen={isSideMenuOpen}
+          toggleSideMenu={toggleSideMenu}
+          userRole={userRole}
         />
-      )}
 
-      {/* 사이드 메뉴바 */}
-      <SideMenuBar
-        isOpen={isSideMenuOpen}
-        closeSideMenu={closeSideMenu}
-        currentPath={pathname}
-        userRole={userRole} // Layout에서 관리하는 권한 전달
-        viewMode={viewMode}
-        onViewModeChange={handleViewModeChange}
-        userInfo={userInfo}
-      />
+        {/* 오버레이 */}
+        {isSideMenuOpen && (
+          <div
+            className="overlay"
+            onClick={closeSideMenu}
+            style={{ display: 'block' }}
+          />
+        )}
 
-      {/* 메인 콘텐츠 */}
-      {children}
+        {/* 사이드 메뉴바 */}
+        <SideMenuBar
+          isOpen={isSideMenuOpen}
+          closeSideMenu={closeSideMenu}
+          currentPath={pathname}
+          userRole={userRole} // Layout에서 관리하는 권한 전달
+          viewMode={viewMode}
+          onViewModeChange={handleViewModeChange}
+          userInfo={userInfo}
+        />
 
-      {/* 푸터 */}
-      <Footer />
+        {/* 메인 콘텐츠 */}
+        {children}
 
-      {/* 플로팅 채팅 시스템 - viewMode 추가 전달 */}
-      <FloatingChatSystem
-        userRole={userRole}
-        userInfo={userInfo}
-        shopCode={shopCode}
-        viewMode={viewMode}
-      />
-    </div>
+        {/* 푸터 */}
+        <Footer />
+
+        {/* 플로팅 채팅 시스템 - viewMode 추가 전달 */}
+        <FloatingChatSystem
+          userRole={userRole}
+          userInfo={userInfo}
+          shopCode={shopCode}
+          viewMode={viewMode}
+        />
+      </div>
+    </UserContext.Provider>
   );
 }
