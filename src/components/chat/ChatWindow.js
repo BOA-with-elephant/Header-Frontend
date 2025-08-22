@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChatbotAPI } from '@/lib/api/chatbot';
 import { useApi } from '@/hooks/useApi';
+import { useRouter } from 'next/navigation';
 import MessageBubble from './MessageBubble';
 import QuickActions from './QuickActions';
 import styles from '@/styles/chat/ChatWindow.module.css';
@@ -31,6 +32,7 @@ export default function ChatWindow({
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
     const { execute, loading } = useApi();
+    const router = useRouter();
 
     // 권한별 도우미별 빠른 액션들
     const getQuickActions = () => {
@@ -140,7 +142,7 @@ export default function ChatWindow({
                 'menu-helper': ChatbotAPI.admin.menu
             },
             1: { // 일반회원
-                'booking-helper': ChatbotAPI.user.booking,
+                'booking-helper': ChatbotAPI.user.booking.sendMessage,
                 'inquiry-helper': ChatbotAPI.user.inquiry,
                 'review-helper': ChatbotAPI.user.review,
                 'support-helper': ChatbotAPI.user.support
@@ -181,25 +183,42 @@ export default function ChatWindow({
             const apiFunction = getAPIFunction();
             
             if (apiFunction) {
-                const response = await execute(apiFunction, shopId, {
-                    text: messageText,
-                    type: 'general'
-                });
+                // 사용자 예약 도우미 전용 api 처리, shopId를 불러오는 부분 없이 token으로만 처리하기 때문에 분리함
+                if (assistant.id === 'booking-helper') {
+                    const response = await execute(apiFunction, messageText);
 
-                const botMessage = {
-                    id: Date.now() + 1,
-                    type: 'bot',
-                    // text: response.data.botReply || response.data.message,
-                    // text: response.data?.answer || "답변을 불러올 수 없습니다.",
-                    text: response?.answer || "답변을 불러올 수 없습니다.",
-                    timestamp: new Date(),
-                    assistant: assistant.id,
-                    suggestedActions: response.data?.suggestedActions || []
-                };
+                    const botMessage = {
+                        id: Date.now() + 1,
+                        type: 'bot',
+                        text: response.message.text,
+                        timestamp: new Date(),
+                        assistant: assistant.id,
+                        actions: response.actions || [],
+                        data: response.data || null,
+                    };
 
-                setMessages(prev => [...prev, botMessage]);
-                onNewMessage?.();
-                
+                    setMessages(prev => [...prev, botMessage]);
+                } else {
+                    const response = await execute(apiFunction, shopId, {
+                        text: messageText,
+                        type: 'general'
+                    });
+
+                    const botMessage = {
+                        id: Date.now() + 1,
+                        type: 'bot',
+                        // text: response.data.botReply || response.data.message,
+                        // text: response.data?.answer || "답변을 불러올 수 없습니다.",
+                        text: response?.answer || "답변을 불러올 수 없습니다.",
+                        timestamp: new Date(),
+                        assistant: assistant.id,
+                        suggestedActions: response.data?.suggestedActions || []
+                    };
+
+                    setMessages(prev => [...prev, botMessage]);
+                    onNewMessage?.();
+                }
+
             } else {
                 // API가 없는 경우 권한별 임시 응답
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -244,6 +263,16 @@ export default function ChatWindow({
             handleSendMessage();
         }
     };
+
+
+// const handleApiAction = (action) => {
+//         if (action.type === 'NAVIGATE') {
+//             router.push(action.payload.url);
+//         } else if (action.type === 'SHOW_SHOP_DETAILS') {
+//             console.log("Show shop details:", action.payload.shopCode);
+                // TODO. 샵 상세 정보 모달을 띄우는 등의 로직
+//         }
+//     };
 
     return (
         <div className={styles.container}>

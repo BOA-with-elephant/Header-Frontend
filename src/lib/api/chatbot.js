@@ -51,16 +51,15 @@ export const ChatbotAPI = {
     // 일반회원용 API (userRole === 1)
     user: {
         booking: {
-            sendMessage: async (userId, message) => {
-                const response = await fetch(`/api/v1/user/${userId}/chatbot/booking`, {
+            sendMessage: async (query) => {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_LLM_BASE_URL}/api/v1/reservation/chat`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
-                        message: message.text,
-                        messageType: message.type || 'general'
+                        query: query
                     })
                 });
                 
