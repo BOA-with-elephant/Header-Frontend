@@ -13,19 +13,24 @@ export default function ReservationMenuModal({
     isPreventRegist,
     setIsPreventRegist,
     preventRegistDate,
-    setPreventRegistDate
+    setPreventRegistDate,
+    userInfo
 }){
     const [pastDay, setPastDay] = useState(false);
-    const SHOP_CODE = 1;
+    const SHOP_CODE = userInfo?.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
-    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
     
     // 예약 상세 조회
     const ShowDetailReservationHandler = async() => {
         setIsShowModal(false);
       
         try{
-            const response = await fetch(`${API_BASE_URL}?resvDate=${selectedDate}`);
+            const response = await fetch(`${API_BASE_URL}?resvDate=${selectedDate}`,{
+                method : 'GET',
+                headers : {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
             const data = await response.json();
             setSearchResultList(data);
             setIsOpen(true);
