@@ -13,7 +13,8 @@ export default function ChatWindow({
     onBack, 
     onNewMessage, 
     userRole, 
-    userInfo 
+    userInfo,
+    onClose 
 }) {
     // const shopId = userInfo?.shopCode || userInfo?.userCode || 1;
     const shopId = userInfo?.shopCode || 1;
@@ -81,9 +82,9 @@ export default function ChatWindow({
                 case 'booking-helper':
                     return [
                         { label: '예약 조회', message: '내 예약 확인해줘' },
-                        { label: '예약 변경', message: '예약 시간 변경하고 싶어' },
                         { label: '예약 취소', message: '예약 취소하고 싶어' },
-                        { label: '새 예약', message: '새로 예약하고 싶어' }
+                        { label: '예약 변경', message: '예약 시간 변경하고 싶어' },
+                        { label: '샵 추천', message: '샵 추천해줘' }
                     ];
                 case 'inquiry-helper':
                     return [
@@ -265,14 +266,21 @@ export default function ChatWindow({
     };
 
 
-// const handleApiAction = (action) => {
-//         if (action.type === 'NAVIGATE') {
-//             router.push(action.payload.url);
-//         } else if (action.type === 'SHOW_SHOP_DETAILS') {
-//             console.log("Show shop details:", action.payload.shopCode);
-                // TODO. 샵 상세 정보 모달을 띄우는 등의 로직
-//         }
-//     };
+const handleApiAction = (action) => {
+
+    console.log('handleApiAction', action)
+
+    if (action.type === 'NAVIGATE') {
+        router.push(action.payload.url);
+        if (onClose) {
+            onClose(); // 예약 조회 페이지로 이동하고, 채팅이 닫힘
+        }
+    } else if (action.type === 'SHOW_SHOP_DETAILS') {
+        console.log("Show shop details:", action.payload.shopCode);
+            // TODO. 샵 상세 정보 모달을 띄우는 등의 로직
+    }
+
+    }; 
 
     return (
         <div className={styles.container}>
@@ -300,6 +308,7 @@ export default function ChatWindow({
                         message={message}
                         assistantColor={assistant.color}
                         onActionClick={handleSendMessage}
+                        onApiActionClick={handleApiAction}
                     />
                 ))}
 

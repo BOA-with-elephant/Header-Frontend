@@ -273,16 +273,16 @@ export default function FloatingChatSystem({ userRole, userInfo, viewMode }) {
                     color: '#667eea',
                     apiEndpoint: '/api/v1/chatbot/user/booking',
                     requiredRole: 1
-                },
-                {
-                    id: 'support-helper',
-                    name: '고객지원',
-                    description: '이용 중 궁금한 점을 도와드려요',
-                    icon: '🛟',
-                    color: '#f093fb',
-                    apiEndpoint: '/api/v1/chatbot/user/support',
-                    requiredRole: 1
                 }
+                // { // 없는 기능 주석처리
+                //     id: 'support-helper',
+                //     name: '고객지원',
+                //     description: '이용 중 궁금한 점을 도와드려요',
+                //     icon: '🛟',
+                //     color: '#f093fb',
+                //     apiEndpoint: '/api/v1/chatbot/user/support',
+                //     requiredRole: 1
+                // }
             ];
         } else { // 비로그인 사용자 : 사용 안하면 삭제 예정
             return [
@@ -385,6 +385,7 @@ export default function FloatingChatSystem({ userRole, userInfo, viewMode }) {
                             userRole={getEffectiveUserRole()}
                             userInfo={userInfo}
                             viewMode={viewMode}
+                            onClose={toggleChat}
                         />
                     )}
                 </div>
