@@ -24,7 +24,12 @@ export default function UpdateProfile() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
-                body: JSON.stringify({userName: userName, userPhone: userPhone, userPwd: userPwd}),
+                body: JSON.stringify({
+                    userId: localStorage.getItem('userId'),
+                    userName: userName || null,
+                    userPhone: userPhone || null,
+                    userPwd: userPwd || null
+                }),
             });
 
             if (response.ok) {
