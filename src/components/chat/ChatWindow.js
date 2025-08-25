@@ -266,20 +266,26 @@ export default function ChatWindow({
     };
 
 
-const handleApiAction = (action) => {
+const handleApiAction = (action, message) => {
 
-    console.log('handleApiAction', action)
+    console.log('handleApiAction', action, message)
 
     if (action.type === 'NAVIGATE') {
         router.push(action.payload.url);
-        if (onClose) {
-            onClose(); // 예약 조회 페이지로 이동하고, 채팅이 닫힘
-        }
-    } else if (action.type === 'SHOW_SHOP_DETAILS') {
-        console.log("Show shop details:", action.payload.shopCode);
-            // TODO. 샵 상세 정보 모달을 띄우는 등의 로직
-    }
 
+        if (onClose) onClose(); // 예약 조회 페이지로 이동하고, 채팅이 닫힘
+
+    } else if (action.type === 'SHOW_SHOP_DETAILS') {
+        const shopCode = action.payload.shopCode
+
+        console.log("shopCode 확인 :", shopCode);
+
+        if (message.data.recommendation.shopCode && message.data.recommendation.menus) {
+            // 샵 추천 내용이 있을 때만 router push
+
+            router.push(`/shops`);
+        }
+    } 
     }; 
 
     return (
