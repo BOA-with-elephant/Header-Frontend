@@ -61,7 +61,6 @@ export default function Signup() {
             });
 
             if (response.ok) {
-                // Handle successful signup (e.g., redirect, show success message)
                 console.log('Signup successful!');
                 alert('회원가입이 성공적으로 완료되었습니다!');
                 window.location.href = '/auth/session';
