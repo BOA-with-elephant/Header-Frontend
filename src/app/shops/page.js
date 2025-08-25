@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { ShopsEvent } from '@/lib/util/shopsEvent';
 import useUserLocation from "@/app/shops/util/useUserLocation";
 import ShopAlertModal from "@/app/shops/components/ShopAlertModal";
 import ShopListPanel from "@/app/shops/components/ShopListPanel";
@@ -8,6 +9,7 @@ import ShopDetailPanel from "@/app/shops/components/ShopDetailPanel";
 import BookingFormPanel from "@/app/shops/components/BookingFormPanel";
 import 'src/styles/user/shops/ShopFinder.css';
 import KakaoMap from "@/app/shops/components/KakaoMap";
+import { da } from 'date-fns/locale';
 
 export default function Shops() {
     // 현재 화면 상태
@@ -24,10 +26,11 @@ export default function Shops() {
 
     const { location: userLocation } = useUserLocation();
 
-    const handleShopSelect = (shopCode) => {
+    // useEffect 사용을 위해 useCallback으로 변경함
+    const handleShopSelect = useCallback((shopCode) => {
         setSelectedShop({code: shopCode});
         setView('detail');
-    };
+    }, []);
 
     // 상세 조회에서 불러왔던 정보 사용
     const handleShowBooking = (shopInfo, groupedMenus) => {
@@ -62,6 +65,22 @@ export default function Shops() {
         setSelectedShop({code: shop.shopCode});
         setView('detail');
     }
+
+    useEffect(() => {
+        const handleShopSelectionEvent = (data) => {
+            console.log('selectShop 이벤트 발생: ', data)
+            if (data?.shopCode) {
+                handleShopSelect(data.shopCode)
+            }
+        };
+
+        ShopsEvent.on('selectShop', handleShopSelectionEvent);
+
+        return () => {
+            ShopsEvent.remove('selectShop', handleShopSelectionEvent)
+        }
+
+    }, [handleShopSelect])
 
     return (
         <div className={'map-page-container'}>

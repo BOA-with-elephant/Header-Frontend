@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChatbotAPI } from '@/lib/api/chatbot';
 import { useApi } from '@/hooks/useApi';
+import { ShopsEvent } from '@/lib/util/shopsEvent';
 import { useRouter } from 'next/navigation';
 import MessageBubble from './MessageBubble';
 import QuickActions from './QuickActions';
@@ -282,8 +283,10 @@ const handleApiAction = (action, message) => {
 
         if (message.data.recommendation.shopCode && message.data.recommendation.menus) {
             // 샵 추천 내용이 있을 때만 router push
-
-            router.push(`/shops`);
+            ShopsEvent.dispatch('selectShop', {shopCode})
+            if(onClose) onClose();
+        } else {
+            console.error('SHOW_SHOP_DETAILS action - shop 정보 비어있음: ', action)
         }
     } 
     }; 
