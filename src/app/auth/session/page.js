@@ -9,7 +9,7 @@ export default function Login() {
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage('');
 
@@ -70,7 +70,7 @@ export default function Login() {
       <div className={styles.container}>
         <main className={styles.loginWrapper}>
           <div className={styles.loginContainer}>
-            <form onSubmit={handleSubmit} className={styles.loginForm}>
+            <form onSubmit={handleLogin} className={styles.loginForm}>
               <div className={styles.inputGroup}>
                 <input
                   type="text"

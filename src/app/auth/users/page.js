@@ -51,8 +51,8 @@ export default function Signup() {
      console.log('회원가입 입력 데이터 전송됨');
 
         try {
-            // const response = await fetch('http://localhost:8080/auth/users', {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/users`, {
+            const response = await fetch('http://localhost:8080/auth/users', {
+            // const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/users`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
