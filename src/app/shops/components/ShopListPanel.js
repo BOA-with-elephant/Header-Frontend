@@ -35,8 +35,8 @@ export default function ShopListPanel({shops, setShops, onShopSelect, userLocati
         if (keyword) params.append('keyword', keyword);
 
         try {
-            // const res = await fetch(`http://localhost:8080/api/v1/shops?${params.toString()}`);
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops?${params.toString()}`);
+            const res = await fetch(`http://localhost:8080/api/v1/shops?${params.toString()}`);
+            //const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops?${params.toString()}`);
             const data = await res.json();
             console.log(data) // 샵 데이터 형태 확인
             if (res.ok && data.results) {

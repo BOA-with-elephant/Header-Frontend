@@ -14,12 +14,12 @@ export default function NewReservationModal({
     setResultMessage,
     setResultType,
     setMessageContext,
-    prefilledCustomer = null // 고객 관리에서 전달받는 고객 정보
+    prefilledCustomer = null, // 고객 관리에서 전달받는 고객 정보
+    userInfo
 }) {
   
-    const SHOP_CODE = 1;
+    const SHOP_CODE = userInfo?.shopCode;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/reservation`;
-    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/reservation`;
     
     const [reservationData, setReservationData] = useState({
         userName : prefilledCustomer?.name || '',
@@ -38,8 +38,12 @@ export default function NewReservationModal({
     useEffect(() => {
         const fetchMenuList = async () => {
             try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/menu`);
-            // const response = await fetch(`http://localhost:8080/api/v1/my-shops/${SHOP_CODE}/menu`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/menu`,{
+                method : 'GET',
+                headers : {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    }
+            });
             const data = await response.json();
             setMenuNameList(data);
             } catch (err) {
@@ -137,6 +141,7 @@ export default function NewReservationModal({
                 const response = await fetch(`${API_BASE_URL}`, {
                     method : "POST",
                     headers : {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         "Content-Type" : "application/json"
                     },
                     body : JSON.stringify(reservationData)

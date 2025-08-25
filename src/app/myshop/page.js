@@ -16,7 +16,7 @@ export default function MyShopPage() {
 
     const fetchMyShops = async () => {
 
-        // const testRes = await fetch('http://localhost:8080/api/v1/my-shops', {
+        //const testRes = await fetch('http://localhost:8080/api/v1/my-shops', {
         const testRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops`, {
             method: 'GET',
             headers: {

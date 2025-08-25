@@ -9,13 +9,13 @@ export default function Login() {
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage('');
 
     try {
-      //const response = await fetch('http://localhost:8080/auth/session'
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/session`
+      const response = await fetch('http://localhost:8080/auth/session'
+      //const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/session`
         , {
         method: 'POST',
         headers: {
@@ -70,7 +70,7 @@ export default function Login() {
       <div className={styles.container}>
         <main className={styles.loginWrapper}>
           <div className={styles.loginContainer}>
-            <form onSubmit={handleSubmit} className={styles.loginForm}>
+            <form onSubmit={handleLogin} className={styles.loginForm}>
               <div className={styles.inputGroup}>
                 <input
                   type="text"
