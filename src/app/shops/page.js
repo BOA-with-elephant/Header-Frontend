@@ -9,7 +9,6 @@ import ShopDetailPanel from "@/app/shops/components/ShopDetailPanel";
 import BookingFormPanel from "@/app/shops/components/BookingFormPanel";
 import 'src/styles/user/shops/ShopFinder.css';
 import KakaoMap from "@/app/shops/components/KakaoMap";
-import { da } from 'date-fns/locale';
 
 export default function Shops() {
     // 현재 화면 상태
