@@ -6,7 +6,7 @@ import MessageModal from '@/components/ui/MessageModal';
 import { useMessageModal } from '@/hooks/useMessageModal';
 import { MESSAGES } from '@/constants/messages';
 
-export default function AddMenuCategoryModal({ isOpen, onClose, onSuccess, initialData }) {
+export default function AddMenuCategoryModal({ isOpen, onClose, onSuccess, initialData , shopCode }) {
     const isEdit = !!initialData;
     const { modal, closeModal, showError, showConfirm } = useMessageModal();
 
@@ -18,8 +18,7 @@ export default function AddMenuCategoryModal({ isOpen, onClose, onSuccess, initi
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // const API_BASE_URL = 'http://localhost:8080/api/v1/my-shops/1';
-    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/1`;
+    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopCode}`;
 
     const colorOptions = [
         '#A5B4FC', '#FCA5A5', '#86EFAC', '#FDE047', '#C4B5FD',
@@ -94,7 +93,13 @@ export default function AddMenuCategoryModal({ isOpen, onClose, onSuccess, initi
             return;
         }
 
-        const submitData = { ...formData, shopCode: 1 };
+        // shopCode 유효성 검사
+        if (!shopCode) {
+            setError('매장 정보가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
+
+        const submitData = { ...formData, shopCode: shopCode };
 
         try {
             setLoading(true);
@@ -140,6 +145,12 @@ export default function AddMenuCategoryModal({ isOpen, onClose, onSuccess, initi
 
     // 삭제 처리
     const handleDelete = () => {
+        // shopCode 유효성 검사
+        if (!shopCode) {
+            setError('매장 정보가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
+
         showConfirm(
             '카테고리 삭제',
             MESSAGES.CATEGORY.DELETE_CONFIRM(initialData.categoryName),

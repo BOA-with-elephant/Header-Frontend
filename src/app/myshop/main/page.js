@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "@/context/UserContext";
 import styles from "../../../styles/admin/Dashboard.module.css";
 
 import MessageModal from '@/components/ui/MessageModal';  // 성공, 실패, 경고, 확인 등의 메시지를 사용자에게 표시하는 공통 모달 컴포넌트
@@ -9,6 +10,7 @@ import { useMessageModal } from '@/hooks/useMessageModal'; // 메시지 모달 �
 import { MESSAGES } from '@/constants/messages'; // 애플리케이션 전반에서 사용하는 표준 메시지 텍스트 모음 (예: 에러 메시지, 안내 문구 등)
 
 export default function AdminMain() {
+    const userInfo = useContext(UserContext);
     const [dashboardData, setDashboardData] = useState({
         todayReservations: 0,
         todaySales: 0,
