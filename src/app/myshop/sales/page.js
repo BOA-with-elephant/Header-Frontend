@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect , useContext } from "react";
+import { UserContext } from "@/context/UserContext";
 import styles from "@/styles/admin/sales/SalesManagement.module.css";
 import Pagination from "@/components/ui/AdvancedPagination";
 import MessageModal from '@/components/ui/MessageModal';
@@ -10,7 +11,8 @@ import { MESSAGES } from '@/constants/messages';
 
 export default function SalesManagement() {
   // 상수 정의
-  const SHOP_CODE = 1;
+  const { userInfo } = useContext(UserContext);
+  const SHOP_CODE = userInfo?.shopCode;
   // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
   const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}`;
 
@@ -386,7 +388,7 @@ export default function SalesManagement() {
         try {
           const response = await fetch(`${API_BASE_URL}/sales/${item.salesCode}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' }
           });
 
           if (!response.ok) {
@@ -418,6 +420,16 @@ export default function SalesManagement() {
 
   // 숫자 포맷
   const formatNumber = (num) => num.toLocaleString('ko-KR');
+
+  if (!SHOP_CODE) {
+    return (
+      <div className="content-card">
+        <div className="loading-container" style={{ textAlign: 'center', padding: '50px' }}>
+          <div>로딩 중...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

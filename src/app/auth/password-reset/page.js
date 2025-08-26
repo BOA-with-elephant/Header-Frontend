@@ -20,7 +20,7 @@ export default function PasswordResetRequest() {
 
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json; charset=UTF-8",
                 },
                 body: JSON.stringify({ name: userName, userId: userId, phoneNumber: phoneNumber }),
             });

@@ -7,7 +7,7 @@ export const ChatbotAPI = {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopId}/chatbot/customer`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json; charset=UTF-8',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
@@ -51,16 +51,16 @@ export const ChatbotAPI = {
     // 일반회원용 API (userRole === 1)
     user: {
         booking: {
-            sendMessage: async (userId, message) => {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/user/${userId}/chatbot/booking`, {
+            sendMessage: async (query) => {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/reservation/chat`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json; charset=UTF-8',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
-                        message: message.text,
-                        messageType: message.type || 'general'
+                        query: query,
+                        message: query
                     })
                 });
                 
@@ -77,7 +77,7 @@ export const ChatbotAPI = {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/user/${userId}/chatbot/support`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json; charset=UTF-8',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
@@ -102,7 +102,7 @@ export const ChatbotAPI = {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/guest/chatbot/info`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json; charset=UTF-8'
                     },
                     body: JSON.stringify({
                         message: message.text,
@@ -124,7 +124,7 @@ export const ChatbotAPI = {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/guest/chatbot/guide`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json; charset=UTF-8'
                     },
                     body: JSON.stringify({
                         message: message.text,

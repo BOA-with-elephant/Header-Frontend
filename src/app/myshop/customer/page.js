@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState , useContext } from 'react';
+import { UserContext } from "@/context/UserContext"; 
 import { useCustomers } from '@/hooks/useCustomers';
 import { MessagesAPI, CustomersAPI } from '@/lib/api';
 import { useApi } from '@/hooks/useApi';
@@ -14,10 +15,11 @@ import NewReservationModal from '../reservation/components/NewReservationModal';
 import styles from '@/styles/admin/customer/Customer.module.css';
 
 export default function Customer() {
+    const {userInfo} = useContext(UserContext); 
     const { modal, closeModal, showError, showSuccess, showConfirm } = useMessageModal();
     
-    // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 1;
+    // shop_id를 context나 store에서 가져오도록 수정
+    const SHOP_ID =  userInfo?.shopCode;
 
     // 고객 관리 훅 (목록, 추가, 삭제, 메모 수정)
     const {
@@ -563,6 +565,7 @@ export default function Customer() {
                 isOpen={messageModal.isOpen}
                 onClose={closeMessageModal}
                 recipientSelection={messageModal.recipientSelection} 
+                userInfo={userInfo.shopCode}
             />
 
             {/* 신규 고객 등록 모달 */}

@@ -17,7 +17,7 @@ export default function DeleteAlertModal({isShowDeleteModal, setIsShowDeleteModa
             method : "PATCH",
             headers : {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                "Content-Type" : "application/json"
+                "Content-Type" : "application/json; charset=UTF-8"
             },
         });
 

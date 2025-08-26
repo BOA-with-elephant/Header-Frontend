@@ -37,6 +37,8 @@ export default function NewReservationModal({
 
     useEffect(() => {
         const fetchMenuList = async () => {
+            if (!SHOP_CODE) return; // shopCode가 없으면 요청하지 않음
+            
             try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}/menu`,{
                 method : 'GET',
@@ -44,15 +46,26 @@ export default function NewReservationModal({
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     }
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
-            setMenuNameList(data);
+            // 데이터가 배열인지 확인하고 설정
+            if (Array.isArray(data)) {
+                setMenuNameList(data);
+            } else {
+                console.warn('메뉴 데이터가 배열이 아닙니다:', data);
+                setMenuNameList([]);
+            }
             } catch (err) {
-            setError(err.message);
             console.error('메뉴 리스트 조회 실패:', err);
+            setMenuNameList([]); // 오류 발생 시 빈 배열로 설정
             }
         }; 
         fetchMenuList();
-    }, []);
+    }, [SHOP_CODE]);
 
     useEffect(() => {
         // 고객 정보가 미리 선택된 경우 예약 데이터에 반영
@@ -142,7 +155,7 @@ export default function NewReservationModal({
                     method : "POST",
                     headers : {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        "Content-Type" : "application/json"
+                        "Content-Type" : "application/json; charset=UTF-8"
                     },
                     body : JSON.stringify(reservationData)
                 });
@@ -302,7 +315,7 @@ export default function NewReservationModal({
                 <label>예약 시술</label>
                 <select className={styles.selector} name="menuName" value={reservationData.menuName} onChange={inputChangeHandler}>
                     <option value="">메뉴 선택</option>
-                    {menuNameList.map(menu => (
+                    {Array.isArray(menuNameList) && menuNameList.map(menu => (
                         <option key={menu.menuCode} value={menu.menuName}>{menu.menuName}</option>
                     ))}
                 </select>
