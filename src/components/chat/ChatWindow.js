@@ -139,7 +139,7 @@ export default function ChatWindow({
         const apiMap = {
             2: { // 샵관리자
                 'customer-helper': ChatbotAPI.admin.customer,
-                'reservation-helper': ChatbotAPI.admin.reservation.sendMessage
+                'reservation-helper': ChatbotAPI.admin.reservation
             },
             1: { // 일반회원
                 'booking-helper': ChatbotAPI.user.booking.sendMessage,
