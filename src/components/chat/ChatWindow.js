@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChatbotAPI } from '@/lib/api/chatbot';
 import { useApi } from '@/hooks/useApi';
+import { ShopsEvent } from '@/lib/util/shopsEvent';
+import { usePathname, useRouter } from 'next/navigation';
 import MessageBubble from './MessageBubble';
 import QuickActions from './QuickActions';
 import styles from '@/styles/chat/ChatWindow.module.css';
@@ -12,7 +14,8 @@ export default function ChatWindow({
     onBack, 
     onNewMessage, 
     userRole, 
-    userInfo 
+    userInfo,
+    onClose
 }) {
     // const shopId = userInfo?.shopCode || userInfo?.userCode || 1;
     const shopId = userInfo?.shopCode || 1;
@@ -31,6 +34,8 @@ export default function ChatWindow({
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
     const { execute, loading } = useApi();
+    const router = useRouter();
+    const pathname = usePathname(); // 현재 url 경로
 
     // 권한별 도우미별 빠른 액션들
     const getQuickActions = () => {
@@ -79,9 +84,9 @@ export default function ChatWindow({
                 case 'booking-helper':
                     return [
                         { label: '예약 조회', message: '내 예약 확인해줘' },
-                        { label: '예약 변경', message: '예약 시간 변경하고 싶어' },
                         { label: '예약 취소', message: '예약 취소하고 싶어' },
-                        { label: '새 예약', message: '새로 예약하고 싶어' }
+                        { label: '예약 변경', message: '예약 시간 변경하고 싶어' },
+                        { label: '샵 추천', message: '샵 추천해줘' }
                     ];
                 case 'inquiry-helper':
                     return [
@@ -134,10 +139,10 @@ export default function ChatWindow({
         const apiMap = {
             2: { // 샵관리자
                 'customer-helper': ChatbotAPI.admin.customer,
-                'reservation-helper': ChatbotAPI.admin.reservation.sendMessage
+                'reservation-helper': ChatbotAPI.admin.reservation
             },
             1: { // 일반회원
-                'booking-helper': ChatbotAPI.user.booking,
+                'booking-helper': ChatbotAPI.user.booking.sendMessage,
                 'support-helper': ChatbotAPI.user.support
             },
             0: { // 게스트
@@ -176,23 +181,44 @@ export default function ChatWindow({
             const apiFunction = getAPIFunction();
             
             if (apiFunction) {
-                const response = await execute(apiFunction.sendMessage, shopId, {
-                    text: messageText,
-                    type: 'general'
-                });
+                // 사용자 예약 도우미 전용 api 처리, shopId를 불러오는 부분 없이 token으로만 처리하기 때문에 분리함
+                if (assistant.id === 'booking-helper') {
+                    const response = await execute(apiFunction, messageText);
 
-                const botMessage = {
-                    id: Date.now() + 1,
-                    type: 'bot',
-                    text: response.data?.answer || "답변을 불러올 수 없습니다.",
-                    timestamp: new Date(),
-                    assistant: assistant.id,
-                    suggestedActions: response.data?.suggestedActions || []
-                };
+                    console.log('사용자 예약 도우미 응답:', response);
 
-                setMessages(prev => [...prev, botMessage]);
-                onNewMessage?.();
-                
+                    const botMessage = {
+                        id: Date.now() + 1,
+                        type: 'bot',
+                        text: response?.data?.message?.text || "챗봇과의 통신 중 오류가 발생했어요! 잠시 후 다시 시도해 주세요.",
+                        timestamp: new Date(),
+                        assistant: assistant.id,
+                        actions: response?.data?.actions || [],
+                        data: response?.data?.data || null,
+                    };
+
+                    setMessages(prev => [...prev, botMessage]);
+
+                } else {
+
+                    const response = await execute(apiFunction.sendMessage, shopId, {
+                        text: messageText,
+                        type: 'general'
+                    });
+
+                    const botMessage = {
+                        id: Date.now() + 1,
+                        type: 'bot',
+                        text: response.data?.answer || "답변을 불러올 수 없습니다.",
+                        timestamp: new Date(),
+                        assistant: assistant.id,
+                        suggestedActions: response.data?.suggestedActions || []
+                    };
+
+                        setMessages(prev => [...prev, botMessage]);
+                        onNewMessage?.();
+                    }
+
             } else {
                 // API가 없는 경우 권한별 임시 응답
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -238,6 +264,36 @@ export default function ChatWindow({
         }
     };
 
+
+const handleApiAction = (action, message) => {
+
+    console.log('handleApiAction', action, message)
+
+    if (action.type === 'NAVIGATE') {
+        router.push(action.payload.url);
+
+        if (onClose) onClose(); // 예약 조회 페이지로 이동하고, 채팅이 닫힘
+
+    } else if (action.type === 'SHOW_SHOP_DETAILS') {
+        const shopCode = action.payload.shopCode
+
+        if (shopCode === null) {
+            console.error('SHOW_SHOP_DETAILS action - shop 정보 비어있음: ', action)
+        }
+
+        if (pathname === '/shops') {
+            ShopsEvent.dispatch('selectShop', {shopCode})
+        } else {
+
+            // shops/ 페이지가 아닌 경우, shops/로 이동 후 샵 detail 페이지 전환
+            sessionStorage.setItem('pendingShopSelection', shopCode)
+            router.push('/shops')
+        }
+
+        if(onClose) onClose();
+    }
+    };
+
     return (
         <div className={styles.container}>
             {/* 헤더 */}
@@ -264,6 +320,7 @@ export default function ChatWindow({
                         message={message}
                         assistantColor={assistant.color}
                         onActionClick={handleSendMessage}
+                        onApiActionClick={handleApiAction}
                     />
                 ))}
 
