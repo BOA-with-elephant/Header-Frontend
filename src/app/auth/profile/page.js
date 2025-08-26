@@ -21,7 +21,7 @@ export default function UpdateProfile() {
             //const response = await fetch('http://localhost:8080/auth/profile', {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=UTF-8',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
                 body: JSON.stringify((() => {
