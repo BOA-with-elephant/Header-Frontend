@@ -81,6 +81,17 @@ export default function Shops() {
 
     }, [handleShopSelect])
 
+    useEffect(() => {
+        
+        const pendingShopCode = sessionStorage.getItem('pendingShopSelection');
+
+        if (pendingShopCode) {
+            handleShopSelect(pendingShopCode);
+            sessionStorage.removeItem('pendingShopSelection')
+        }
+
+    }, [handleShopSelect])
+
     return (
         <div className={'map-page-container'}>
             {alert &&

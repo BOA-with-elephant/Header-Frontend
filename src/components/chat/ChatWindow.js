@@ -286,8 +286,8 @@ const handleApiAction = (action, message) => {
         } else {
 
             // shops/ 페이지가 아닌 경우, shops/로 이동 후 샵 detail 페이지 전환
+            sessionStorage.setItem('pendingShopSelection', shopCode)
             router.push('/shops')
-            ShopsEvent.dispatch('selectShop', {shopCode})
         }
 
         if(onClose) onClose();
