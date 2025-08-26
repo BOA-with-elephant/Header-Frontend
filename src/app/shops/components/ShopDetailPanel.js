@@ -31,7 +31,7 @@ export default function ShopDetailPanel({shopCode, onBack, onShowBooking}) {
             setError(null);
 
             try {
-                // const res = await fetch(`http://localhost:8080/api/v1/shops/${shopCode}`);
+                //const res = await fetch(`http://localhost:8080/api/v1/shops/${shopCode}`);
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/${shopCode}`);
                 const data = await res.json();
 

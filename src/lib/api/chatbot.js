@@ -4,7 +4,7 @@ export const ChatbotAPI = {
     admin: {
         customer: {
             sendMessage: async (shopId, message) => {
-                const response = await fetch(`/api/v1/my-shops/${shopId}/chatbot/customer`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopId}/chatbot/customer`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export const ChatbotAPI = {
     user: {
         booking: {
             sendMessage: async (userId, message) => {
-                const response = await fetch(`/api/v1/user/${userId}/chatbot/booking`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/user/${userId}/chatbot/booking`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const ChatbotAPI = {
 
         support: {
             sendMessage: async (userId, message) => {
-                const response = await fetch(`/api/v1/user/${userId}/chatbot/support`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/user/${userId}/chatbot/support`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export const ChatbotAPI = {
     guest: {
         info: {
             sendMessage: async (guestId, message) => {
-                const response = await fetch(`/api/v1/guest/chatbot/info`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/guest/chatbot/info`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -121,7 +121,7 @@ export const ChatbotAPI = {
 
         guide: {
             sendMessage: async (guestId, message) => {
-                const response = await fetch(`/api/v1/guest/chatbot/guide`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/guest/chatbot/guide`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

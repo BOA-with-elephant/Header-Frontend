@@ -134,15 +134,10 @@ export default function ChatWindow({
         const apiMap = {
             2: { // 샵관리자
                 'customer-helper': ChatbotAPI.admin.customer,
-                'reservation-helper': ChatbotAPI.admin.reservation.sendMessage,
-                'sales-helper': ChatbotAPI.admin.sales,
-                'message-helper': ChatbotAPI.admin.message,
-                'menu-helper': ChatbotAPI.admin.menu
+                'reservation-helper': ChatbotAPI.admin.reservation.sendMessage
             },
             1: { // 일반회원
                 'booking-helper': ChatbotAPI.user.booking,
-                'inquiry-helper': ChatbotAPI.user.inquiry,
-                'review-helper': ChatbotAPI.user.review,
                 'support-helper': ChatbotAPI.user.support
             },
             0: { // 게스트
@@ -181,7 +176,7 @@ export default function ChatWindow({
             const apiFunction = getAPIFunction();
             
             if (apiFunction) {
-                const response = await execute(apiFunction, shopId, {
+                const response = await execute(apiFunction.sendMessage, shopId, {
                     text: messageText,
                     type: 'general'
                 });
@@ -189,9 +184,7 @@ export default function ChatWindow({
                 const botMessage = {
                     id: Date.now() + 1,
                     type: 'bot',
-                    // text: response.data.botReply || response.data.message,
-                    // text: response.data?.answer || "답변을 불러올 수 없습니다.",
-                    text: response?.answer || "답변을 불러올 수 없습니다.",
+                    text: response.data?.answer || "답변을 불러올 수 없습니다.",
                     timestamp: new Date(),
                     assistant: assistant.id,
                     suggestedActions: response.data?.suggestedActions || []

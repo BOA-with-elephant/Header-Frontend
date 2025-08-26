@@ -33,7 +33,7 @@ export default function MyShopDetailPanel({ shopData, onEdit, onDelete, onBack }
             setLoading(true);
 
             try {
-                // const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopData.shopCode}`);
+                //const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopData.shopCode}`);
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopData.shopCode}`);
                 const data = await res.json();
 

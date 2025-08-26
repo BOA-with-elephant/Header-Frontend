@@ -24,7 +24,7 @@ export default function MyShopHoliday() {
         if (!shopCode) return;
         setLoading(true);
         try {
-            // const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}/holidays`, {
+            //const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}/holidays`, {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopCode}/holidays`, {
                 method: 'GET',
                 headers: {
