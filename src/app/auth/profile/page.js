@@ -17,8 +17,8 @@ export default function UpdateProfile() {
         console.log('프로필 수정사항 정상 전송');
 
         try {
-            // const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/profile`, {
-            const response = await fetch('http://localhost:8080/auth/profile', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/profile`, {
+            //const response = await fetch('http://localhost:8080/auth/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
