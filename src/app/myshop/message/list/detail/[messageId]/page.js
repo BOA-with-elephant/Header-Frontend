@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useContext } from 'react';
+import { UserContext } from "@/context/UserContext"; 
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { MessagesAPI } from '@/lib/api';
 import { useApi } from '@/hooks/useApi';
 import styles from '@/styles/admin/message/MessageDetail.module.css';
 
 export default function MessageDetail() {
+    const {userInfo} = useContext(UserContext); 
     const router = useRouter();
     const params = useParams();
     const messageId = params?.messageId;
@@ -35,8 +37,8 @@ export default function MessageDetail() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
-    // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 1;
+    // shop_id를 context나 store에서 가져오도록 수정
+    const SHOP_ID = userInfo?.shopCode;
 
     // 수신자별 메시지 내용 조회 (새로운 API 패턴 사용)
     const fetchRecipientMessage = async (historyCode) => {

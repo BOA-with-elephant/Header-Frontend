@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState , useContext} from 'react';
+import { UserContext } from "@/context/UserContext"; 
 import { MessagesAPI } from '@/lib/api';
 import { useApi } from '@/hooks/useApi';
 import { useMessageModal } from '@/hooks/useMessageModal';
@@ -14,13 +15,15 @@ import MessageModal from '@/components/ui/MessageModal';
 import styles from '@/styles/admin/message/Message.module.css';
 
 export default function Message() {
+    const {userInfo} = useContext(UserContext); 
+
     const { modal, closeModal, showError, showSuccess, showConfirm } = useMessageModal();
     
     // API 호출용 훅
     const { execute: executeApi, loading: apiLoading } = useApi();
 
-    // 임시 shopId (실제로는 context나 store에서 가져와야 함)
-    const SHOP_ID = 1;
+    // shopId
+    const SHOP_ID = userInfo?.shopCode;
 
     // 현재 단계 상태
     const [currentStep, setCurrentStep] = useState(1);
@@ -197,6 +200,7 @@ export default function Message() {
 
                     {currentStep === 2 && messageType === 'template' && (
                         <TemplateSelection
+                            userInfo={userInfo.shopCode}
                             selectedTemplate={selectedTemplate}
                             onTemplateSelect={handleTemplateSelect}
                         />
@@ -211,6 +215,7 @@ export default function Message() {
 
                     {currentStep === 3 && (
                         <RecipientSelection
+                            userInfo={userInfo.shopCode}
                             selectedRecipients={selectedRecipients}
                             filters={filters}
                             onFiltersChange={setFilters}

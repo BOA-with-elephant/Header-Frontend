@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect , useContext} from 'react';
+import { UserContext } from "@/context/UserContext"; 
 import { useRouter } from 'next/navigation';
 import { MessagesAPI } from '@/lib/api';
 import { useApi } from '@/hooks/useApi';
@@ -12,6 +13,7 @@ import MessageModal from '@/components/ui/MessageModal';
 import styles from '@/styles/admin/message/TemplateManagement.module.css';
 
 export default function TemplateManagement() {
+    const {userInfo} = useContext(UserContext);
     const router = useRouter();
     const { modal, closeModal, showError, showSuccess, showConfirm } = useMessageModal();
     
@@ -35,8 +37,8 @@ export default function TemplateManagement() {
         template: null
     });
 
-    // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 1;
+    // shop_id를 context나 store에서 가져오도록 수정
+    const SHOP_ID =  userInfo?.shopCode;
 
     // API 데이터를 내부 형식으로 변환
     const transformApiData = (apiData) => {
