@@ -109,13 +109,13 @@ export default function AddMenuCategoryModal({ isOpen, onClose, onSuccess, initi
             if (isEdit) {
                 response = await fetch(`${API_BASE_URL}/menu/category/${initialData.categoryCode}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                     body: JSON.stringify(submitData)
                 });
             } else {
                 response = await fetch(`${API_BASE_URL}/menu/category`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                     body: JSON.stringify(submitData)
                 });
             }
@@ -162,7 +162,7 @@ export default function AddMenuCategoryModal({ isOpen, onClose, onSuccess, initi
                 try {
                     const response = await fetch(`${API_BASE_URL}/menu/category/${initialData.categoryCode}`, {
                         method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'Content-Type': 'application/json; charset=UTF-8' }
                     });
 
                     if (!response.ok) {

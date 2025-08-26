@@ -388,7 +388,7 @@ export default function SalesManagement() {
         try {
           const response = await fetch(`${API_BASE_URL}/sales/${item.salesCode}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' }
           });
 
           if (!response.ok) {

@@ -29,7 +29,7 @@ export default function MyShopHoliday() {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=UTF-8',
                 }
             });
             const data = await res.json();
@@ -119,7 +119,7 @@ export default function MyShopHoliday() {
                 method,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=UTF-8',
                 },
                 body: JSON.stringify(formData),
             });
@@ -142,7 +142,7 @@ export default function MyShopHoliday() {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json; charset=UTF-8',
                     }
                 });
                 if (!res.ok) {

@@ -133,7 +133,7 @@ export default function UpdateReservationInfoModal({
                     method : 'PUT',
                     headers : {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        "Content-Type" : "application/json"
+                        "Content-Type" : "application/json; charset=UTF-8"
                     },
                     body : JSON.stringify(updatedInfo)
                 });
