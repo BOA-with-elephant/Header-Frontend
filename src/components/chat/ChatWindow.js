@@ -15,7 +15,7 @@ export default function ChatWindow({
     onNewMessage, 
     userRole, 
     userInfo,
-    onClose 
+    onClose
 }) {
     // const shopId = userInfo?.shopCode || userInfo?.userCode || 1;
     const shopId = userInfo?.shopCode || 1;
@@ -138,15 +138,10 @@ export default function ChatWindow({
         const apiMap = {
             2: { // 샵관리자
                 'customer-helper': ChatbotAPI.admin.customer,
-                'reservation-helper': ChatbotAPI.admin.reservation.sendMessage,
-                'sales-helper': ChatbotAPI.admin.sales,
-                'message-helper': ChatbotAPI.admin.message,
-                'menu-helper': ChatbotAPI.admin.menu
+                'reservation-helper': ChatbotAPI.admin.reservation.sendMessage
             },
             1: { // 일반회원
                 'booking-helper': ChatbotAPI.user.booking.sendMessage,
-                'inquiry-helper': ChatbotAPI.user.inquiry,
-                'review-helper': ChatbotAPI.user.review,
                 'support-helper': ChatbotAPI.user.support
             },
             0: { // 게스트
@@ -200,8 +195,10 @@ export default function ChatWindow({
                     };
 
                     setMessages(prev => [...prev, botMessage]);
+
                 } else {
-                    const response = await execute(apiFunction, shopId, {
+
+                    const response = await execute(apiFunction.sendMessage, shopId, {
                         text: messageText,
                         type: 'general'
                     });
@@ -209,17 +206,15 @@ export default function ChatWindow({
                     const botMessage = {
                         id: Date.now() + 1,
                         type: 'bot',
-                        // text: response.data.botReply || response.data.message,
-                        // text: response.data?.answer || "답변을 불러올 수 없습니다.",
-                        text: response?.answer || "답변을 불러올 수 없습니다.",
+                        text: response.data?.answer || "답변을 불러올 수 없습니다.",
                         timestamp: new Date(),
                         assistant: assistant.id,
                         suggestedActions: response.data?.suggestedActions || []
                     };
 
-                    setMessages(prev => [...prev, botMessage]);
-                    onNewMessage?.();
-                }
+                        setMessages(prev => [...prev, botMessage]);
+                        onNewMessage?.();
+                    }
 
             } else {
                 // API가 없는 경우 권한별 임시 응답
@@ -288,8 +283,8 @@ const handleApiAction = (action, message) => {
         } else {
             console.error('SHOW_SHOP_DETAILS action - shop 정보 비어있음: ', action)
         }
-    } 
-    }; 
+    }
+    };
 
     return (
         <div className={styles.container}>
