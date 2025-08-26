@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
+import { UserContext } from '@/context/UserContext';
 import {
   filterSalesByPeriod,
   processTransactionData,
@@ -12,11 +13,10 @@ import {
   getStatusDisplayName
 } from '@/constants/sales/chartConfig';
 
-const SHOP_CODE = 1;
-// const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}`;
-
 export const useChartData = (allSalesData) => {
+  const { userInfo } = useContext(UserContext);
+  const SHOP_CODE = userInfo?.shopCode;
+  const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}`;
   const [monthlyTrend, setMonthlyTrend] = useState({
     loading: false,
     data: [],

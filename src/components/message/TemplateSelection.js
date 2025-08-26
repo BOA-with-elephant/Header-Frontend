@@ -5,7 +5,7 @@ import { MessagesAPI } from '@/lib/api';
 import { useApi } from '@/hooks/useApi';
 import styles from '@/styles/admin/message/TemplateSelection.module.css';
 
-export default function TemplateSelection({ selectedTemplate, onTemplateSelect }) {
+export default function TemplateSelection({ userInfo,selectedTemplate, onTemplateSelect }) {
     // 템플릿 카테고리
     const [selectedCategory, setSelectedCategory] = useState('promotional');
     
@@ -18,8 +18,8 @@ export default function TemplateSelection({ selectedTemplate, onTemplateSelect }
     // API 호출용 훅
     const { execute: executeApi, loading } = useApi();
 
-    // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 1;
+    // shop_id를 context나 store에서 가져오도록 수정
+    const SHOP_ID = userInfo?.shopCode || 1;
 
     // API 데이터를 내부 형식으로 변환
     const transformApiData = (apiData) => {

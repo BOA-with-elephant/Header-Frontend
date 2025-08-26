@@ -20,7 +20,7 @@ export const API_CONFIG = {
         },
         CUSTOMERS: {
             LIST: (shopId) => `/api/v1/my-shops/${shopId}/customers`,
-            DETAIL: (shopId, clientCode) => `/api/v1/my-shops/${shopId}/customers/${clientCode}`,
+            DETAIL: (shopId, clientCode) => `/api/v1/my-shops/${shopId}/customers/${clientCode}/history`,
             CREATE: (shopId) => `/api/v1/my-shops/${shopId}/customers`,
             UPDATE: (shopId, clientCode) => `/api/v1/my-shops/${shopId}/customers/${clientCode}`,
             DELETE: (shopId, clientCode) => `/api/v1/my-shops/${shopId}/customers/${clientCode}`,
