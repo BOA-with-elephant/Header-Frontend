@@ -106,7 +106,7 @@ export default function Signup() {
                             required
                         />
                         <button type="submit">
-                            <Link href="/auth/verification-code">전화번호 인증</Link>
+                            <Link href="/auth/verification-code">이메일 본인 인증</Link>
                         </button>
                     </div>
 

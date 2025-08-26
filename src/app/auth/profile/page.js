@@ -17,19 +17,20 @@ export default function UpdateProfile() {
         console.log('프로필 수정사항 정상 전송');
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/profile`, {
-            //const response = await fetch('http://localhost:8080/auth/profile', {
+            // const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/profile`, {
+            const response = await fetch('http://localhost:8080/auth/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
-                body: JSON.stringify({
-                    userId: localStorage.getItem('userId'),
-                    userName: userName || null,
-                    userPhone: userPhone || null,
-                    userPwd: userPwd || null
-                }),
+                body: JSON.stringify((() => {
+                    const payload = { userId: localStorage.getItem('userId') };
+                    if (userName?.trim()) payload.userName = userName.trim();
+                    if (userPhone?.trim()) payload.userPhone = userPhone.trim();
+                    if (userPwd) payload.userPwd = userPwd;
+                    return payload;
+                })()),
             });
 
             if (response.ok) {
@@ -38,14 +39,28 @@ export default function UpdateProfile() {
                 alert('정보 수정이 성공적으로 완료되었습니다!');
                 router.push('/auth/profile');
             } else {
-                // Corrected error handling
                 const contentType = response.headers.get('content-type');
                 if (contentType && contentType.includes('application/json')) {
                     const errorData = await response.json();
                     console.error('Profile update failed:', errorData);
-                    alert(`정보수정 실패: ${errorData.message || '알 수 없는 오류'}`);
+
+                    switch (errorData.message) {
+                        case '(은)는 이전 비밀번호와 동일합니다.':
+                            alert('이전과 동일한 비밀번호입니다. 새로운 비밀번호를 입력해주세요.');
+                            break;
+                        case '(은)는 이전 전화번호와 동일합니다.':
+                            alert('이전과 동일한 전화번호입니다. 새로운 번호를 입력해주세요.');
+                            break;
+                        case '(은)는 이전 이름과 동일합니다.':
+                            alert('이전과 동일한 이름입니다. 변경된 이름을 입력해주세요.');
+                            break;
+                        case '이미 존재하는 전화번호입니다.':
+                            alert('이미 등록된 전화번호입니다. 다른 번호를 사용해주세요.');
+                            break;
+                        default:
+                            alert(`정보수정 실패: ${errorData.message || '알 수 없는 오류'}`);
+                    }
                 } else {
-                    // 403 empty response body를 포함한 non-JSON 응답 핸들링
                     if (response.status === 403) {
                         alert('접근이 거부되었습니다. 다시 로그인해주세요.');
                     } else {
