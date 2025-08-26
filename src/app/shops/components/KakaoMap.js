@@ -61,7 +61,9 @@ export default function KakaoMap({ shops, userLocation, onMarkerClick, selectedS
 
   // Script 로드 완료 시 지도 초기화
   const handleScriptLoad = () => {
-    window.kakao.maps.load(initializeMap);
+    if (window.kakao && window.kakao.maps) {
+      window.kakao.maps.load(initializeMap);
+    }
   };
 
   // shops 데이터가 변경될 때마다 마커를 다시 그림
@@ -70,6 +72,14 @@ export default function KakaoMap({ shops, userLocation, onMarkerClick, selectedS
       drawMarkers();
     }
   }, [shops]); // shops 배열이 바뀔 때만 마커 새로고침
+
+  useEffect(() => {
+    // 컴포넌트가 마운트될 때 카카오 지도 스크립트가 이미 로드되어 있는지 확인
+    if (window.kakao && window.kakao.maps) {
+      // 이미 로드되었다면, onLoad를 기다리지 않고 즉시 지도 초기화
+      handleScriptLoad();
+    }
+  }, [])
 
   return (
       <>
