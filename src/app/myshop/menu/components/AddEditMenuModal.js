@@ -130,7 +130,7 @@ export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialDa
 
             const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                 body: JSON.stringify(submitData)
             });
 
@@ -202,7 +202,7 @@ export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialDa
                 try {
                     const response = await fetch(`${API_BASE_URL}/menu/${initialData.menuCode}`, {
                         method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'Content-Type': 'application/json; charset=UTF-8' }
                     });
 
                     if (!response.ok) {

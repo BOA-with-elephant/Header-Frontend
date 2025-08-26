@@ -78,7 +78,7 @@ export default function BookingFormPanel ({shopCode, shopName, menus, onBack, on
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json; charset=UTF-8'
                 },
                 body: JSON.stringify(bookingData)
                 });

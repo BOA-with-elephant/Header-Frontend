@@ -15,7 +15,7 @@ export default function RealDeleteAlertModal({isShowRealDeleteModal, setIsShowRe
                 method : "DELETE",
                 headers : {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    "Content-Type" : "application/json"
+                    "Content-Type" : "application/json; charset=UTF-8"
                 },
             });
     

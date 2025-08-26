@@ -19,7 +19,7 @@ export default function Login() {
         , {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
         },
         // 백엔드 LoginUserDTO의 필드명에 맞게 'userId', 'userPwd' 사용
         body: JSON.stringify({ userId: id, userPwd: password }),

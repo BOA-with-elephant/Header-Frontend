@@ -30,7 +30,7 @@ export default function Verification() {
                 const response = await fetch('/auth/verification-code', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json; charset=UTF-8',
                     },
                     body: JSON.stringify(formData),
                 });
