@@ -25,21 +25,17 @@ export const ChatbotAPI = {
         },
         reservation: {
             sendMessage: async (shopId, message) => {
-
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopId}/chatbot/reservation`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopId}/chatbot/reservation`,{
                     method: 'POST',
                     headers: {
-                        'Content-Type' : 'application/json',
-                        // 'Authorization' : `Bearer ${localStorage.getItem('token')}`
+                        'Content-Type': 'application/json; charset=UTF-8',
                     },
                     body: JSON.stringify({
-                        // message: message.text,
-                        // messageType: message.type || 'general'
-                        question : message.text
+                        question: message.text
                     })
                 });
-                
-                if(!response.ok){
+
+                if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
 
