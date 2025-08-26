@@ -52,14 +52,15 @@ export const ChatbotAPI = {
     user: {
         booking: {
             sendMessage: async (query) => {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_LLM_BASE_URL}/api/v1/reservation/chat`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/reservation/chat`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
-                        query: query
+                        query: query,
+                        message: query
                     })
                 });
                 

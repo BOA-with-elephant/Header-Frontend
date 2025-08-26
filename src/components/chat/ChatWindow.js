@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ChatbotAPI } from '@/lib/api/chatbot';
 import { useApi } from '@/hooks/useApi';
 import { ShopsEvent } from '@/lib/util/shopsEvent';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import MessageBubble from './MessageBubble';
 import QuickActions from './QuickActions';
 import styles from '@/styles/chat/ChatWindow.module.css';
@@ -35,6 +35,7 @@ export default function ChatWindow({
     const messagesEndRef = useRef(null);
     const { execute, loading } = useApi();
     const router = useRouter();
+    const pathname = usePathname(); // 현재 url 경로
 
     // 권한별 도우미별 빠른 액션들
     const getQuickActions = () => {
@@ -184,14 +185,16 @@ export default function ChatWindow({
                 if (assistant.id === 'booking-helper') {
                     const response = await execute(apiFunction, messageText);
 
+                    console.log('사용자 예약 도우미 응답:', response);
+
                     const botMessage = {
                         id: Date.now() + 1,
                         type: 'bot',
-                        text: response.message.text,
+                        text: response?.data?.message?.text || "챗봇과의 통신 중 오류가 발생했어요! 잠시 후 다시 시도해 주세요.",
                         timestamp: new Date(),
                         assistant: assistant.id,
-                        actions: response.actions || [],
-                        data: response.data || null,
+                        actions: response?.data?.actions || [],
+                        data: response?.data?.data || null,
                     };
 
                     setMessages(prev => [...prev, botMessage]);
@@ -274,15 +277,20 @@ const handleApiAction = (action, message) => {
     } else if (action.type === 'SHOW_SHOP_DETAILS') {
         const shopCode = action.payload.shopCode
 
-        console.log("shopCode 확인 :", shopCode);
-
-        if (message.data.recommendation.shopCode && message.data.recommendation.menus) {
-            // 샵 추천 내용이 있을 때만 router push
-            ShopsEvent.dispatch('selectShop', {shopCode})
-            if(onClose) onClose();
-        } else {
+        if (shopCode === null) {
             console.error('SHOW_SHOP_DETAILS action - shop 정보 비어있음: ', action)
         }
+
+        if (pathname === '/shops') {
+            ShopsEvent.dispatch('selectShop', {shopCode})
+        } else {
+
+            // shops/ 페이지가 아닌 경우, shops/로 이동 후 샵 detail 페이지 전환
+            router.push('/shops')
+            ShopsEvent.dispatch('selectShop', {shopCode})
+        }
+
+        if(onClose) onClose();
     }
     };
 
