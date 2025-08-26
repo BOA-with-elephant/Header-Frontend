@@ -2,7 +2,7 @@ class ApiClient {
     constructor(baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') {
         this.baseURL = baseURL;
         this.defaultHeaders = {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json; charset=UTF-8',
         };
     }
 
