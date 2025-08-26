@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styles from '../../../../styles/admin/reservation/DetailReservationModal.module.css';
 import Image from 'next/image';
 import closeBtn from '../../../../../public/images/reservation/whiteCloseBtn.png';
-import AddEditMenuModal from '../../menu/components/AddEditMenuModal';
 
 export default function DetailReservationModal({
     selectedResvCode, 

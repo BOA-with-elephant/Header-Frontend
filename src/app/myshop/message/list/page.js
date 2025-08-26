@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useContext } from 'react';
+import { UserContext } from "@/context/UserContext"; 
 import { useRouter } from 'next/navigation';
 import { MessagesAPI } from '@/lib/api';
 import { useApi } from '@/hooks/useApi';
@@ -8,7 +9,8 @@ import styles from '@/styles/admin/message/MessageList.module.css';
 
 export default function MessageList() {
     const router = useRouter();
-    
+    const {userInfo} = useContext(UserContext);
+
     // API 호출용 훅
     const { execute: executeApi, loading, error: apiError } = useApi();
     
@@ -28,8 +30,8 @@ export default function MessageList() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
-    // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 1;
+    // shop_id를 context나 store에서 가져오도록 수정
+    const SHOP_ID = userInfo?.shopCode;
 
     // 컴포넌트 마운트 시 메시지 목록 불러오기
     useEffect(() => {

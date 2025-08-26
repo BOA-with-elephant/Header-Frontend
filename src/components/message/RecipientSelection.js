@@ -5,6 +5,7 @@ import { useCustomers } from '@/hooks/useCustomers'; // 기존 useCustomers 훅 
 import styles from '@/styles/admin/message/RecipientSelection.module.css';
 
 export default function RecipientSelection({ 
+    userInfo,
     selectedRecipients, 
     filters, 
     onFiltersChange, 
@@ -13,8 +14,8 @@ export default function RecipientSelection({
 }) {
     const [filteredCustomers, setFilteredCustomers] = useState([]);
     
-    // TODO: shop_id를 context나 store에서 가져오도록 수정
-    const SHOP_ID = 1;
+    // shop_id를 context나 store에서 가져오도록 수정
+    const SHOP_ID = userInfo?.shopCode || 1;
 
     // useCustomers 훅 사용
     const { customers, loading, error } = useCustomers(SHOP_ID);
