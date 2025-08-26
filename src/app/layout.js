@@ -39,27 +39,27 @@
 //   );
 // }
 
-'use client';
-import { useState } from 'react';
-import { UserContext } from '@/context/UserContext';
+import { UserProvider } from '@/context/UserProvider';
 import "@/styles/common/globals.css";
 
-export default function RootLayout({ children }) {
-  const [userInfo, setUserInfo] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+export const metadata = {
+  title: 'Header',
+  description: 'Header Management App',
+};
 
+export default function RootLayout({ children }) {
   return (
-    <UserContext.Provider value={{ userInfo, userRole }}>
-      <html lang="ko">
-        <head>
-          <meta charSet="UTF-8" /> {/* 서버에서도 한글 깨짐 방지 */}
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-        </head>
-        <body>
+    <html lang="ko">
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body>
+        <UserProvider>
           {children}
-        </body>
-      </html>
-    </UserContext.Provider>
+        </UserProvider>
+      </body>
+    </html>
   );
 }
 
