@@ -39,19 +39,27 @@
 //   );
 // }
 
+'use client';
+import { useState } from 'react';
+import { UserContext } from '@/context/UserContext';
 import "@/styles/common/globals.css";
 
 export default function RootLayout({ children }) {
+  const [userInfo, setUserInfo] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+
   return (
-    <html lang="ko">
-      <head>
-        <meta charSet="UTF-8" /> {/* ✅ 서버에서 안전하게 적용 */}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>내 사이트 제목</title>
-      </head>
-      <body>
-        {children}
-      </body>
-    </html>
+    <UserContext.Provider value={{ userInfo, userRole }}>
+      <html lang="ko">
+        <head>
+          <meta charSet="UTF-8" /> {/* 서버에서도 한글 깨짐 방지 */}
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </head>
+        <body>
+          {children}
+        </body>
+      </html>
+    </UserContext.Provider>
   );
 }
+
