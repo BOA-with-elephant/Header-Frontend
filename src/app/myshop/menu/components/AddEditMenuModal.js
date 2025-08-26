@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect} from 'react';
 import styles from '@/styles/admin/menu/AddEditMenuModal.module.css';
 import MessageModal from '@/components/ui/MessageModal';
 import { useMessageModal } from '@/hooks/useMessageModal';
 import { MESSAGES } from '@/constants/messages';
 
-export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialData = null, categories = [] }) {
+export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialData = null, categories = [], shopCode}) {
     const { modal, closeModal, showError, showConfirm } = useMessageModal();
     
     const [formData, setFormData] = useState({
@@ -19,8 +19,7 @@ export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialDa
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // const API_BASE_URL = 'http://localhost:8080/api/v1/my-shops/1';
-    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/1`;
+    const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopCode}`
     const isEdit = !!initialData;
 
     // 모달이 열릴 때 초기 데이터 설정
@@ -100,6 +99,12 @@ export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialDa
         
         if (!validateForm()) return;
 
+        // shopCode 유효성 검사
+        if (!shopCode) {
+            setError('매장 정보가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
+
         setLoading(true);
         setError('');
 
@@ -116,7 +121,7 @@ export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialDa
                 categoryCode: parseInt(formData.categoryCode),
                 menuPrice: parseInt(formData.menuPrice),
                 estTime: durationInMinutes,
-                shopCode: 1
+                shopCode: shopCode
             };
 
             if (isEdit && initialData.menuCode) {
@@ -125,7 +130,7 @@ export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialDa
 
             const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                 body: JSON.stringify(submitData)
             });
 
@@ -180,6 +185,12 @@ export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialDa
 
     // 삭제 처리
     const handleDelete = () => {
+        // shopCode 유효성 검사
+        if (!shopCode) {
+            setError('매장 정보가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
+
         showConfirm(
             '시술 삭제',
             MESSAGES.MENU.DELETE_CONFIRM(initialData.menuName),
@@ -191,7 +202,7 @@ export default function AddEditMenuModal({ isOpen, onClose, onSuccess, initialDa
                 try {
                     const response = await fetch(`${API_BASE_URL}/menu/${initialData.menuCode}`, {
                         method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'Content-Type': 'application/json; charset=UTF-8' }
                     });
 
                     if (!response.ok) {

@@ -21,7 +21,7 @@ export default function MyShopPage() {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=UTF-8',
             }
         });
 
@@ -100,7 +100,7 @@ export default function MyShopPage() {
             method,
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json; charset=UTF-8'
             },
             body: JSON.stringify(body)
         });

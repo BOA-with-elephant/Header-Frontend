@@ -14,6 +14,9 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="ko">
+      <head>
+        <meta charSet="UTF-8"/>
+      </head>
       <body>
         {isLandingPage ? (
           // 랜딩페이지: 헤더/푸터만 (사이드메뉴 없음)
@@ -38,3 +41,5 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
+

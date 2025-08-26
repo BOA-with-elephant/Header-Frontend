@@ -21,10 +21,15 @@ export default function UpdateProfile() {
             //const response = await fetch('http://localhost:8080/auth/profile', {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=UTF-8',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
-                body: JSON.stringify({userName: userName, userPhone: userPhone, userPwd: userPwd}),
+                body: JSON.stringify({
+                    userId: localStorage.getItem('userId'),
+                    userName: userName || null,
+                    userPhone: userPhone || null,
+                    userPwd: userPwd || null
+                }),
             });
 
             if (response.ok) {

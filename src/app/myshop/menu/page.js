@@ -1,6 +1,7 @@
 'use client'; // Next.js에서 클라이언트 측 렌더링을 사용한다는 표시. 서버가 아닌 사용자의 웹 브라우저에서 이 코드가 실행된다.
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { UserContext } from '@/context/UserContext';
 import styles from '@/styles/admin/menu/Menu.module.css'; // 스타일 적용
 import AddMenuCategoryModal from './components/AddEditMenuCategoryModal'; // 메뉴카테고리를 추가하거나 수정할 때 사용하는 팝업창(모달) 컴포넌트
 import AddEditMenuModal from './components/AddEditMenuModal'; // 메뉴(시술)를 추가하거나 수정할 때 사용하는 팝업창(모달) 컴포넌트
@@ -41,7 +42,8 @@ export default function MenuManagement() {
     const [showEditMenuModal, setShowEditMenuModal] = useState(false); // 메뉴 수정 모달 열림 여부
     const [editMenuData, setEditMenuData] = useState(null); // 수정할 메뉴 데이터를 저장
 
-    const SHOP_CODE = 1; // TODO: 실제 샵 코드에 따라 동적으로 변경하기(추후 로그인한 사용자의 실제 샵 코드를 이곳에 적용해야 함)
+    const { userInfo } = useContext(UserContext);
+    const SHOP_CODE = userInfo?.shopCode;
     // --- 2. API 통신 기본 URL ---
     // 백엔드 서버와 통신할 때 사용할 기본 주소
     // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
@@ -343,6 +345,10 @@ export default function MenuManagement() {
     // --- 9. 로딩 및 오류 화면 처리 ---
     // 데이터 로딩 중이거나 오류 발생 시 보여줄 화면입니다.
 
+    if (!SHOP_CODE) { // shopCode가 아직 로드되지 않았을 때
+        return <div className={styles.menuManagement}><div className={styles.loading}>로딩 중...</div></div>;
+    }
+
     if (loading) { // `loading` 상태가 true일 때 (카테고리 초기 로딩)
         return <div className={styles.menuManagement}><div className={styles.loading}>로딩 중...</div></div>;
     }
@@ -486,6 +492,7 @@ export default function MenuManagement() {
                 onSuccess={showEditCategoryModal ? handleCategoryEditSuccess : handleCategoryAddSuccess}
                 // 수정 모드이면 수정 성공 핸들러 호출, 아니면 등록 성공 핸들러 호출
                 initialData={editCategoryData} // 수정 모드일 경우 모달에 전달할 초기 데이터 (등록 시에는 null)
+                shopCode={SHOP_CODE}
             />
 
             {/* 메뉴 등록/수정 모달 */}
@@ -500,6 +507,7 @@ export default function MenuManagement() {
                 // 수정 모드이면 수정 성공 핸들러 호출, 아니면 등록 성공 핸들러 호출
                 initialData={editMenuData} // 수정 모드일 경우 모달에 전달할 초기 데이터 (등록 시에는 null)
                 categories={menuCategories} // 카테고리 드롭다운을 채우기 위한 데이터 목록
+                shopCode={SHOP_CODE}
             />
 
             {/* 메시지 모달 (성공/실패/경고/확인 등 안내용 공통 팝업) */}

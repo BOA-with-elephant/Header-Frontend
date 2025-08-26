@@ -11,14 +11,14 @@ import SendOptions from '@/components/message/SendOptions';
 import MessageModal from '@/components/ui/MessageModal';
 import styles from '@/styles/admin/message/MessageSlideModal.module.css';
 
-export default function MessageSlideModal({ isOpen, onClose, recipientSelection}) {
+export default function MessageSlideModal({ isOpen, onClose, recipientSelection, userInfo}) {
     const { modal, closeModal, showError, showSuccess, showConfirm } = useMessageModal();
     
     // API 호출용 훅
     const { execute: executeApi, loading: apiLoading } = useApi();
     
     // 임시 shopId
-    const SHOP_ID = 1;
+    const SHOP_ID = userInfo?.shopCode || 1;
 
     // 현재 단계 상태
     const [currentStep, setCurrentStep] = useState(1);
@@ -204,6 +204,7 @@ export default function MessageSlideModal({ isOpen, onClose, recipientSelection}
                 if (messageType === 'template') {
                     return (
                         <TemplateSelection
+                            userInfo={userInfo.shopCode}
                             selectedTemplate={selectedTemplate}
                             onTemplateSelect={handleTemplateSelect}
                         />
