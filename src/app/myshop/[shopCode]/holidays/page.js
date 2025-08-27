@@ -24,7 +24,6 @@ export default function MyShopHoliday() {
         if (!shopCode) return;
         setLoading(true);
         try {
-            //const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}/holidays`, {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopCode}/holidays`, {
                 method: 'GET',
                 headers: {
@@ -108,9 +107,7 @@ export default function MyShopHoliday() {
         }
 
         const url = formMode === 'create'
-            // ? `http://localhost:8080/api/v1/my-shops/${shopCode}/holidays`
             ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopCode}/holidays`
-            // : `http://localhost:8080/api/v1/my-shops/${shopCode}/holidays/${editingHoliday.shopHolCode}`;
             : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopCode}/holidays/${editingHoliday.shopHolCode}`;
         const method = formMode === 'create' ? 'POST' : 'PUT';
 
@@ -137,7 +134,6 @@ export default function MyShopHoliday() {
     const handleDelete = async (shopHolCode) => {
         if (window.confirm('해당 휴일 정보를 정말로 삭제하시겠습니까?')) {
             try {
-                // const res = await fetch(`http://localhost:8080/api/v1/my-shops/${shopCode}/holidays/${shopHolCode}`, {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${shopCode}/holidays/${shopHolCode}`, {
                     method: 'DELETE',
                     headers: {

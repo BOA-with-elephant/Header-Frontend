@@ -46,7 +46,6 @@ export default function MenuManagement() {
     const SHOP_CODE = userInfo?.shopCode;
     // --- 2. API 통신 기본 URL ---
     // 백엔드 서버와 통신할 때 사용할 기본 주소
-    // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}`;
 
     // --- 3. 메시지 모달 헬퍼 함수들 ---

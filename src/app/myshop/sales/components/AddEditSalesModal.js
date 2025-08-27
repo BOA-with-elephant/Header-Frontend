@@ -36,9 +36,7 @@ export default function AddEditSalesModal({
     
     // 상수
     const isEdit = !!initialData?.salesCode;
-    // const API_BASE_URL = 'http://localhost:8080/api/v1/my-shops/1';
     const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/1`;
-    // const RESERVATION_API_URL = 'http://localhost:8080/api/v1/my-shops/1/reservation';
     const RESERVATION_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/1/reservation`;
 
     // 유틸리티 함수

@@ -13,7 +13,6 @@ export default function SalesManagement() {
   // 상수 정의
   const { userInfo } = useContext(UserContext);
   const SHOP_CODE = userInfo?.shopCode;
-  // const API_BASE_URL = `http://localhost:8080/api/v1/my-shops/${SHOP_CODE}`;
   const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/my-shops/${SHOP_CODE}`;
 
   // 현재 월의 시작일과 종료일을 계산하는 함수
@@ -92,7 +91,6 @@ export default function SalesManagement() {
         const yearMonth = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
         
         try {
-          // const response = await fetch(`http://localhost:8080/my-shops/${SHOP_CODE}/reservation?date=${yearMonth}`);
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/my-shops/${SHOP_CODE}/reservation?date=${yearMonth}`);
           if (response.ok) {
             const monthData = await response.json();
