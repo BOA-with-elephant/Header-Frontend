@@ -199,8 +199,24 @@ export default function ChatWindow({
 
                     setMessages(prev => [...prev, botMessage]);
 
-                } else {
+                } else if (assistant.id === 'reservation-helper') {
+                    const response = await execute(apiFunction.sendMessage, shopId, {
+                        text: messageText,
+                        type: 'general'
+                    });
 
+                    const botMessage = {
+                        id: Date.now() + 1,
+                        type: 'bot',
+                        text: response?.answer || "답변을 불러올 수 없습니다.",
+                        timestamp: new Date(),
+                        assistant: assistant.id,
+                        suggestedActions: response?.suggestedActions || []
+                    };
+
+                    setMessages(prev => [...prev, botMessage]);
+                    onNewMessage?.();
+                } else {
                     const response = await execute(apiFunction.sendMessage, shopId, {
                         text: messageText,
                         type: 'general'
