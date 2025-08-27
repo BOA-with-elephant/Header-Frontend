@@ -29,7 +29,6 @@ export default function BookingFormPanel ({shopCode, shopName, menus, onBack, on
         const fetchSchedule = async () => {
             console.log('샵 코드 확인' + shopCode)
             try {
-                //const res = await fetch(`http://localhost:8080/api/v1/shops/reservation/${shopCode}/available-schedule`);
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/reservation/${shopCode}/available-schedule`);
                 const data = await res.json();
 
@@ -73,7 +72,6 @@ export default function BookingFormPanel ({shopCode, shopName, menus, onBack, on
         };
 
         try {
-            // const res = await fetch(`http://localhost:8080/api/v1/shops/${shopCode}`, {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/shops/${shopCode}`, {
                 method: 'POST',
                 headers: {

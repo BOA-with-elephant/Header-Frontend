@@ -18,7 +18,6 @@ export default function UpdateProfile() {
 
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/profile`, {
-            //const response = await fetch('http://localhost:8080/auth/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8',
