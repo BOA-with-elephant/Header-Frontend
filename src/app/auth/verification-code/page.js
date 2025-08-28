@@ -4,12 +4,12 @@ import Link from 'next/link';
 import Signup from "@/app/auth/users/page.js";
 
 export default function Verification() {
-    const { userName, userPhone } = Signup();
+    const { userId, userEmail } = Signup();
     const [formData, setFormData] = useState({
-        userName: {userName},
-        userPhone: {userPhone}
+        userId: {userId},
+        userEmail: {userEmail}
     });
-    
+
         // Handle input changes
         const handleChange = (e) => {
             const { name, value } = e.target;
@@ -18,14 +18,14 @@ export default function Verification() {
                 [name]: value,
             }));
         };
-    
+
         // Handle form submission
         const handleSubmit = async (e) => {
             e.preventDefault(); // Prevent default browser form submission
-    
+
             // 백엔드로 넘어가는 데이터 확인을 위한 코드
             console.log('Form submitted with data:', formData);
-    
+
             try {
                 const response = await fetch('/auth/verification-code', {
                     method: 'POST',
@@ -34,13 +34,13 @@ export default function Verification() {
                     },
                     body: JSON.stringify(formData),
                 });
-    
+
                 if (response.ok) {
                     // Handle successful signup (e.g., redirect, show success message)
                     console.log('Verify successful');
-                    alert('회원가입에 성공하였습니다!');
-                    // 성공 시 로그인 페이지로 전환
-                    window.location.href = '/auth/session';
+                    alert('인증번호가 이메일로 발송되었습니다!');
+                    // 성공 시 인증번호 확인 페이지로 전환
+                    window.location.href = `/auth/verification-code/validate`;
                 } else {
                     // Handle errors (e.g., show error message)
                     const errorData = await response.json();
@@ -54,37 +54,37 @@ export default function Verification() {
         };
     return (
         <div className="signup-container"> {/* Added a container for overall styling */}
-            <h1>전화번호 인증</h1>
+            <h1>본인 인증</h1>
             <div className="content-card">
                 <form onSubmit={handleSubmit}> {/* Use onSubmit for React forms */}
                     <div className="form-group">
-                        <label htmlFor="userName">이름:</label>
+                        <label htmlFor="userName">아이디:</label>
                         <input
                             type="text"
-                            id="userName"
-                            name="userName"
-                            value={formData.userName}
+                            id="userId"
+                            name="userId"
+                            value={formData.userId}
                             onChange={handleChange}
                             required
                         />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="userPhone">전화번호:</label>
+                        <label htmlFor="userEmail">이메일:</label>
                         <input
                             type="tel"
-                            id="userPhone"
-                            name="userPhone"
-                            value={formData.userPhone}
+                            id="userEmail"
+                            name="userEmail"
+                            value={formData.userEmail}
                             onChange={handleChange}
-                            placeholder="예: 010-1234-5678"
-                            pattern="[0-9]{3}-?[0-9]{4}-?[0-9]{4}"
+                            placeholder="예: example@site.com"
+                            pattern="/^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-za-z0-9\-]+/"
                             required
                         />
                     </div>
 
                     <button type="submit">
-                        <Link href="/auth/verification-code/validate">인증번호 발송</Link>
+                     인증번호 발송
                     </button>
                 </form>
             </div>
