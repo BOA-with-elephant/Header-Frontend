@@ -19,7 +19,7 @@ export default function ValidateOX() {
 
     // Handle form submission
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent default browser form submission
+        e.preventDefault();
 
         // 백엔드로 넘어가는 데이터 확인을 위한 코드
         console.log('Form submitted with data');
