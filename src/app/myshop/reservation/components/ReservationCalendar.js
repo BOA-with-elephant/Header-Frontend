@@ -247,12 +247,22 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                         const availableDates = resvDateList?.results?.schedule?.map(item => item.targetDate) || [];
                         const isAvailableDate = availableDates.includes(formatted);
 
+                        // 서버 timestamp 기준으로 날짜 비교
+                        const dailyReservations = Array.isArray(reservationInfo) ? reservationInfo.filter(list => {
+                            const listDate = new Date(list.resvDate); // timestamp → Date
+                            const formattedListDate = formatDateToYML(listDate);
+                            return (list.resvState === "APPROVE" || list.resvState === "FINISH") 
+                                    && formattedListDate === formatted;
+                        })
+                        : [];
+
+                        const showReservations = dailyReservations.slice(0, 2);
+                        const hiddenCount = dailyReservations.length - 2;
+
                         return(
                             <div
                                 key={index}
-                                className={`${styles.dateCell} ${
-                                    date.getMonth() === month ? styles.currentMonth : styles.otherMonth
-                                }`}
+                                className={`${styles.dateCell} ${date.getMonth() === month ? styles.currentMonth : styles.otherMonth}`}
                                 style={{ 
                                     backgroundColor : isToday ? '#F2F2F2' : 'none', 
                                     // color : !isAvailableDate ? 'red' : 'inherit'
@@ -273,7 +283,7 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                                         return `${year}-${month}-${day}`
                                     }
                                     // 하루의 예약 3개 이상인 경우 2개만 보여주고 나머지는 그 외 n건으로 표기
-                                    const dailyReservations = Array.isArray(reservationInfo) ? reservationInfo.filter(list => (list.resvState === "APPROVE" || list.resvState === "FINISH") && list.resvDate === formatDateToYML(date)) : [];
+                                    // const dailyReservations = Array.isArray(reservationInfo) ? reservationInfo.filter(list => (list.resvState === "APPROVE" || list.resvState === "FINISH") && list.resvDate === formatDateToYML(date)) : [];
                                     const showReservations = dailyReservations.slice(0, 2);
                                     const hiddenCount = dailyReservations.length - 2;
 
@@ -283,11 +293,18 @@ export default function ReservationCalendar({setSearchResultList, setIsOpen, set
                                                 const backgroundColor = list.menuColor;
                                                 const resvTime = list.resvTime;
 
+                                                // function formatTime(resvTime){
+                                                //     const [hours, minutes, seconds] = resvTime.split(':');
+                                                //     const date = new Date();
+                                                //     date.setHours(parseInt(hours, 10));
+                                                //     return date.toLocaleTimeString('en-US', {hour: 'numeric', hour12: true});
+                                                // }
+
                                                 function formatTime(resvTime){
                                                     const [hours, minutes, seconds] = resvTime.split(':');
                                                     const date = new Date();
-                                                    date.setHours(parseInt(hours, 10));
-                                                    return date.toLocaleTimeString('en-US', {hour: 'numeric', hour12: true});
+                                                    date.setHours(parseInt(hours, 10), parseInt(minutes, 10), parseInt(seconds, 10));
+                                                    return date.toLocaleTimeString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true});
                                                 }
 
                                                 const formattedTime = formatTime(resvTime);
