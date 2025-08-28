@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from 'react';
 import styles from "../users/page.module.css";
-import Link from "next/link";
 
 function Checkbox({ children, disabled, checked, onChange }) {
   return (
@@ -104,8 +103,8 @@ export default function Signup() {
                             pattern="[0-9]{3}-?[0-9]{4}-?[0-9]{4}"
                             required
                         />
-                        <button type="submit">
-                            <Link href="/auth/verification-code">이메일 본인 인증</Link>
+                        <button onClick={()=>(window.location.href="/auth/verification-code")}>
+                            이메일 본인 인증
                         </button>
                     </div>
 
