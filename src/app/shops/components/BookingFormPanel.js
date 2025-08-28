@@ -66,7 +66,8 @@ export default function BookingFormPanel ({shopCode, shopName, menus, onBack, on
 
         const bookingData = {
             menuCode: selectedMenuCode,
-            resvDate: selectedDate.toISOString().split('T')[0], // yyyy-MM-dd 포맷
+            // resvDate: selectedDate.toISOString().split('T')[0], // yyyy-MM-dd 포맷
+            resvDate: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth()+1).padStart(2,'0')}-${String(selectedDate.getDate()).padStart(2,'0')}`,
             resvTime: selectedTime,
             userComment: userComment
         };
@@ -95,7 +96,11 @@ export default function BookingFormPanel ({shopCode, shopName, menus, onBack, on
     };
 
     // 가능한 날짜 추출
-    const availableDates = Object.keys(availableSchedule).map(d => new Date(d));
+    // const availableDates = Object.keys(availableSchedule).map(d => new Date(d));
+    const availableDates = Object.keys(availableSchedule).map(d => {
+        const parts = d.split('-');
+        return new Date(parts[0], parts[1]-1, parts[2]);
+    });
 
     // 가능한 시간 추출
     const availableTimes
