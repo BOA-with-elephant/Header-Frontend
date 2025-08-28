@@ -34,7 +34,6 @@ export default function ValidateOX() {
             });
 
             if (response.ok) {
-                // Handle successful signup (e.g., redirect, show success message)
                 console.log('Verify successful');
                 alert('이메일 인증에 성공하였습니다!');
                 // 성공 시 회원가입 페이지로 전환

@@ -87,7 +87,7 @@ export default function Signup() {
                             name="userName"
                             value={formData.userName}
                             onChange={handleChange}
-                            required // Add HTML5 validation
+                            required // 필수 입력
                         />
                     </div>
 
